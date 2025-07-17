@@ -23,9 +23,9 @@ const COLOR_SYSTEM_CONFIG = {
 
   // Project metadata
   project: {
-    name: "Design System",
+    name: "Semantic Color Design System",
     description:
-      "A comprehensive color system built on primitive colors with semantic tokens",
+      "A comprehensive color system built on primitive colors with semantic tokens for consistent,accessible design",
   },
 
   // Customization options

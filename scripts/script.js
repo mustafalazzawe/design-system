@@ -80,6 +80,9 @@ class ColorSystemState {
     customConfig.baseColors.primary.hex = primaryHex;
     customConfig.baseColors.primary.name = "primary";
 
+    // Update project name for custom colors
+    customConfig.project.name = "Custom Design System";
+
     customConfig.options.autoDetectColorNames = false;
 
     return this.updateColorSystem(customConfig);
@@ -471,13 +474,14 @@ class Renderer {
 
     if (titleElement) {
       titleElement.textContent =
-        state.currentColorSystem.config.project?.name || "Color Design System";
+        state.currentColorSystem.config.project?.name ||
+        "Semantic Color Design System";
     }
 
     if (subtitleElement) {
       subtitleElement.textContent =
         state.currentColorSystem.config.project?.description ||
-        "A comprehensive color system built on primitive colors with semantic tokens";
+        "A comprehensive color system built on primitive colors with semantic tokens for consistent, accessible design";
     }
 
     if (neutralTitle) {
@@ -810,6 +814,15 @@ class ConfigPanel {
       ) {
         this.toggle();
       }
+    });
+
+    // Prevent scroll events from bubbling through the config panel
+    this.panel?.addEventListener("wheel", (e) => {
+      e.preventDefault();
+    });
+
+    this.panel?.addEventListener("touchmove", (e) => {
+      e.preventDefault();
     });
   }
 
