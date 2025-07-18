@@ -738,7 +738,7 @@ class Renderer {
       }
     });
 
-    // Update ALL semantic badges (not just the first one)
+    // Update semantic badges
     const semanticBadges = document.querySelectorAll(".semantic-badge");
     if (
       semanticBadges.length > 0 &&
@@ -974,6 +974,7 @@ class ConfigPanel {
     }
   }
 
+  // TODO: Update detected colors for custom colors
   updateDetectedColors() {
     const detectedColors = document.getElementById("detected-colors");
     if (detectedColors) {
@@ -1099,6 +1100,62 @@ class ConfigPanel {
 // ENHANCED EXPORT SYSTEM
 // =============================================================================
 
+class CodeTemplate {
+  constructor() {
+    this.blocks = [];
+  }
+
+  addBlock(opener, content, closer = "}", indentLevel = 0) {
+    this.blocks.push({ opener, content, closer, indentLevel });
+    return this;
+  }
+
+  addLines(lines, indentLevel = 0) {
+    this.blocks.push({
+      opener: null,
+      content: lines,
+      closer: null,
+      indentLevel,
+    });
+    return this;
+  }
+
+  render(indentSize = 2) {
+    return this.blocks
+      .map((block) => {
+        let result = [];
+        const baseIndent = " ".repeat(block.indentLevel * indentSize);
+        const contentIndent = " ".repeat((block.indentLevel + 1) * indentSize);
+
+        if (block.opener) {
+          result.push(baseIndent + block.opener);
+        }
+
+        if (Array.isArray(block.content) && block.content.length > 0) {
+          result.push(
+            ...block.content.map((line) => {
+              if (line.trim() === "") return ""; // Preserve empty lines
+
+              // Preserve intentional indentation if line starts with spaces
+              if (line.startsWith(" ")) {
+                return contentIndent + line;
+              } else {
+                return contentIndent + line.trim();
+              }
+            })
+          );
+        }
+
+        if (block.closer) {
+          result.push(baseIndent + block.closer);
+        }
+
+        return result.join("\n");
+      })
+      .join("\n\n");
+  }
+}
+
 class EnhancedExportManager {
   constructor() {
     this.state = {
@@ -1132,53 +1189,64 @@ class EnhancedExportManager {
     const neutralName = state.currentColorSystem.meta.neutralName;
     const primaryName = state.currentColorSystem.meta.primaryName;
 
-    let css = this.state.includeMedia
-      ? "@media (prefers-color-scheme: light) {\n  "
-      : "";
-    css += ":root {\n";
+    const template = new CodeTemplate();
 
-    // Neutral colors
+    // Build the root block content
+    const rootContent = [];
+
+    // Add neutral colors
     Object.entries(neutralColors).forEach(([weight, colorData]) => {
-      css += `    --${neutralName}-${weight}: ${this.formatColor(
-        colorData.hex
-      )};\n`;
+      rootContent.push(
+        `--${neutralName}-${weight}: ${this.formatColor(colorData.hex)};`
+      );
     });
 
-    css += "\n";
+    rootContent.push("");
 
-    // Primary colors
+    // Add primary colors
     Object.entries(primaryColors).forEach(([weight, colorData]) => {
-      css += `    --${primaryName}-${weight}: ${this.formatColor(
-        colorData.hex
-      )};\n`;
+      rootContent.push(
+        `--${primaryName}-${weight}: ${this.formatColor(colorData.hex)};`
+      );
     });
 
     if (this.state.includeThemes) {
-      css += "\n    /* Semantic tokens */\n";
+      rootContent.push("");
+      rootContent.push("/* Semantic tokens */");
       Object.entries(semanticTokens).forEach(([tokenName, token]) => {
-        css += `    --${tokenName}: ${this.formatColor(token.light.hex)};\n`;
+        rootContent.push(
+          `--${tokenName}: ${this.formatColor(token.light.hex)};`
+        );
       });
     }
 
-    css += "  }";
+    // Determine the opener and closer based on @media setting
+    const opener = this.state.includeMedia
+      ? "@media (prefers-color-scheme: light) {\n  :root {"
+      : ":root {";
 
-    if (this.state.includeMedia) {
-      css += "\n}\n\n@media (prefers-color-scheme: dark) {\n  :root {\n";
-      css += "    /* Dark theme overrides */\n";
+    const closer = this.state.includeMedia ? "  }\n}" : "}";
+
+    template.addBlock(opener, rootContent, closer);
+
+    // Add dark theme if themes are included
+    if (this.state.includeThemes) {
+      const darkOpener = this.state.includeMedia
+        ? "@media (prefers-color-scheme: dark) {\n  :root {"
+        : '[data-theme="dark"] {';
+
+      const darkContent = ["/* Dark theme overrides */"];
       Object.entries(semanticTokens).forEach(([tokenName, token]) => {
-        css += `    --${tokenName}: ${this.formatColor(token.dark.hex)};\n`;
+        darkContent.push(
+          `--${tokenName}: ${this.formatColor(token.dark.hex)};`
+        );
       });
-      css += "  }\n}";
-    } else if (this.state.includeThemes) {
-      css += '\n\n[data-theme="dark"] {\n';
-      css += "  /* Dark theme overrides */\n";
-      Object.entries(semanticTokens).forEach(([tokenName, token]) => {
-        css += `  --${tokenName}: ${this.formatColor(token.dark.hex)};\n`;
-      });
-      css += "}";
+
+      const darkCloser = this.state.includeMedia ? "  }\n}" : "}";
+      template.addBlock(darkOpener, darkContent, darkCloser);
     }
 
-    return css;
+    return template.render();
   }
 
   generateTailwindConfig() {
@@ -1188,52 +1256,80 @@ class EnhancedExportManager {
     const neutralName = state.currentColorSystem.meta.neutralName;
     const primaryName = state.currentColorSystem.meta.primaryName;
 
-    let config = `colors: {
-        ${neutralName}: {`;
+    const template = new CodeTemplate();
 
+    const allContent = [];
+
+    // Add neutral colors
+    allContent.push(`${neutralName}: {`);
     Object.entries(neutralColors).forEach(([weight, colorData]) => {
-      config += `\n          ${weight}: '${this.formatColor(colorData.hex)}',`;
+      allContent.push(`  ${weight}: '${this.formatColor(colorData.hex)}',`);
     });
+    allContent.push("},");
 
-    config += `\n        },
-        ${primaryName}: {`;
-
+    // Add primary colors
+    allContent.push(`${primaryName}: {`);
     Object.entries(primaryColors).forEach(([weight, colorData]) => {
-      config += `\n          ${weight}: '${this.formatColor(colorData.hex)}',`;
+      allContent.push(`  ${weight}: '${this.formatColor(colorData.hex)}',`);
     });
+    allContent.push("}");
 
-    config += `\n  }
-}`;
+    template.addBlock("colors: {", allContent, "}");
 
-    return config;
+    return template.render();
   }
 
   generateTailwindCSS() {
-    if (!state.semanticTokens || !this.state.includeThemes) {
+    if (!state.semanticTokens) {
       return "/* No semantic tokens to display */";
     }
 
     const { semanticTokens } = state;
 
-    let css = `@layer base {
-  :root {`;
+    const template = new CodeTemplate();
 
-    Object.entries(semanticTokens).forEach(([tokenName, token]) => {
-      css += `\n    --${tokenName}: ${this.formatColor(token.light.hex)};`;
-    });
+    if (this.state.includeThemes) {
+      // Build the complete @layer structure with light/dark themes
+      const layerContent = [];
 
-    css += `\n  }
+      // Add :root section (light theme)
+      layerContent.push(":root {");
+      Object.entries(semanticTokens).forEach(([tokenName, token]) => {
+        layerContent.push(
+          `  --${tokenName}: ${this.formatColor(token.light.hex)};`
+        );
+      });
+      layerContent.push("}");
 
-  [data-theme="dark"] {`;
+      layerContent.push("");
 
-    Object.entries(semanticTokens).forEach(([tokenName, token]) => {
-      css += `\n    --${tokenName}: ${this.formatColor(token.dark.hex)};`;
-    });
+      // Add dark theme section
+      layerContent.push('[data-theme="dark"] {');
+      Object.entries(semanticTokens).forEach(([tokenName, token]) => {
+        layerContent.push(
+          `  --${tokenName}: ${this.formatColor(token.dark.hex)};`
+        );
+      });
+      layerContent.push("}");
 
-    css += `\n  }
-}`;
+      // Wrap everything in @layer base
+      template.addBlock("@layer base {", layerContent, "}");
+    } else {
+      // Just show semantic tokens in :root without theme organization
+      const layerContent = [];
 
-    return css;
+      layerContent.push(":root {");
+      Object.entries(semanticTokens).forEach(([tokenName, token]) => {
+        layerContent.push(
+          `  --${tokenName}: ${this.formatColor(token.light.hex)};`
+        );
+      });
+      layerContent.push("}");
+
+      template.addBlock("@layer base {", layerContent, "}");
+    }
+
+    return template.render();
   }
 
   generateJSON() {
