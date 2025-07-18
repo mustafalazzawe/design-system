@@ -6,7 +6,7 @@
 // CONFIGURATION CONSTANTS
 // =============================================================================
 
-const COLOR_SYSTEM_CONFIG = {
+export const COLOR_SYSTEM_CONFIG = {
   // Base colors - these will generate the full scales
   baseColors: {
     neutral: {
@@ -40,7 +40,7 @@ const COLOR_SYSTEM_CONFIG = {
 };
 
 // Color detection mappings for auto-detection (only used for presets for now)
-const COLOR_MAPPINGS = Object.freeze({
+export const COLOR_MAPPINGS = Object.freeze({
   // Neutrals/Greys
   slate: { hue: [200, 220], saturation: [0, 20] },
   gray: { hue: [0, 360], saturation: [0, 10] },
@@ -75,7 +75,7 @@ const COLOR_MAPPINGS = Object.freeze({
 });
 
 // Lightness values for each scale step
-const LIGHTNESS_SCALE = Object.freeze({
+export const LIGHTNESS_SCALE = Object.freeze({
   50: 98,
   100: 96,
   200: 91,
@@ -90,7 +90,7 @@ const LIGHTNESS_SCALE = Object.freeze({
 });
 
 // Status color values (consistent across themes)
-const STATUS_COLORS = Object.freeze({
+export const STATUS_COLORS = Object.freeze({
   success: {
     light: { primary: "#16a34a", background: "#dcfce7", foreground: "#16a34a" }, // green-600, green-100, green-600
     dark: { primary: "#16a34a", background: "#064e3b", foreground: "#4ade80" }, // green-600, green-900, green-400
@@ -114,7 +114,7 @@ const STATUS_COLORS = Object.freeze({
  * @param {string} hex - Hex color string
  * @returns {Object|null} HSL object with h, s, l properties or null if invalid
  */
-function hexToHsl(hex) {
+export function hexToHsl(hex) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!result) return null;
 
@@ -161,7 +161,7 @@ function hexToHsl(hex) {
  * @param {number} l - Lightness (0-100)
  * @returns {string} Hex color string
  */
-function hslToHex(h, s, l) {
+export function hslToHex(h, s, l) {
   s /= 100;
   l /= 100;
 
@@ -212,7 +212,7 @@ function hslToHex(h, s, l) {
  * @param {string} hex - Hex color string
  * @returns {Array|null} RGB array [r, g, b] or null if invalid
  */
-function hexToRgb(hex) {
+export function hexToRgb(hex) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? [
@@ -228,7 +228,7 @@ function hexToRgb(hex) {
  * @param {string} hex - Hex color string
  * @returns {string} Detected color name or "custom"
  */
-function detectColorName(hex) {
+export function detectColorName(hex) {
   const hsl = hexToHsl(hex);
   if (!hsl) return "custom";
 
@@ -258,7 +258,7 @@ function detectColorName(hex) {
  * @param {string} str - String to capitalize
  * @returns {string} Capitalized string
  */
-function capitalize(str) {
+export function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
@@ -273,7 +273,7 @@ function capitalize(str) {
  * @param {boolean} useSmartPositioning - Whether to use smart positioning
  * @returns {Object|null} Color scale object or null if invalid
  */
-function generateColorScale(baseHex, colorName, useSmartPositioning = false) {
+export function generateColorScale(baseHex, colorName, useSmartPositioning = false) {
   const hsl = hexToHsl(baseHex);
   if (!hsl) return null;
 
@@ -348,7 +348,7 @@ function generateColorScale(baseHex, colorName, useSmartPositioning = false) {
  * @param {string} primaryName - Primary color name
  * @returns {Object} Semantic tokens object
  */
-function generateSemanticTokens(
+export function generateSemanticTokens(
   neutralScale,
   primaryScale,
   neutralName,
@@ -452,7 +452,7 @@ function generateSemanticTokens(
     },
     "bg-tertiary": {
       light: { hex: neutralScale[200].hex, name: `${neutralName}-200` },
-      dark: { hex: neutralScale[900].hex, name: `${neutralName}-900` },
+      dark: { hex: neutralScale[800].hex, name: `${neutralName}-800` },
     },
     "bg-base": {
       light: { hex: "#ffffff", name: "base-white" },
@@ -600,7 +600,7 @@ function generateSemanticTokens(
  * @param {Object} config - Configuration object
  * @returns {Object} Initialized color system
  */
-function initializeColorSystem(config = COLOR_SYSTEM_CONFIG) {
+export function initializeColorSystem(config = COLOR_SYSTEM_CONFIG) {
   const { baseColors, options } = config;
 
   // Auto-detect color names for presets only
@@ -673,7 +673,7 @@ function deepFreeze(obj) {
 }
 
 // Immutable preset configurations
-const PRESET_CONFIGS = deepFreeze({
+export const PRESET_CONFIGS = deepFreeze({
   default: {
     baseColors: {
       neutral: { name: "zinc", base: "#71717a", hex: "#71717a" },
@@ -711,27 +711,6 @@ const PRESET_CONFIGS = deepFreeze({
   },
 });
 
-// =============================================================================
-// EXPORTS & GLOBAL SETUP
-// =============================================================================
-
-// Make functions and constants available globally
-Object.assign(window, {
-  ColorSystemConfig: COLOR_SYSTEM_CONFIG,
-  initializeColorSystem,
-  PRESET_CONFIGS,
-  detectColorName,
-  generateColorScale,
-
-  // Additional utilities for external use
-  hexToHsl,
-  hslToHex,
-  hexToRgb,
-  STATUS_COLORS,
-  COLOR_MAPPINGS,
-});
-
-// Initialize logging
 console.log("🎨 Modular Color System v2.0 loaded");
 console.log("📋 Available presets:", Object.keys(PRESET_CONFIGS));
 console.log("🔒 Presets are immutable and protected from modification");
