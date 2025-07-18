@@ -23,9 +23,9 @@ const COLOR_SYSTEM_CONFIG = {
 
   // Project metadata
   project: {
-    name: "Design System",
+    name: "Semantic Color Design System",
     description:
-      "A comprehensive color system built on primitive colors with semantic tokens",
+      "A comprehensive color system built on primitive colors with semantic tokens for consistent,accessible design",
   },
 
   // Customization options
@@ -416,6 +416,10 @@ function generateSemanticTokens(
   Object.assign(tokens, {
     "fg-primary": {
       light: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
+      dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
+    },
+    "fg-primary-on-brand": {
+      light: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
       dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
     },
     "fg-secondary": {

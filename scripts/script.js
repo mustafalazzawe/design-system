@@ -80,6 +80,9 @@ class ColorSystemState {
     customConfig.baseColors.primary.hex = primaryHex;
     customConfig.baseColors.primary.name = "primary";
 
+    // Update project name for custom colors
+    customConfig.project.name = "Custom Design System";
+
     customConfig.options.autoDetectColorNames = false;
 
     return this.updateColorSystem(customConfig);
@@ -97,17 +100,72 @@ const utils = {
   hexToRgb(hex) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result
-      ? [
-          parseInt(result[1], 16),
-          parseInt(result[2], 16),
-          parseInt(result[3], 16),
-        ]
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
       : null;
   },
 
   hexToRgba(hex, alpha = 1) {
     const rgb = this.hexToRgb(hex);
-    return rgb ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})` : hex;
+    return rgb ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})` : hex;
+  },
+
+  hexToHsl(hex) {
+    const rgb = this.hexToRgb(hex);
+    if (!rgb) return null;
+
+    let { r, g, b } = rgb;
+    r /= 255;
+    g /= 255;
+    b /= 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h,
+      s,
+      l = (max + min) / 2;
+
+    if (max === min) {
+      h = s = 0;
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+      switch (max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        case b:
+          h = (r - g) / d + 4;
+          break;
+      }
+      h /= 6;
+    }
+
+    return {
+      h: Math.round(h * 360),
+      s: Math.round(s * 100),
+      l: Math.round(l * 100),
+    };
+  },
+
+  formatColor(hex, format = "hex") {
+    switch (format) {
+      case "rgb":
+        const rgb = this.hexToRgb(hex);
+        return rgb ? `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` : hex;
+      case "hsl":
+        const hsl = this.hexToHsl(hex);
+        return hsl ? `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)` : hex;
+      default:
+        return hex;
+    }
   },
 
   getLuminance(r, g, b) {
@@ -128,7 +186,7 @@ const utils = {
     if (hex.includes("rgba")) return true;
     const rgb = this.hexToRgb(hex);
     if (!rgb) return true;
-    const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
+    const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
     return brightness > 128;
   },
 
@@ -151,8 +209,10 @@ const utils = {
         family: {},
       };
 
-    const whiteContrast = this.getContrastRatio(rgb, [255, 255, 255]);
-    const blackContrast = this.getContrastRatio(rgb, [0, 0, 0]);
+    // Convert to array format for the contrast calculation functions
+    const rgbArray = [rgb.r, rgb.g, rgb.b];
+    const whiteContrast = this.getContrastRatio(rgbArray, [255, 255, 255]);
+    const blackContrast = this.getContrastRatio(rgbArray, [0, 0, 0]);
 
     let familyContrasts = {};
     const currentColors =
@@ -164,7 +224,11 @@ const utils = {
       Object.entries(currentColors).forEach(([weight, colorData]) => {
         const shadeRgb = this.hexToRgb(colorData.hex);
         if (shadeRgb) {
-          const contrast = this.getContrastRatio(rgb, shadeRgb);
+          const contrast = this.getContrastRatio(rgbArray, [
+            shadeRgb.r,
+            shadeRgb.g,
+            shadeRgb.b,
+          ]);
           if (contrast >= 4.5 && hex !== colorData.hex) {
             familyContrasts[weight] = {
               ratio: contrast,
@@ -188,18 +252,24 @@ const utils = {
     };
   },
 
-  copyToClipboard(text) {
+  copyToClipboard(text, customFeedback = null) {
     if (navigator.clipboard?.writeText) {
       navigator.clipboard
         .writeText(text)
-        .then(() => this.showFeedback("Copied!"))
-        .catch(() => this.fallbackCopy(text));
+        .then(() => {
+          if (customFeedback) {
+            customFeedback();
+          } else {
+            this.showFeedback("Copied!");
+          }
+        })
+        .catch(() => this.fallbackCopy(text, customFeedback));
     } else {
-      this.fallbackCopy(text);
+      this.fallbackCopy(text, customFeedback);
     }
   },
 
-  fallbackCopy(text) {
+  fallbackCopy(text, customFeedback = null) {
     const textArea = document.createElement("textarea");
     textArea.value = text;
     textArea.style.cssText =
@@ -210,7 +280,11 @@ const utils = {
 
     try {
       document.execCommand("copy");
-      this.showFeedback("Copied!");
+      if (customFeedback) {
+        customFeedback();
+      } else {
+        this.showFeedback("Copied!");
+      }
     } catch (err) {
       console.error("Copy failed:", err);
     }
@@ -263,15 +337,6 @@ class CSSUpdater {
     const currentTheme = root.getAttribute("data-theme") || "light";
     const updates = {};
 
-    // Background colors
-    this.addColorVars(updates, currentTheme, "bg", [
-      "primary",
-      "secondary",
-      "tertiary",
-      "base",
-      "modal-overlay",
-    ]);
-
     // Text colors
     this.addColorVars(updates, currentTheme, "text", [
       "primary",
@@ -287,6 +352,26 @@ class CSSUpdater {
       "secondary",
       "tertiary",
     ]);
+
+    // Foreground colors
+    this.addColorVars(updates, currentTheme, "fg", [
+      "primary",
+      "primary-on-brand",
+      "secondary",
+      "tertiary",
+      "white",
+      "disabled",
+    ]);
+
+    // Background colors
+    this.addColorVars(updates, currentTheme, "bg", [
+      "primary",
+      "secondary",
+      "tertiary",
+      "base",
+      "modal-overlay",
+    ]);
+
     updates["--border-color"] =
       state.semanticTokens["border-primary"][currentTheme].hex;
 
@@ -471,13 +556,14 @@ class Renderer {
 
     if (titleElement) {
       titleElement.textContent =
-        state.currentColorSystem.config.project?.name || "Color Design System";
+        state.currentColorSystem.config.project?.name ||
+        "Semantic Color Design System";
     }
 
     if (subtitleElement) {
       subtitleElement.textContent =
         state.currentColorSystem.config.project?.description ||
-        "A comprehensive color system built on primitive colors with semantic tokens";
+        "A comprehensive color system built on primitive colors with semantic tokens for consistent, accessible design";
     }
 
     if (neutralTitle) {
@@ -811,6 +897,15 @@ class ConfigPanel {
         this.toggle();
       }
     });
+
+    // Prevent scroll events from bubbling through the config panel
+    this.panel?.addEventListener("wheel", (e) => {
+      e.preventDefault();
+    });
+
+    this.panel?.addEventListener("touchmove", (e) => {
+      e.preventDefault();
+    });
   }
 
   handlePresetChange(e) {
@@ -991,33 +1086,649 @@ class ConfigPanel {
   }
 
   exportConfig() {
-    const config = {
-      ...state.currentColorSystem.config,
-      exportedAt: new Date().toISOString(),
-      version: "1.0.0",
-    };
-
-    const configJson = JSON.stringify(config, null, 2);
-    const blob = new Blob([configJson], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-
-    a.href = url;
-    a.download = `color-system-config-${
-      new Date().toISOString().split("T")[0]
-    }.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    utils.showFeedback("Config exported!");
+    // Open the enhanced export modal
+    openEnhancedExportModal();
   }
 
   toggle() {
     this.panel?.classList.toggle("show");
   }
 }
+
+// =============================================================================
+// ENHANCED EXPORT SYSTEM
+// =============================================================================
+
+class EnhancedExportManager {
+  constructor() {
+    this.state = {
+      currentTab: "css",
+      currentFormat: "hex",
+      includeMedia: false,
+      includeThemes: true,
+      textWrapEnabled: false,
+    };
+    this.modal = null;
+    this.init();
+  }
+
+  init() {
+    this.modal = document.getElementById("exportModal");
+    if (!this.modal) {
+      console.warn("Export modal not found");
+      return;
+    }
+    this.bindEvents();
+  }
+
+  // =============================================================================
+  // CODE GENERATION METHODS
+  // =============================================================================
+
+  generateCSS() {
+    if (!state.currentColorSystem) return "";
+
+    const { neutralColors, primaryColors, semanticTokens } = state;
+    const neutralName = state.currentColorSystem.meta.neutralName;
+    const primaryName = state.currentColorSystem.meta.primaryName;
+
+    let css = this.state.includeMedia
+      ? "@media (prefers-color-scheme: light) {\n  "
+      : "";
+    css += ":root {\n";
+
+    // Neutral colors
+    Object.entries(neutralColors).forEach(([weight, colorData]) => {
+      css += `    --${neutralName}-${weight}: ${this.formatColor(
+        colorData.hex
+      )};\n`;
+    });
+
+    css += "\n";
+
+    // Primary colors
+    Object.entries(primaryColors).forEach(([weight, colorData]) => {
+      css += `    --${primaryName}-${weight}: ${this.formatColor(
+        colorData.hex
+      )};\n`;
+    });
+
+    if (this.state.includeThemes) {
+      css += "\n    /* Semantic tokens */\n";
+      Object.entries(semanticTokens).forEach(([tokenName, token]) => {
+        css += `    --${tokenName}: ${this.formatColor(token.light.hex)};\n`;
+      });
+    }
+
+    css += "  }";
+
+    if (this.state.includeMedia) {
+      css += "\n}\n\n@media (prefers-color-scheme: dark) {\n  :root {\n";
+      css += "    /* Dark theme overrides */\n";
+      Object.entries(semanticTokens).forEach(([tokenName, token]) => {
+        css += `    --${tokenName}: ${this.formatColor(token.dark.hex)};\n`;
+      });
+      css += "  }\n}";
+    } else if (this.state.includeThemes) {
+      css += '\n\n[data-theme="dark"] {\n';
+      css += "  /* Dark theme overrides */\n";
+      Object.entries(semanticTokens).forEach(([tokenName, token]) => {
+        css += `  --${tokenName}: ${this.formatColor(token.dark.hex)};\n`;
+      });
+      css += "}";
+    }
+
+    return css;
+  }
+
+  generateTailwindConfig() {
+    if (!state.currentColorSystem) return "";
+
+    const { neutralColors, primaryColors } = state;
+    const neutralName = state.currentColorSystem.meta.neutralName;
+    const primaryName = state.currentColorSystem.meta.primaryName;
+
+    let config = `module.exports = {
+  content: ['./src/**/*.{html,js,jsx,ts,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        ${neutralName}: {`;
+
+    Object.entries(neutralColors).forEach(([weight, colorData]) => {
+      config += `\n          ${weight}: '${this.formatColor(colorData.hex)}',`;
+    });
+
+    config += `\n        },
+        ${primaryName}: {`;
+
+    Object.entries(primaryColors).forEach(([weight, colorData]) => {
+      config += `\n          ${weight}: '${this.formatColor(colorData.hex)}',`;
+    });
+
+    config += `\n        }
+      }
+    }
+  },
+  plugins: []
+}`;
+
+    return config;
+  }
+
+  generateTailwindCSS() {
+    if (!state.semanticTokens || !this.state.includeThemes) {
+      return "/* No semantic tokens to display */";
+    }
+
+    const { semanticTokens } = state;
+
+    let css = `@layer base {
+  :root {`;
+
+    Object.entries(semanticTokens).forEach(([tokenName, token]) => {
+      css += `\n    --${tokenName}: ${this.formatColor(token.light.hex)};`;
+    });
+
+    css += `\n  }
+
+  [data-theme="dark"] {`;
+
+    Object.entries(semanticTokens).forEach(([tokenName, token]) => {
+      css += `\n    --${tokenName}: ${this.formatColor(token.dark.hex)};`;
+    });
+
+    css += `\n  }
+}`;
+
+    return css;
+  }
+
+  generateJSON() {
+    if (!state.currentColorSystem) return "{}";
+
+    const { neutralColors, primaryColors, semanticTokens } = state;
+    const neutralName = state.currentColorSystem.meta.neutralName;
+    const primaryName = state.currentColorSystem.meta.primaryName;
+
+    const data = { colors: {} };
+
+    data.colors[neutralName] = {};
+    Object.entries(neutralColors).forEach(([weight, colorData]) => {
+      data.colors[neutralName][weight] = this.formatColor(colorData.hex);
+    });
+
+    data.colors[primaryName] = {};
+    Object.entries(primaryColors).forEach(([weight, colorData]) => {
+      data.colors[primaryName][weight] = this.formatColor(colorData.hex);
+    });
+
+    if (this.state.includeThemes) {
+      data.semanticTokens = { light: {}, dark: {} };
+
+      Object.entries(semanticTokens).forEach(([tokenName, token]) => {
+        data.semanticTokens.light[tokenName] = this.formatColor(
+          token.light.hex
+        );
+        data.semanticTokens.dark[tokenName] = this.formatColor(token.dark.hex);
+      });
+    }
+
+    return JSON.stringify(data, null, 2);
+  }
+
+  // =============================================================================
+  // UTILITY METHODS
+  // =============================================================================
+
+  formatColor(hex) {
+    return utils.formatColor(hex, this.state.currentFormat);
+  }
+
+  updateCodePreview() {
+    const cssCode = document.getElementById("css-code");
+    const tailwindConfigCode = document.getElementById("tailwind-config-code");
+    const tailwindCssCode = document.getElementById("tailwind-css-code");
+    const jsonCode = document.getElementById("json-code");
+
+    if (cssCode) cssCode.textContent = this.generateCSS();
+    if (tailwindConfigCode)
+      tailwindConfigCode.textContent = this.generateTailwindConfig();
+    if (tailwindCssCode)
+      tailwindCssCode.textContent = this.generateTailwindCSS();
+    if (jsonCode) jsonCode.textContent = this.generateJSON();
+  }
+
+  forceScrollRecalculation() {
+    const activeCodeContent = document.querySelector(".code-content");
+    if (activeCodeContent) {
+      // Force the browser to recalculate scrollable area
+      const originalOverflow = activeCodeContent.style.overflow;
+      activeCodeContent.style.overflow = "hidden";
+
+      // Trigger reflow
+      activeCodeContent.offsetHeight;
+
+      // Restore overflow
+      activeCodeContent.style.overflow = originalOverflow || "auto";
+    }
+  }
+
+  // =============================================================================
+  // UI INTERACTION METHODS
+  // =============================================================================
+
+  switchTab(tab) {
+    this.state.currentTab = tab;
+
+    // Update tab buttons
+    document
+      .querySelectorAll(".export-modal .tab-button") // More specific selector
+      .forEach((btn) => btn.classList.remove("active"));
+    const tabButton = document.getElementById(`${tab}-tab`);
+    if (tabButton) tabButton.classList.add("active");
+
+    const container = document.querySelector(".code-preview-container");
+    if (!container) return;
+
+    // CRITICAL FIX: Hide ALL sections first - be more explicit
+    const allSections = [
+      "css-section",
+      "json-section",
+      "tailwind-config-section",
+      "tailwind-css-section",
+    ];
+
+    allSections.forEach((sectionId) => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.classList.add("hidden");
+        element.style.display = "none"; // Force hide with inline style too
+      }
+    });
+
+    if (tab === "tailwind") {
+      // Show split layout for Tailwind
+      container.classList.add("split");
+      // Show Tailwind sections
+      const configSection = document.getElementById("tailwind-config-section");
+      const cssSection = document.getElementById("tailwind-css-section");
+      if (configSection) {
+        configSection.classList.remove("hidden");
+        configSection.style.display = "flex";
+      }
+      if (cssSection) {
+        cssSection.classList.remove("hidden");
+        cssSection.style.display = "flex";
+      }
+    } else {
+      // Show single layout
+      container.classList.remove("split");
+      // Show the selected section
+      const selectedSection = document.getElementById(`${tab}-section`);
+      if (selectedSection) {
+        selectedSection.classList.remove("hidden");
+        selectedSection.style.display = "flex";
+      }
+    }
+
+    // Show/hide @media toggle only for CSS tab
+    const mediaContainer = document.getElementById("media-toggle-container");
+    if (mediaContainer) {
+      if (tab === "css" && this.state.includeThemes) {
+        mediaContainer.style.display = "flex";
+      } else {
+        mediaContainer.style.display = "none";
+      }
+    }
+
+    // Force scroll recalculation after tab switch
+    setTimeout(() => {
+      this.forceScrollRecalculation();
+    }, 10);
+  }
+
+  setFormat(format) {
+    this.state.currentFormat = format;
+
+    // Update ONLY color format buttons, not the wrap button
+    document
+      .querySelectorAll(".format-buttons .format-button")
+      .forEach((btn) => btn.classList.remove("active"));
+    const formatButton = document.getElementById(`${format}-btn`);
+    if (formatButton) formatButton.classList.add("active");
+
+    this.updateCodePreview();
+  }
+
+  toggleTextWrap() {
+    this.state.textWrapEnabled = !this.state.textWrapEnabled;
+
+    // Update button appearance
+    const wrapButton = document.getElementById("wrap-btn");
+    if (wrapButton) {
+      wrapButton.classList.toggle("active", this.state.textWrapEnabled);
+    }
+
+    // Apply wrap/no-wrap styling to code blocks
+    const codeBlocks = document.querySelectorAll(".code-block");
+    codeBlocks.forEach((block) => {
+      if (this.state.textWrapEnabled) {
+        block.classList.remove("force-scroll");
+      } else {
+        block.classList.add("force-scroll");
+      }
+    });
+  }
+
+  toggleMedia() {
+    this.state.includeMedia = !this.state.includeMedia;
+    const toggle = document.getElementById("media-toggle");
+    if (toggle) {
+      toggle.classList.toggle("active", this.state.includeMedia);
+    }
+    this.updateCodePreview();
+  }
+
+  toggleThemes() {
+    this.state.includeThemes = !this.state.includeThemes;
+    const toggle = document.getElementById("themes-toggle");
+    if (toggle) {
+      toggle.classList.toggle("active", this.state.includeThemes);
+    }
+
+    // Show/hide @media toggle based on themes setting AND current tab
+    const mediaContainer = document.getElementById("media-toggle-container");
+    if (mediaContainer) {
+      if (this.state.includeThemes && this.state.currentTab === "css") {
+        mediaContainer.style.display = "flex";
+      } else {
+        mediaContainer.style.display = "none";
+        // Reset @media toggle when themes are disabled
+        this.state.includeMedia = false;
+        const mediaToggle = document.getElementById("media-toggle");
+        if (mediaToggle) mediaToggle.classList.remove("active");
+      }
+    }
+
+    this.updateCodePreview();
+  }
+
+  // =============================================================================
+  // MODAL MANAGEMENT
+  // =============================================================================
+
+  open() {
+    if (!this.modal) return;
+
+    this.modal.classList.add("show");
+
+    // Initialize wrap button state
+    const wrapButton = document.getElementById("wrap-btn");
+    if (wrapButton) {
+      wrapButton.classList.toggle("active", this.state.textWrapEnabled);
+    }
+
+    // Apply initial text wrap state to code blocks
+    const codeBlocks = document.querySelectorAll(".code-block");
+    codeBlocks.forEach((block) => {
+      if (this.state.textWrapEnabled) {
+        block.classList.remove("force-scroll");
+      } else {
+        block.classList.add("force-scroll");
+      }
+    });
+
+    // Initialize @media toggle visibility
+    const mediaContainer = document.getElementById("media-toggle-container");
+    if (mediaContainer) {
+      if (this.state.currentTab === "css" && this.state.includeThemes) {
+        mediaContainer.style.display = "flex";
+      } else {
+        mediaContainer.style.display = "none";
+      }
+    }
+
+    // CRITICAL: Update content first
+    this.updateCodePreview();
+
+    // CRITICAL: Force proper initial state by explicitly calling switchTab
+    // Use setTimeout to ensure DOM is ready
+    setTimeout(() => {
+      this.switchTab(this.state.currentTab);
+
+      // Additional force scroll recalculation
+      setTimeout(() => {
+        this.forceScrollRecalculation();
+      }, 50);
+    }, 10);
+
+    // Prevent body scroll
+    document.body.style.overflow = "hidden";
+  }
+
+  close() {
+    if (!this.modal) return;
+
+    this.modal.classList.remove("show");
+
+    // Restore body scroll
+    document.body.style.overflow = "";
+  }
+
+  // =============================================================================
+  // COPY FUNCTIONALITY
+  // =============================================================================
+
+  copyCode(format) {
+    let text = "";
+
+    switch (format) {
+      case "css":
+        text = this.generateCSS();
+        break;
+      case "tailwind-config":
+        text = this.generateTailwindConfig();
+        break;
+      case "tailwind-css":
+        text = this.generateTailwindCSS();
+        break;
+      case "json":
+        text = this.generateJSON();
+        break;
+      default:
+        console.warn(`Unknown format: ${format}`);
+        return;
+    }
+
+    utils.copyToClipboard(text, () => this.showCopyFeedback(format));
+  }
+
+  showCopyFeedback(format) {
+    const button = document.getElementById(`${format}-copy`);
+    if (!button) return;
+
+    // Clear any existing timeout to prevent stuck state
+    if (this.copyFeedbackTimeouts) {
+      if (this.copyFeedbackTimeouts[format]) {
+        clearTimeout(this.copyFeedbackTimeouts[format]);
+      }
+    } else {
+      this.copyFeedbackTimeouts = {};
+    }
+
+    // Store original text if we don't have it yet
+    if (!this.originalCopyTexts) {
+      this.originalCopyTexts = {};
+    }
+    if (!this.originalCopyTexts[format]) {
+      this.originalCopyTexts[format] = button.textContent;
+    }
+
+    const originalText = this.originalCopyTexts[format];
+
+    // Reset to original state first
+    button.classList.remove("copied");
+    button.textContent = originalText;
+    button.offsetHeight; // Force reflow
+
+    // Apply feedback state
+    button.classList.add("copied");
+    button.textContent = "Copied!";
+
+    // Set new timeout
+    this.copyFeedbackTimeouts[format] = setTimeout(() => {
+      button.textContent = originalText;
+      button.classList.remove("copied");
+      this.copyFeedbackTimeouts[format] = null;
+    }, 2000);
+  }
+
+  // =============================================================================
+  // HELPER METHODS
+  // =============================================================================
+
+  hideElement(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) element.classList.add("hidden");
+  }
+
+  showElement(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) element.classList.remove("hidden");
+  }
+
+  // =============================================================================
+  // EVENT BINDING
+  // =============================================================================
+
+  bindEvents() {
+    if (!this.modal) return;
+
+    // Close modal on outside click
+    this.modal.addEventListener("click", (e) => {
+      if (e.target.classList.contains("modal-overlay")) {
+        this.close();
+      }
+    });
+
+    // Prevent click-through on modal content
+    const modalContent = this.modal.querySelector(".export-modal");
+    if (modalContent) {
+      modalContent.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+    }
+
+    // Close modal on Escape key
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && this.modal.classList.contains("show")) {
+        this.close();
+      }
+    });
+
+    // Make methods available globally for onclick handlers in HTML
+    window.switchTab = (tab) => this.switchTab(tab);
+    window.setFormat = (format) => this.setFormat(format);
+    window.toggleTextWrap = () => this.toggleTextWrap();
+    window.toggleMedia = () => this.toggleMedia();
+    window.toggleThemes = () => this.toggleThemes();
+    window.copyCode = (format) => this.copyCode(format);
+  }
+}
+
+// Create global instance
+const exportManager = new EnhancedExportManager();
+
+function openEnhancedExportModal() {
+  exportManager.open();
+}
+
+function closeEnhancedExportModal() {
+  exportManager.close();
+}
+
+// =============================================================================
+// COMPONENT INTERACTION FUNCTIONS
+// =============================================================================
+
+function switchTabGeneric(containerSelector, tabName, idPrefix = "") {
+  const container = document.querySelector(containerSelector);
+  if (!container) return;
+
+  // Remove active class from all tab buttons in this container
+  container.querySelectorAll(".tab-button").forEach((btn) => {
+    btn.classList.remove("active");
+  });
+
+  // Remove active class from all tab panels in this container
+  container.querySelectorAll(".tab-panel").forEach((panel) => {
+    panel.classList.remove("active");
+  });
+
+  // Add active class to clicked tab button
+  const tabButton = document.getElementById(
+    `${idPrefix ? idPrefix + "-" : ""}${tabName}-tab`
+  );
+  if (tabButton) {
+    tabButton.classList.add("active");
+  }
+
+  // Show corresponding panel
+  const tabPanel = document.getElementById(
+    `${idPrefix ? idPrefix + "-" : ""}${tabName}-panel`
+  );
+  if (tabPanel) {
+    tabPanel.classList.add("active");
+  }
+}
+
+function toggleGeneric(toggleId) {
+  const toggle = document.getElementById(toggleId);
+  if (toggle) {
+    toggle.classList.toggle("active");
+  }
+}
+
+// =============================================================================
+// DEMO COMPONENT FUNCTIONS
+// =============================================================================
+
+function demoSwitchTab(tabName) {
+  switchTabGeneric(".demo-tabs", tabName, "demo");
+}
+
+function demoToggle(toggleName) {
+  toggleGeneric(`demo-${toggleName}-toggle`);
+}
+
+// =============================================================================
+// EXPORT MODAL TAB FUNCTIONS
+// =============================================================================
+
+function exportSwitchTab(tabName) {
+  switchTabGeneric(".export-modal", tabName);
+  // Keep the existing export-specific logic
+  exportManager.switchTab(tabName);
+}
+
+// =============================================================================
+// GLOBAL FUNCTION EXPORTS
+// =============================================================================
+
+// Make all component functions available globally
+Object.assign(window, {
+  // Generic functions
+  switchTabGeneric,
+  toggleGeneric,
+
+  // Demo-specific functions
+  demoSwitchTab,
+  demoToggle,
+
+  // Export-specific functions
+  exportSwitchTab,
+});
 
 // =============================================================================
 // EVENT HANDLERS
@@ -1099,6 +1810,7 @@ function init() {
     toggleConfig: () => configPanel.toggle(),
     reload: () => renderer.renderInterface(),
     export: () => configPanel.exportConfig(),
+    exportEnhanced: () => openEnhancedExportModal(),
     setTheme: (theme) => themeManager.setTheme(theme),
     getTheme: () =>
       document.documentElement.getAttribute("data-theme") || "light",
