@@ -452,7 +452,7 @@ function generateSemanticTokens(
     },
     "bg-tertiary": {
       light: { hex: neutralScale[200].hex, name: `${neutralName}-200` },
-      dark: { hex: neutralScale[900].hex, name: `${neutralName}-900` },
+      dark: { hex: neutralScale[800].hex, name: `${neutralName}-800` },
     },
     "bg-base": {
       light: { hex: "#ffffff", name: "base-white" },

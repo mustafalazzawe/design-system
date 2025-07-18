@@ -1188,11 +1188,7 @@ class EnhancedExportManager {
     const neutralName = state.currentColorSystem.meta.neutralName;
     const primaryName = state.currentColorSystem.meta.primaryName;
 
-    let config = `module.exports = {
-  content: ['./src/**/*.{html,js,jsx,ts,tsx}'],
-  theme: {
-    extend: {
-      colors: {
+    let config = `colors: {
         ${neutralName}: {`;
 
     Object.entries(neutralColors).forEach(([weight, colorData]) => {
@@ -1206,11 +1202,7 @@ class EnhancedExportManager {
       config += `\n          ${weight}: '${this.formatColor(colorData.hex)}',`;
     });
 
-    config += `\n        }
-      }
-    }
-  },
-  plugins: []
+    config += `\n  }
 }`;
 
     return config;
