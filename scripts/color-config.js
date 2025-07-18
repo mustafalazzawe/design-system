@@ -418,6 +418,10 @@ function generateSemanticTokens(
       light: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
       dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
     },
+    "fg-primary-on-brand": {
+      light: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
+      dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
+    },
     "fg-secondary": {
       light: { hex: neutralScale[900].hex, name: `${neutralName}-900` },
       dark: { hex: neutralScale[300].hex, name: `${neutralName}-300` },
