@@ -504,10 +504,9 @@
           <h4>Tabs</h4>
           <div class="demo-tabs">
             <div class="tab-nav">
-              <button class="tab-button active" onclick="demoSwitchTab('overview')"
-                id="demo-overview-tab">Overview</button>
-              <button class="tab-button" onclick="demoSwitchTab('details')" id="demo-details-tab">Details</button>
-              <button class="tab-button" onclick="demoSwitchTab('settings')" id="demo-settings-tab">Settings</button>
+              <button class="tab-button active" id="demo-overview-tab">Overview</button>
+              <button class="tab-button" id="demo-details-tab">Details</button>
+              <button class="tab-button" id="demo-settings-tab">Settings</button>
             </div>
             <div class="tab-content">
               <div class="tab-panel active" id="demo-overview-panel">
@@ -528,16 +527,15 @@
           <div class="demo-toggles">
             <div class="toggle">
               <span>Notifications</span>
-              <div class="toggle-switch active" onclick="demoToggle('notifications')" id="demo-notifications-toggle">
-              </div>
+              <div class="toggle-switch active" id="demo-notifications-toggle"></div>
             </div>
             <div class="toggle">
               <span>Auto-save</span>
-              <div class="toggle-switch" onclick="demoToggle('autosave')" id="demo-autosave-toggle"></div>
+              <div class="toggle-switch" id="demo-autosave-toggle"></div>
             </div>
             <div class="toggle">
               <span>Dark mode</span>
-              <div class="toggle-switch" onclick="demoToggle('darkmode')" id="demo-darkmode-toggle"></div>
+              <div class="toggle-switch" id="demo-darkmode-toggle"></div>
             </div>
           </div>
         </div>
@@ -625,33 +623,33 @@
     <div class="export-modal">
       <!-- Tab Navigation -->
       <div class="tab-nav">
-        <button class="tab-button active" onclick="exportSwitchTab('css')" id="css-tab">CSS</button>
-        <button class="tab-button" onclick="exportSwitchTab('tailwind')" id="tailwind-tab">Tailwind CSS</button>
-        <button class="tab-button" onclick="exportSwitchTab('json')" id="json-tab">JSON</button>
+        <button class="tab-button active" id="css-tab">CSS</button>
+        <button class="tab-button" id="tailwind-tab">Tailwind CSS</button>
+        <button class="tab-button" id="json-tab">JSON</button>
       </div>
 
       <!-- Format Options -->
       <div class="format-options">
         <div class="format-controls">
           <div class="format-buttons">
-            <button class="format-button active" onclick="setFormat('hex')" id="hex-btn">HEX</button>
-            <button class="format-button" onclick="setFormat('rgb')" id="rgb-btn">RGB</button>
-            <button class="format-button" onclick="setFormat('hsl')" id="hsl-btn">HSL</button>
+            <button class="format-button active" id="hex-btn">HEX</button>
+            <button class="format-button" id="rgb-btn">RGB</button>
+            <button class="format-button" id="hsl-btn">HSL</button>
           </div>
           <div class="format-divider"></div>
           <div class="wrap-controls">
-            <button class="format-button" onclick="toggleTextWrap()" id="wrap-btn">Wrap Text</button>
+            <button class="format-button" id="wrap-btn">Wrap Text</button>
           </div>
         </div>
 
         <div class="toggle-group">
           <div class="toggle" id="media-toggle-container">
             <span>@media</span>
-            <div class="toggle-switch" onclick="toggleMedia()" id="media-toggle"></div>
+            <div class="toggle-switch" id="media-toggle"></div>
           </div>
           <div class="toggle">
             <span>Themes</span>
-            <div class="toggle-switch active" onclick="toggleThemes()" id="themes-toggle"></div>
+            <div class="toggle-switch active" id="themes-toggle"></div>
           </div>
         </div>
       </div>
@@ -662,7 +660,7 @@
         <div class="code-section tab-panel active" id="css-section">
           <div class="code-header">
             <span class="code-title">styles.css</span>
-            <button class="copy-button" onclick="copyCode('css')" id="css-copy">Copy</button>
+            <button class="copy-button" id="css-copy">Copy</button>
           </div>
           <div class="code-content">
             <pre class="code-block" id="css-code"></pre>
@@ -673,7 +671,7 @@
         <div class="code-section tab-panel" id="tailwind-config-section">
           <div class="code-header">
             <span class="code-title">tailwind.config.js</span>
-            <button class="copy-button" onclick="copyCode('tailwind-config')" id="tailwind-config-copy">Copy</button>
+            <button class="copy-button" id="tailwind-config-copy">Copy</button>
           </div>
           <div class="code-content">
             <pre class="code-block" id="tailwind-config-code"></pre>
@@ -684,7 +682,7 @@
         <div class="code-section tab-panel" id="tailwind-css-section">
           <div class="code-header">
             <span class="code-title">globals.css</span>
-            <button class="copy-button" onclick="copyCode('tailwind-css')" id="tailwind-css-copy">Copy</button>
+            <button class="copy-button" id="tailwind-css-copy">Copy</button>
           </div>
           <div class="code-content">
             <pre class="code-block" id="tailwind-css-code"></pre>
@@ -695,7 +693,7 @@
         <div class="code-section tab-panel" id="json-section">
           <div class="code-header">
             <span class="code-title">colors.json</span>
-            <button class="copy-button" onclick="copyCode('json')" id="json-copy">Copy</button>
+            <button class="copy-button" id="json-copy">Copy</button>
           </div>
           <div class="code-content">
             <pre class="code-block" id="json-code"></pre>
@@ -705,9 +703,7 @@
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script src="scripts/color-config.js"></script>
-  <script src="scripts/script.js"></script>
+  <script type="module" src="scripts/main.js"></script>
 </body>
 
 </html>

@@ -24,3 +24,6 @@ node_modules/
 # Optional: if you add build tools later
 dist/
 build/
+
+# Backup folders and files
+backup/
