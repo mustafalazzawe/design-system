@@ -344,10 +344,6 @@ export function generateSemanticTokens(
       light: { hex: neutralScale[200].hex, name: `${neutralName}-200` },
       dark: { hex: neutralScale[900].hex, name: `${neutralName}-900` },
     },
-    "border-interactive": {
-      light: { hex: primaryScale[400].hex, name: `${primaryName}-400` },
-      dark: { hex: primaryScale[400].hex, name: `${primaryName}-400` },
-    },
     "border-disabled": {
       light: { hex: neutralScale[300].hex, name: `${neutralName}-300` },
       dark: { hex: neutralScale[600].hex, name: `${neutralName}-600` },
