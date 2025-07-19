@@ -210,23 +210,27 @@ class ColorSystemApp {
   }
 
   handleInitializationError(error) {
-    // Show user-friendly error message
     const errorMessage = document.createElement("div");
-    errorMessage.style.cssText = `
-     position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-     background: #dc2626; color: white; padding: 16px 24px;
-     border-radius: 8px; font-family: system-ui, sans-serif;
-     font-weight: 500; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-   `;
+    errorMessage.className =
+      "notification-base notification-center notification-error";
     errorMessage.textContent =
       "Failed to initialize color system. Please refresh the page.";
+
     document.body.appendChild(errorMessage);
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+      errorMessage.classList.add("show");
+    });
 
     // Auto-remove after 5 seconds
     setTimeout(() => {
-      if (document.body.contains(errorMessage)) {
-        document.body.removeChild(errorMessage);
-      }
+      errorMessage.classList.remove("show");
+      setTimeout(() => {
+        if (document.body.contains(errorMessage)) {
+          document.body.removeChild(errorMessage);
+        }
+      }, 300); // Wait for fade out
     }, 5000);
   }
 

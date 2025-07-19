@@ -127,7 +127,7 @@ body {
 .navbar {
   position: sticky;
   top: 0;
-  background: var(--bg-secondary);
+  background: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
   z-index: var(--z-navbar);
   backdrop-filter: blur(8px);
@@ -284,6 +284,7 @@ body {
   border-color: var(--success-bg);
 }
 
+/* TODO: Make tertiary a outline, need to update semantic tokens */
 .btn-tertiary {
   background: var(--interactive-secondary);
   color: var(--text-primary);
@@ -1182,6 +1183,161 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+}
+
+/* =============================================================================
+   DYNAMIC COMPONENT STYLES (for JS-controlled elements)
+   ============================================================================= */
+
+/* Color preview styling */
+.color-preview-light {
+  background: var(--dynamic-bg, transparent);
+  color: var(--dynamic-text, var(--text-primary));
+  border: 1px solid var(--border-soft);
+  cursor: pointer;
+}
+
+.color-preview-dark {
+  background: var(--dynamic-bg, transparent);
+  color: var(--dynamic-text, var(--text-primary-on-brand));
+  border: 1px solid var(--border-soft);
+  cursor: pointer;
+}
+
+.color-preview-alpha {
+  background: var(--dynamic-bg, transparent);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+}
+
+/* Status demo styling */
+.status-demo-success {
+  background-color: var(--success-background);
+  color: var(--success-foreground);
+}
+
+.status-demo-warning {
+  background-color: var(--warning-background);
+  color: var(--warning-foreground);
+}
+
+.status-demo-error {
+  background-color: var(--error-background);
+  color: var(--error-foreground);
+}
+
+/* Demo text element overrides - use these instead of inline styles */
+.demo-text-primary {
+  color: var(--text-primary) !important;
+}
+
+.demo-text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+.demo-text-tertiary {
+  color: var(--text-tertiary) !important;
+}
+
+.demo-text-quaternary {
+  color: var(--text-quaternary) !important;
+}
+
+/* Semantic badge dynamic styling */
+.semantic-badge-dynamic {
+  background-color: var(--success-background) !important;
+  color: var(--success-foreground) !important;
+}
+
+/* Text field state overrides */
+.text-field-success-active {
+  border-color: var(--success-fg) !important;
+}
+
+.text-field-error-active {
+  border-color: var(--error-fg) !important;
+}
+
+/* User selected indicator active state */
+.user-selected-indicator-active {
+  background-color: var(--fg-white) !important;
+}
+
+/* Primitive swatch dynamic styling */
+.primitive-swatch-dynamic {
+  background-color: var(--dynamic-bg) !important;
+  color: var(--dynamic-text) !important;
+}
+
+/* Reset utility for clearing inline styles */
+.reset-inline-styles {
+  border-color: unset !important;
+  box-shadow: unset !important;
+  background-color: unset !important;
+  color: unset !important;
+}
+
+/* =============================================================================
+   CONSOLIDATED NOTIFICATION SYSTEM
+   ============================================================================= */
+
+.notification-base {
+  position: fixed;
+  top: 20px;
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-md);
+  z-index: var(--z-feedback);
+  box-shadow: var(--shadow-hover);
+  opacity: 0;
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
+  transform: translateY(-10px);
+}
+
+.notification-base.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Center notifications (error/success messages) */
+.notification-center {
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+}
+
+.notification-center.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Right-aligned notifications (copy feedback) */
+.notification-right {
+  right: 20px;
+  pointer-events: none;
+}
+
+/* Notification types */
+.notification-success {
+  background: var(--success-primary);
+  color: var(--text-primary-on-brand);
+}
+
+.notification-error {
+  background: var(--error-primary);
+  color: var(--text-primary-on-brand);
+}
+
+.notification-copy {
+  background: var(--success-primary);
+  color: var(--text-primary-on-brand);
+  padding: var(--space-3) var(--space-4);
+  /* Smaller padding for copy feedback */
+}
+
+.notification-copy.error {
+  background: var(--error-primary);
 }
 
 /* =============================================================================
