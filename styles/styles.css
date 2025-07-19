@@ -269,30 +269,27 @@ body {
 }
 
 .btn-secondary {
-  background: var(--text-primary);
+  background: var(--interactive-secondary);
   color: var(--bg-primary);
   border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover {
-  background: var(--text-secondary);
+  background: var(--interactive-secondary-hover);
 }
 
-.btn-secondary.applied {
-  background: var(--success-primary);
-  color: var(--text-primary-on-brand);
-  border-color: var(--success-bg);
+.btn-secondary:active {
+  background: var(--interactive-secondary-active);
 }
 
-/* TODO: Make tertiary a outline, need to update semantic tokens */
 .btn-tertiary {
-  background: var(--interactive-secondary);
+  background: var(--interactive-tertiary);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
 }
 
 .btn-tertiary:hover {
-  background: var(--interactive-secondary-hover);
+  border: 1px solid var(--border-interactive);
 }
 
 /* =============================================================================
@@ -311,7 +308,7 @@ body {
 .toggle-switch {
   width: 44px;
   height: 24px;
-  background: var(--bg-tertiary);
+  background: var(--interactive-tertiary);
   border-radius: var(--space-3);
   position: relative;
   cursor: pointer;
@@ -322,11 +319,6 @@ body {
 .toggle-switch.active {
   background: var(--interactive-primary);
   border-color: var(--interactive-primary);
-}
-
-.toggle-switch:hover:not(.active) {
-  background: var(--interactive-secondary);
-  border-color: var(--border-secondary);
 }
 
 .toggle-switch:focus,
@@ -408,32 +400,6 @@ body {
   display: block;
 }
 
-/* Tab variants */
-.tab-nav.tab-nav-compact .tab-button {
-  padding: var(--space-3) var(--space-5);
-  font-size: var(--font-size-base);
-}
-
-.tab-nav.tab-nav-minimal {
-  border-bottom: none;
-  background: transparent;
-  border-radius: 0;
-}
-
-.tab-nav.tab-nav-minimal .tab-button {
-  border-bottom: 1px solid var(--border-color);
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-  margin-right: var(--space-1);
-}
-
-.tab-nav.tab-nav-minimal .tab-button.active {
-  border-bottom-color: var(--fg-primary);
-  background: var(--bg-secondary);
-  border-left: 1px solid var(--border-color);
-  border-right: 1px solid var(--border-color);
-  border-top: 1px solid var(--border-color);
-}
-
 /* =============================================================================
    GRID LAYOUTS
    ============================================================================= */
@@ -471,16 +437,6 @@ body {
 .primitive-card:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-hover);
-}
-
-.primitive-card.user-selected {
-  border: 2px solid #10b981;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
-}
-
-.primitive-card.user-selected:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25);
 }
 
 .primitive-swatch {
@@ -541,10 +497,6 @@ body {
   border-radius: 50%;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
   transition: all var(--transition-fast);
-}
-
-[data-theme="dark"] .user-selected-indicator {
-  background: #f4f4f5;
 }
 
 .contrast-info {
@@ -929,7 +881,7 @@ body {
 }
 
 .format-button:hover:not(.active) {
-  background: var(--interactive-secondary);
+  background: var(--interactive-tertiary-hover);
   color: var(--text-primary);
 }
 
@@ -1056,13 +1008,6 @@ body {
   overflow-y: hidden;
   word-wrap: normal;
   overflow-wrap: normal;
-}
-
-.code-block.wrap-aggressive {
-  white-space: pre-wrap;
-  word-break: break-all;
-  /* More aggressive breaking */
-  overflow-wrap: break-word;
 }
 
 .code-content::-webkit-scrollbar,
@@ -1211,22 +1156,6 @@ body {
   cursor: pointer;
 }
 
-/* Status demo styling */
-.status-demo-success {
-  background-color: var(--success-background);
-  color: var(--success-foreground);
-}
-
-.status-demo-warning {
-  background-color: var(--warning-background);
-  color: var(--warning-foreground);
-}
-
-.status-demo-error {
-  background-color: var(--error-background);
-  color: var(--error-foreground);
-}
-
 /* Demo text element overrides - use these instead of inline styles */
 .demo-text-primary {
   color: var(--text-primary) !important;
@@ -1244,12 +1173,6 @@ body {
   color: var(--text-quaternary) !important;
 }
 
-/* Semantic badge dynamic styling */
-.semantic-badge-dynamic {
-  background-color: var(--success-background) !important;
-  color: var(--success-foreground) !important;
-}
-
 /* Text field state overrides */
 .text-field-success-active {
   border-color: var(--success-fg) !important;
@@ -1257,25 +1180,6 @@ body {
 
 .text-field-error-active {
   border-color: var(--error-fg) !important;
-}
-
-/* User selected indicator active state */
-.user-selected-indicator-active {
-  background-color: var(--fg-white) !important;
-}
-
-/* Primitive swatch dynamic styling */
-.primitive-swatch-dynamic {
-  background-color: var(--dynamic-bg) !important;
-  color: var(--dynamic-text) !important;
-}
-
-/* Reset utility for clearing inline styles */
-.reset-inline-styles {
-  border-color: unset !important;
-  box-shadow: unset !important;
-  background-color: unset !important;
-  color: unset !important;
 }
 
 /* =============================================================================

@@ -292,6 +292,8 @@ export function generateSemanticTokens(
 ) {
   const tokens = {};
 
+  // TODO: Create text and fg dark, these elements will always be dark
+
   // Text tokens
   Object.assign(tokens, {
     "text-primary": {
@@ -341,6 +343,10 @@ export function generateSemanticTokens(
     "border-tertiary": {
       light: { hex: neutralScale[200].hex, name: `${neutralName}-200` },
       dark: { hex: neutralScale[900].hex, name: `${neutralName}-900` },
+    },
+    "border-interactive": {
+      light: { hex: primaryScale[400].hex, name: `${primaryName}-400` },
+      dark: { hex: primaryScale[400].hex, name: `${primaryName}-400` },
     },
     "border-disabled": {
       light: { hex: neutralScale[300].hex, name: `${neutralName}-300` },
@@ -410,6 +416,7 @@ export function generateSemanticTokens(
     : primaryScale[800].hex;
 
   Object.assign(tokens, {
+    // Primary
     "interactive-primary": {
       light: { hex: primaryScale[600].hex, name: `${primaryName}-600` },
       dark: { hex: primaryScale[600].hex, name: `${primaryName}-600` },
@@ -422,18 +429,28 @@ export function generateSemanticTokens(
       light: { hex: primaryScale[400].hex, name: `${primaryName}-400` },
       dark: { hex: primaryScale[400].hex, name: `${primaryName}-400` },
     },
+
+    // Secondary interactive (solid button with inverted colors)
     "interactive-secondary": {
-      light: { hex: "rgba(0,0,0,0.06)", name: "alpha-black-200" },
-      dark: { hex: "rgba(255,255,255,0.06)", name: "alpha-white-200" },
+      light: { hex: neutralScale[950].hex, name: `${neutralName}-950` }, // text-primary
+      dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` }, // text-primary for dark mode
     },
     "interactive-secondary-hover": {
-      light: { hex: "rgba(0,0,0,0.04)", name: "alpha-black-100" },
-      dark: { hex: "rgba(255,255,255,0.04)", name: "alpha-white-100" },
+      light: { hex: neutralScale[900].hex, name: `${neutralName}-900` }, // text-secondary
+      dark: { hex: neutralScale[100].hex, name: `${neutralName}-100` }, // text-secondary for dark mode
     },
     "interactive-secondary-active": {
-      light: { hex: "rgba(0,0,0,0.02)", name: "alpha-black-50" },
-      dark: { hex: "rgba(255,255,255,0.02)", name: "alpha-white-50" },
+      light: { hex: neutralScale[900].hex, name: `${neutralName}-900` },
+      dark: { hex: neutralScale[200].hex, name: `${neutralName}-200` },
     },
+
+    // Tertiary interactive (outline button)
+    "interactive-tertiary": {
+      light: { hex: "transparent", name: "transparent" },
+      dark: { hex: "transparent", name: "transparent" },
+    },
+
+    // Focus
     "interactive-focus": {
       light: { hex: focusLight, name: `${primaryName}-600-alpha-30` },
       dark: { hex: focusDark, name: `${primaryName}-600-alpha-40` },

@@ -139,7 +139,7 @@ const ColorUtils = {
     const rgb = this.hexToRgb(hex);
     if (!rgb) return true;
     const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
-    return brightness > 128;
+    return brightness > 140;
   },
 };
 

@@ -33,6 +33,7 @@ class CSSUpdater {
       "primary",
       "secondary",
       "tertiary",
+      "interactive",
       "disabled",
     ]);
 
@@ -94,6 +95,7 @@ class CSSUpdater {
       "interactive-secondary",
       "interactive-secondary-hover",
       "interactive-secondary-active",
+      "interactive-tertiary",
       "interactive-focus",
     ];
 

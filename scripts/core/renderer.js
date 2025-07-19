@@ -224,9 +224,8 @@ class Renderer {
       "color-preview-alpha"
     );
 
-    if (token.hex.includes("rgba")) {
+    if (token.hex.includes("rgba") || token.hex === "transparent") {
       preview.classList.add("color-preview-alpha");
-      // Set the dynamic background via CSS custom property
       preview.style.setProperty("--dynamic-bg", token.hex);
     } else {
       const isLight = ColorUtils.isLightColor(token.hex);
@@ -237,10 +236,9 @@ class Renderer {
       // Set dynamic colors via CSS custom properties
       preview.style.setProperty("--dynamic-bg", token.hex);
 
-      if (!isLight) {
-        const contrastTextColor = this.getContrastTextColor(token.hex);
-        preview.style.setProperty("--dynamic-text", contrastTextColor);
-      }
+      // Always set contrast text color for better reliability
+      const contrastTextColor = this.getContrastTextColor(token.hex);
+      preview.style.setProperty("--dynamic-text", contrastTextColor);
     }
   }
 
@@ -296,9 +294,6 @@ class Renderer {
 
     // Update text field styling
     this.updateTextFieldStyling();
-
-    // Update user-selected indicators
-    this.updateUserSelectedIndicators();
 
     console.log("🎨 Demo components updated");
   }
@@ -363,24 +358,6 @@ class Renderer {
         field.classList.add("text-field-success-active");
       } else if (field.classList.contains("error")) {
         field.classList.add("text-field-error-active");
-      }
-    });
-  }
-
-  updateUserSelectedIndicators() {
-    const indicators = document.querySelectorAll(".user-selected-indicator");
-    const userSelectedCards = document.querySelectorAll(".primitive-card");
-
-    // Update indicator colors using CSS class
-    indicators.forEach((indicator) => {
-      indicator.classList.add("user-selected-indicator-active");
-    });
-
-    // Reset any special styling from user-selected cards using CSS class
-    userSelectedCards.forEach((card) => {
-      const isUserSelected = card.querySelector(".user-selected-indicator");
-      if (isUserSelected) {
-        card.classList.add("reset-inline-styles");
       }
     });
   }
