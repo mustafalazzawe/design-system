@@ -32,6 +32,8 @@ class ColorSystemState {
         includeAlphaColors: true,
         includeStatusColors: true,
         includeFamilyContrast: true,
+        useSmartPositioning: true, 
+        useExactInteractiveColors: false, 
       },
     };
   }
@@ -66,7 +68,7 @@ class ColorSystemState {
     return this.updateColorSystem(newConfig);
   }
 
-  setCustomColors(neutralHex, primaryHex) {
+  setCustomColors(neutralHex, primaryHex, additionalOptions = {}) {
     const customConfig = JSON.parse(JSON.stringify(this.activeConfig));
 
     customConfig.baseColors.neutral.base = neutralHex;
@@ -81,6 +83,9 @@ class ColorSystemState {
     customConfig.project.name = "Custom Design System";
 
     customConfig.options.autoDetectColorNames = false;
+
+    // Merge additional options
+    Object.assign(customConfig.options, additionalOptions);
 
     return this.updateColorSystem(customConfig);
   }

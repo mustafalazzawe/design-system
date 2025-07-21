@@ -52,7 +52,6 @@ class CSSUpdater {
       "primary",
       "secondary",
       "tertiary",
-      "base",
       "modal-overlay",
     ]);
 
