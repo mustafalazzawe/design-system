@@ -33,7 +33,6 @@ class CSSUpdater {
       "primary",
       "secondary",
       "tertiary",
-      "interactive",
       "disabled",
     ]);
 

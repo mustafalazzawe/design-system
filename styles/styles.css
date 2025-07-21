@@ -332,6 +332,10 @@ body {
   border: 1px solid var(--border-color);
 }
 
+.btn-tertiary:hover {
+  border: 1px solid var(--interactive-primary-hover);
+}
+
 /* =============================================================================
    TOGGLE COMPONENTS
    ============================================================================= */
