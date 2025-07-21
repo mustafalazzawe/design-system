@@ -1,7 +1,7 @@
-import { state } from './state.js';
-import { themeManager } from './theme-manager.js';
-import { ColorUtils } from '../utils/color-utils.js';
-import { DOMUtils } from '../utils/dom-utils.js';
+import { state } from "./state.js";
+import { themeManager } from "./theme-manager.js";
+import { ColorUtils } from "../utils/color-utils.js";
+import { DOMUtils } from "../utils/dom-utils.js";
 
 // =============================================================================
 // Rendering System
@@ -213,28 +213,32 @@ class Renderer {
       }
     });
 
-    // Update status demos
-    this.updateStatusDemos(currentTheme);
-
     console.log(`🎨 Updated ${updateCount} semantic token previews`);
   }
 
   styleSemanticPreview(preview, token) {
-    if (token.hex.includes("rgba")) {
-      preview.style.cssText = `
-      background: ${token.hex}; 
-      color: var(--text-primary); 
-      border: 1px solid var(--border-color);
-      cursor: pointer;
-    `;
+    // Remove any existing dynamic classes
+    preview.classList.remove(
+      "color-preview-light",
+      "color-preview-dark",
+      "color-preview-alpha"
+    );
+
+    if (token.hex.includes("rgba") || token.hex === "transparent") {
+      preview.classList.add("color-preview-alpha");
+      preview.style.setProperty("--dynamic-bg", token.hex);
     } else {
+      const isLight = ColorUtils.isLightColor(token.hex);
+      preview.classList.add(
+        isLight ? "color-preview-light" : "color-preview-dark"
+      );
+
+      // Set dynamic colors via CSS custom properties
+      preview.style.setProperty("--dynamic-bg", token.hex);
+
+      // Always set contrast text color for better reliability
       const contrastTextColor = this.getContrastTextColor(token.hex);
-      preview.style.cssText = `
-      background-color: ${token.hex}; 
-      color: ${contrastTextColor};
-      border: 1px solid var(--border-soft);
-      cursor: pointer;
-    `;
+      preview.style.setProperty("--dynamic-text", contrastTextColor);
     }
   }
 
@@ -256,7 +260,11 @@ class Renderer {
         bg: "warning-background",
         fg: "warning-foreground",
       },
-      { id: "error-demo", bg: "error-background", fg: "error-foreground" },
+      {
+        id: "error-demo",
+        bg: "error-background",
+        fg: "error-foreground",
+      },
     ];
 
     statusDemos.forEach(({ id, bg, fg }) => {
@@ -276,32 +284,40 @@ class Renderer {
     const currentTheme = themeManager.getCurrentTheme();
 
     // Update demo text elements
-    this.updateDemoTextElements(currentTheme);
+    this.updateDemoTextElements();
 
     // Update semantic badges
     this.updateSemanticBadges(currentTheme);
 
+    // Update status demos
+    this.updateStatusDemos(currentTheme);
+
     // Update text field styling
     this.updateTextFieldStyling();
-
-    // Update user-selected indicators
-    this.updateUserSelectedIndicators();
 
     console.log("🎨 Demo components updated");
   }
 
-  updateDemoTextElements(theme) {
+  updateDemoTextElements() {
     const elements = [
-      { selector: ".demo-heading", token: "text-primary" },
-      { selector: ".demo-subheading", token: "text-secondary" },
-      { selector: ".demo-body", token: "text-tertiary" },
-      { selector: ".demo-caption", token: "text-quaternary" },
+      { selector: ".demo-heading", className: "demo-text-primary" },
+      { selector: ".demo-subheading", className: "demo-text-secondary" },
+      { selector: ".demo-body", className: "demo-text-tertiary" },
+      { selector: ".demo-caption", className: "demo-text-quaternary" },
     ];
 
-    elements.forEach(({ selector, token }) => {
+    elements.forEach(({ selector, className }) => {
       const element = document.querySelector(selector);
-      if (element && state.semanticTokens[token]) {
-        element.style.color = state.semanticTokens[token][theme].hex;
+      if (element) {
+        // Remove any existing demo text classes
+        element.classList.remove(
+          "demo-text-primary",
+          "demo-text-secondary",
+          "demo-text-tertiary",
+          "demo-text-quaternary"
+        );
+        // Add the appropriate class
+        element.classList.add(className);
       }
     });
   }
@@ -327,48 +343,21 @@ class Renderer {
     const textFields = document.querySelectorAll(".text-field");
 
     textFields.forEach((field) => {
-      // Reset any inline styles that might conflict
+      // Remove any existing state classes
+      field.classList.remove(
+        "text-field-success-active",
+        "text-field-error-active"
+      );
+
+      // Clear any inline styles
       field.style.borderColor = "";
       field.style.boxShadow = "";
 
-      // Re-apply CSS classes to ensure proper styling
+      // Add appropriate CSS classes
       if (field.classList.contains("success")) {
-        field.style.borderColor = "var(--success-fg)";
+        field.classList.add("text-field-success-active");
       } else if (field.classList.contains("error")) {
-        field.style.borderColor = "var(--error-fg)";
-      }
-    });
-  }
-
-  updateUserSelectedIndicators() {
-    if (!state.semanticTokens?.["fg-white"]) return;
-
-    const indicators = document.querySelectorAll(".user-selected-indicator");
-    const currentTheme = themeManager.getCurrentTheme();
-    const whiteColor = state.semanticTokens["fg-white"][currentTheme].hex;
-
-    // Update indicator colors to white
-    indicators.forEach((indicator) => {
-      indicator.style.backgroundColor = whiteColor;
-    });
-
-    // Reset any special styling from user-selected cards
-    const userSelectedCards = document.querySelectorAll(".primitive-card");
-    userSelectedCards.forEach((card) => {
-      const isUserSelected = card.querySelector(".user-selected-indicator");
-      if (isUserSelected) {
-        card.style.borderColor = "";
-        card.style.boxShadow = "";
-
-        const nameElement = card.querySelector(".primitive-name");
-        if (nameElement) {
-          nameElement.style.color = "";
-        }
-
-        const infoElement = card.querySelector(".primitive-info");
-        if (infoElement) {
-          infoElement.style.background = "";
-        }
+        field.classList.add("text-field-error-active");
       }
     });
   }

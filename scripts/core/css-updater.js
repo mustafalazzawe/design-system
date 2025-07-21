@@ -51,7 +51,6 @@ class CSSUpdater {
       "primary",
       "secondary",
       "tertiary",
-      "base",
       "modal-overlay",
     ]);
 
@@ -94,6 +93,7 @@ class CSSUpdater {
       "interactive-secondary",
       "interactive-secondary-hover",
       "interactive-secondary-active",
+      "interactive-tertiary",
       "interactive-focus",
     ];
 

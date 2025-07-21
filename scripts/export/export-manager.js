@@ -406,6 +406,11 @@ class EnhancedExportManager {
       }
     });
 
+    // Close button
+    document.getElementById("close-export")?.addEventListener("click", () => {
+      this.close();
+    });
+
     // Bind export tab buttons
     document
       .getElementById("css-tab")

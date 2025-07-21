@@ -38,6 +38,7 @@ class ConfigPanel {
     const primaryColorInput = document.getElementById("primary-color");
     const neutralHexInput = document.getElementById("neutral-hex");
     const primaryHexInput = document.getElementById("primary-hex");
+    const exactColorsToggle = document.getElementById("exact-colors-toggle");
     const applyButton = document.getElementById("apply-config");
     const closeButton = document.getElementById("close-config");
     const exportButton = document.getElementById("export-config");
@@ -60,6 +61,10 @@ class ConfigPanel {
     );
 
     // Actions
+    exactColorsToggle?.addEventListener("change", (e) =>
+      this.handleExactColorsToggle(e)
+    );
+
     applyButton?.addEventListener("click", () => this.applyChanges());
     closeButton?.addEventListener("click", () => this.close());
     exportButton?.addEventListener("click", () => this.exportConfig());
@@ -197,6 +202,7 @@ class ConfigPanel {
     const primaryColorInput = document.getElementById("primary-color");
     const neutralHexInput = document.getElementById("neutral-hex");
     const primaryHexInput = document.getElementById("primary-hex");
+    const exactColorsToggle = document.getElementById("exact-colors-toggle");
 
     // Update color inputs
     if (
@@ -218,6 +224,11 @@ class ConfigPanel {
     if (presetSelect) {
       const matchingPreset = this.findMatchingPreset(state.activeConfig);
       presetSelect.value = matchingPreset;
+    }
+
+    if (exactColorsToggle) {
+      exactColorsToggle.checked =
+        state.activeConfig?.options?.useExactInteractiveColors || false;
     }
 
     // Update detected colors display
@@ -259,6 +270,16 @@ class ConfigPanel {
   }
 
   // =============================================================================
+  // EXACT COLOR TOGGLE
+  // =============================================================================
+
+  handleExactColorsToggle(e) {
+    // This will trigger when user changes the checkbox
+    // The actual state change will happen when they click "Apply Changes"
+    console.log("Exact colors toggle changed:", e.target.checked);
+  }
+
+  // =============================================================================
   // APPLY CHANGES
   // =============================================================================
 
@@ -266,11 +287,14 @@ class ConfigPanel {
     const presetSelect = document.getElementById("preset-select");
     const neutralColorInput = document.getElementById("neutral-color");
     const primaryColorInput = document.getElementById("primary-color");
+    const exactColorsToggle = document.getElementById("exact-colors-toggle");
 
     if (!presetSelect) {
       console.error("Config Panel: Preset select not found");
       return;
     }
+
+    const useExactColors = exactColorsToggle?.checked || false;
 
     try {
       if (presetSelect.value !== "custom") {
@@ -279,6 +303,11 @@ class ConfigPanel {
         if (!success) {
           console.error(`Failed to load preset: ${presetSelect.value}`);
           return;
+        }
+
+        if (success && state.activeConfig) {
+          state.activeConfig.options.useExactInteractiveColors = useExactColors;
+          state.updateColorSystem(state.activeConfig);
         }
       } else {
         // Apply custom colors
@@ -298,7 +327,8 @@ class ConfigPanel {
 
         const success = state.setCustomColors(
           neutralColorInput.value,
-          primaryColorInput.value
+          primaryColorInput.value,
+          { useExactInteractiveColors: useExactColors }
         );
         if (!success) {
           console.error("Failed to set custom colors");
