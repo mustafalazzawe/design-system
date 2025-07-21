@@ -772,6 +772,12 @@ body {
   margin-right: 0;
 }
 
+.apply-btn.applied {
+  background: var(--success-primary);
+  color: var(--text-primary-on-brand);
+  border-color: var(--success-bg);
+}
+
 .config-footer {
   padding-top: var(--space-4);
   border-top: 1px solid var(--border-color);
