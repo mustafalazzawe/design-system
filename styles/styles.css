@@ -274,7 +274,7 @@ body {
   }
 
   .btn-tertiary:hover {
-    border: 1px solid var(--border-interactive);
+    border: 1px solid var(--interactive-primary-hover);
   }
 }
 
