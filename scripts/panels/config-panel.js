@@ -14,6 +14,7 @@ class ConfigPanel {
     this.panel = document.getElementById("config-panel");
     this.applyFeedbackTimeout = null;
     this.isOpen = false;
+    this.scrollPosition = undefined;
     this.init();
   }
 
@@ -72,9 +73,57 @@ class ConfigPanel {
     // Close on outside click
     document.addEventListener("click", (e) => this.handleOutsideClick(e));
 
-    // Prevent scroll events from bubbling through the config panel
-    this.panel?.addEventListener("wheel", (e) => e.preventDefault());
-    this.panel?.addEventListener("touchmove", (e) => e.preventDefault());
+    // Enhanced scroll prevention
+    this.panel?.addEventListener(
+      "touchmove",
+      (e) => {
+        // Only prevent if not touching scrollable content
+        if (!e.target.closest(".config-content")) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      },
+      { passive: false }
+    );
+
+    this.panel?.addEventListener(
+      "wheel",
+      (e) => {
+        // Only prevent if not on scrollable content
+        if (!e.target.closest(".config-content")) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      },
+      { passive: false }
+    );
+
+    // Prevent background scroll when panel is open - more robust
+    document.addEventListener(
+      "touchmove",
+      (e) => {
+        if (this.isOpen && window.innerWidth <= 768) {
+          // Allow scrolling only within the config panel
+          if (!this.panel?.contains(e.target)) {
+            e.preventDefault();
+          }
+        }
+      },
+      { passive: false }
+    );
+
+    // Also prevent wheel scrolling on background
+    document.addEventListener(
+      "wheel",
+      (e) => {
+        if (this.isOpen && window.innerWidth <= 768) {
+          if (!this.panel?.contains(e.target)) {
+            e.preventDefault();
+          }
+        }
+      },
+      { passive: false }
+    );
   }
 
   handleOutsideClick(e) {
@@ -389,8 +438,20 @@ class ConfigPanel {
   open() {
     if (!this.panel) return;
 
+    // Store scroll position BEFORE any DOM changes
+    this.scrollPosition =
+      window.pageYOffset || document.documentElement.scrollTop;
+
     this.panel.classList.add("show");
     this.isOpen = true;
+
+    // Prevent body scroll on mobile
+    if (window.innerWidth <= 768) {
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
+      document.body.style.top = `-${this.scrollPosition}px`;
+    }
 
     // Update inputs when opening
     this.updateInputs();
@@ -403,6 +464,21 @@ class ConfigPanel {
 
     this.panel.classList.remove("show");
     this.isOpen = false;
+
+    // Restore body scroll on mobile
+    if (window.innerWidth <= 768) {
+      const scrollY = this.scrollPosition;
+
+      // Remove fixed positioning
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
+      document.body.style.top = "";
+
+      // Restore scroll position immediately
+      window.scrollTo(0, scrollY);
+      this.scrollPosition = undefined;
+    }
 
     console.log("⚙️ Config panel closed");
   }

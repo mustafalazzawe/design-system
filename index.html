@@ -576,46 +576,47 @@
       <button class="config-close" id="close-config" aria-label="Close configuration panel">✕</button>
     </div>
 
-    <form class="config-form">
-      <div class="config-section">
-        <label for="preset-select">Color Presets:</label>
-        <select id="preset-select" class="config-select">
-          <option value="default">Default (Zinc + Blue)</option>
-          <option value="modern">Modern (Slate + Indigo)</option>
-          <option value="natural">Natural (Stone + Emerald)</option>
-          <option value="custom">Custom Colors</option>
-        </select>
-      </div>
-
-      <div class="config-section">
-        <label for="neutral-color">Neutral Color:</label>
-        <div class="config-color-input">
-          <input type="color" id="neutral-color" class="config-color-picker" aria-label="Choose neutral color">
-          <input type="text" id="neutral-hex" class="config-hex-input" placeholder="#71717a"
-            aria-label="Neutral color hex value">
+    <div class="config-content">
+      <form class="config-form">
+        <div class="config-section">
+          <label for="preset-select">Color Presets:</label>
+          <select id="preset-select" class="config-select">
+            <option value="default">Default (Zinc + Blue)</option>
+            <option value="modern">Modern (Slate + Indigo)</option>
+            <option value="natural">Natural (Stone + Emerald)</option>
+            <option value="custom">Custom Colors</option>
+          </select>
         </div>
-      </div>
-
-      <div class="config-section">
-        <label for="primary-color">Primary Color:</label>
-        <div class="config-color-input">
-          <input type="color" id="primary-color" class="config-color-picker" aria-label="Choose primary color">
-          <input type="text" id="primary-hex" class="config-hex-input" placeholder="#3b82f6"
-            aria-label="Primary color hex value">
+        
+        <div class="config-section">
+          <label for="neutral-color">Neutral Color:</label>
+          <div class="config-color-input">
+            <input type="color" id="neutral-color" class="config-color-picker" aria-label="Choose neutral color">
+            <input type="text" id="neutral-hex" class="config-hex-input" placeholder="#71717a"
+              aria-label="Neutral color hex value">
+          </div>
         </div>
-      </div>
 
-      <div class="config-section">
-        <label>
-          <input type="checkbox" id="exact-colors-toggle">
-          Use exact selected colors for interactions
-        </label>
-        <small>When enabled, uses your exact color choices. When disabled, optimizes colors for better hover/active
-          states.</small>
-      </div>
+        <div class="config-section">
+          <label for="primary-color">Primary Color:</label>
+          <div class="config-color-input">
+            <input type="color" id="primary-color" class="config-color-picker" aria-label="Choose primary color">
+            <input type="text" id="primary-hex" class="config-hex-input" placeholder="#3b82f6"
+              aria-label="Primary color hex value">
+          </div>
+        </div>
 
-      <button type="button" class="btn btn-secondary apply-btn" id="apply-config">Apply Changes</button>
-    </form>
+        <div class="config-section">
+          <label>
+            <input type="checkbox" id="exact-colors-toggle">
+            Use exact selected colors for interactions
+          </label>
+          <small>When enabled, uses your exact color choices. When disabled, optimizes colors for better hover/active
+            states.</small>
+        </div>
+        <button type="button" class="btn btn-secondary apply-btn" id="apply-config">Apply Changes</button>
+      </form>
+    </div>
 
     <footer class="config-footer">
       <div class="config-footer-header">
@@ -625,6 +626,7 @@
       </div>
       <p id="detected-colors" class="config-detected-colors" aria-live="polite"></p>
     </footer>
+    
   </aside>
 
   <!-- Enhanced Export Modal -->
