@@ -34,51 +34,53 @@ class ConfigPanel {
 
   bindEvents() {
     // Form elements
-    const presetSelect = document.getElementById("preset-select");
-    const neutralColorInput = document.getElementById("neutral-color");
-    const primaryColorInput = document.getElementById("primary-color");
-    const neutralHexInput = document.getElementById("neutral-hex");
-    const primaryHexInput = document.getElementById("primary-hex");
-    const exactColorsToggle = document.getElementById("exact-colors-toggle");
-    const applyButton = document.getElementById("apply-config");
-    const closeButton = document.getElementById("close-config");
-    const exportButton = document.getElementById("export-config");
+    const presetSelect = document.getElementById('preset-select');
+    const neutralColorInput = document.getElementById('neutral-color');
+    const primaryColorInput = document.getElementById('primary-color');
+    const neutralHexInput = document.getElementById('neutral-hex');
+    const primaryHexInput = document.getElementById('primary-hex');
+    const exactColorsToggle = document.getElementById('exact-colors-toggle');
+    const applyButton = document.getElementById('apply-config');
+    const closeButton = document.getElementById('close-config');
+    const exportButton = document.getElementById('export-config');
 
     // Preset selection
-    presetSelect?.addEventListener("change", (e) => this.handlePresetChange(e));
+    presetSelect?.addEventListener('change', e => this.handlePresetChange(e));
 
     // Color picker synchronization
-    neutralColorInput?.addEventListener("input", (e) =>
-      this.handleColorChange(e, "neutral")
+    neutralColorInput?.addEventListener('input', e => {
+      e.stopPropagation();
+      this.handleColorChange(e, 'neutral');
+    });
+    primaryColorInput?.addEventListener('input', e => {
+      e.stopPropagation();
+      this.handleColorChange(e, 'primary');
+    });
+    neutralHexInput?.addEventListener('input', e =>
+      this.handleHexChange(e, 'neutral')
     );
-    primaryColorInput?.addEventListener("input", (e) =>
-      this.handleColorChange(e, "primary")
-    );
-    neutralHexInput?.addEventListener("input", (e) =>
-      this.handleHexChange(e, "neutral")
-    );
-    primaryHexInput?.addEventListener("input", (e) =>
-      this.handleHexChange(e, "primary")
+    primaryHexInput?.addEventListener('input', e =>
+      this.handleHexChange(e, 'primary')
     );
 
     // Actions
-    exactColorsToggle?.addEventListener("change", (e) =>
+    exactColorsToggle?.addEventListener('change', e =>
       this.handleExactColorsToggle(e)
     );
 
-    applyButton?.addEventListener("click", () => this.applyChanges());
-    closeButton?.addEventListener("click", () => this.close());
-    exportButton?.addEventListener("click", () => this.exportConfig());
+    applyButton?.addEventListener('click', () => this.applyChanges());
+    closeButton?.addEventListener('click', () => this.close());
+    exportButton?.addEventListener('click', () => this.exportConfig());
 
     // Close on outside click
-    document.addEventListener("click", (e) => this.handleOutsideClick(e));
+    document.addEventListener('click', e => this.handleOutsideClick(e));
 
     // Enhanced scroll prevention
     this.panel?.addEventListener(
-      "touchmove",
-      (e) => {
+      'touchmove',
+      e => {
         // Only prevent if not touching scrollable content
-        if (!e.target.closest(".config-content")) {
+        if (!e.target.closest('.config-content')) {
           e.preventDefault();
           e.stopPropagation();
         }
@@ -87,10 +89,10 @@ class ConfigPanel {
     );
 
     this.panel?.addEventListener(
-      "wheel",
-      (e) => {
+      'wheel',
+      e => {
         // Only prevent if not on scrollable content
-        if (!e.target.closest(".config-content")) {
+        if (!e.target.closest('.config-content')) {
           e.preventDefault();
           e.stopPropagation();
         }
@@ -100,8 +102,8 @@ class ConfigPanel {
 
     // Prevent background scroll when panel is open - more robust
     document.addEventListener(
-      "touchmove",
-      (e) => {
+      'touchmove',
+      e => {
         if (this.isOpen && window.innerWidth <= 768) {
           // Allow scrolling only within the config panel
           if (!this.panel?.contains(e.target)) {
@@ -114,8 +116,8 @@ class ConfigPanel {
 
     // Also prevent wheel scrolling on background
     document.addEventListener(
-      "wheel",
-      (e) => {
+      'wheel',
+      e => {
         if (this.isOpen && window.innerWidth <= 768) {
           if (!this.panel?.contains(e.target)) {
             e.preventDefault();

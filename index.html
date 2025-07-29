@@ -29,11 +29,11 @@
         <h1 class="navbar-title">Design System</h1>
       </div>
       <div class="navbar-controls">
-        <button class="btn btn-tertiary" id="config-toggle" aria-label="Open configuration panel">
+        <button class="btn btn-tertiary interactive-base" id="config-toggle" aria-label="Open configuration panel">
           <span id="config-icon" aria-hidden="true">⚙️</span>
           <span id="config-text">Config</span>
         </button>
-        <button class="btn btn-tertiary" id="theme-toggle" aria-label="Toggle theme">
+        <button class="btn btn-tertiary interactive-base" id="theme-toggle" aria-label="Toggle theme">
           <span id="theme-icon" aria-hidden="true">🌙</span>
           <span id="theme-text">Dark</span>
         </button>
@@ -190,7 +190,7 @@
           Foreground Colors
           <span class="semantic-badge">Semantic Tokens</span>
         </h2>
-        <p class="section-description">Use for all non-text foreground elements (i.e. icons) in your designs.</p>
+        <p class="section-description">Use for all non-text foreground elements, e.g., icons, in your designs.</p>
 
         <div class="semantic-table" role="table" aria-labelledby="foreground-colors-title">
           <div class="table-header" role="row">
@@ -484,9 +484,9 @@
         <div class="demo-group">
           <h4>Buttons</h4>
           <div class="demo-controls">
-            <button class="btn btn-primary">Primary</button>
-            <button class="btn btn-secondary">Secondary</button>
-            <button class="btn btn-tertiary">Tertiary</button>
+            <button class="btn btn-primary interactive-base">Primary</button>
+            <button class="btn btn-secondary interactive-base">Secondary</button>
+            <button class="btn btn-tertiary interactive-base">Tertiary</button>
           </div>
         </div>
 
@@ -504,9 +504,9 @@
           <h4>Tabs</h4>
           <div class="demo-tabs">
             <div class="tab-nav">
-              <button class="tab-button active" id="demo-overview-tab">Overview</button>
-              <button class="tab-button" id="demo-details-tab">Details</button>
-              <button class="tab-button" id="demo-settings-tab">Settings</button>
+              <button class="tab-button active interactive-base" id="demo-overview-tab">Overview</button>
+              <button class="tab-button interactive-base" id="demo-details-tab">Details</button>
+              <button class="tab-button interactive-base" id="demo-settings-tab">Settings</button>
             </div>
             <div class="tab-content">
               <div class="tab-panel active" id="demo-overview-panel">
@@ -527,15 +527,15 @@
           <div class="demo-toggles">
             <div class="toggle">
               <span>Notifications</span>
-              <div class="toggle-switch active" id="demo-notifications-toggle"></div>
+              <div class="toggle-switch active interactive-base" id="demo-notifications-toggle"></div>
             </div>
             <div class="toggle">
               <span>Auto-save</span>
-              <div class="toggle-switch" id="demo-autosave-toggle"></div>
+              <div class="toggle-switch interactive-base" id="demo-autosave-toggle"></div>
             </div>
             <div class="toggle">
               <span>Dark mode</span>
-              <div class="toggle-switch" id="demo-darkmode-toggle"></div>
+              <div class="toggle-switch interactive-base" id="demo-darkmode-toggle"></div>
             </div>
           </div>
         </div>
@@ -573,14 +573,14 @@
   <aside class="config-panel" id="config-panel" role="dialog" aria-labelledby="config-title" aria-hidden="true">
     <div class="config-header">
       <h3 id="config-title">Configuration</h3>
-      <button class="config-close" id="close-config" aria-label="Close configuration panel">✕</button>
+      <button class="config-close interactive-base" id="close-config" aria-label="Close configuration panel">✕</button>
     </div>
 
     <div class="config-content">
       <form class="config-form">
         <div class="config-section">
           <label for="preset-select">Color Presets:</label>
-          <select id="preset-select" class="config-select">
+          <select id="preset-select" class="config-select interactive-base">
             <option value="default">Default (Zinc + Blue)</option>
             <option value="modern">Modern (Slate + Indigo)</option>
             <option value="natural">Natural (Stone + Emerald)</option>
@@ -591,8 +591,8 @@
         <div class="config-section">
           <label for="neutral-color">Neutral Color:</label>
           <div class="config-color-input">
-            <input type="color" id="neutral-color" class="config-color-picker" aria-label="Choose neutral color">
-            <input type="text" id="neutral-hex" class="config-hex-input" placeholder="#71717a"
+            <input type="color" id="neutral-color" class="config-color-picker interactive-base" aria-label="Choose neutral color">
+            <input type="text" id="neutral-hex" class="config-hex-input text-field interactive-base" placeholder="#71717a"
               aria-label="Neutral color hex value">
           </div>
         </div>
@@ -600,8 +600,8 @@
         <div class="config-section">
           <label for="primary-color">Primary Color:</label>
           <div class="config-color-input">
-            <input type="color" id="primary-color" class="config-color-picker" aria-label="Choose primary color">
-            <input type="text" id="primary-hex" class="config-hex-input" placeholder="#3b82f6"
+            <input type="color" id="primary-color" class="config-color-picker interactive-base" aria-label="Choose primary color">
+            <input type="text" id="primary-hex" class="config-hex-input text-field interactive-base" placeholder="#3b82f6"
               aria-label="Primary color hex value">
           </div>
         </div>
@@ -614,14 +614,14 @@
           <small>When enabled, uses your exact color choices. When disabled, optimizes colors for better hover/active
             states.</small>
         </div>
-        <button type="button" class="btn btn-secondary apply-btn" id="apply-config">Apply Changes</button>
+        <button type="button" class="btn btn-secondary apply-btn interactive-base" id="apply-config">Apply Changes</button>
       </form>
     </div>
 
     <footer class="config-footer">
       <div class="config-footer-header">
         <span>Detected Colors:</span>
-        <button type="button" id="export-config" class="btn config-export-btn"
+        <button type="button" id="export-config" class="btn config-export-btn interactive-base"
           aria-label="Export configuration">Export</button>
       </div>
       <p id="detected-colors" class="config-detected-colors" aria-live="polite"></p>
@@ -646,24 +646,24 @@
       <div class="format-options">
         <div class="format-controls">
           <div class="format-buttons">
-            <button class="btn format-button active" id="hex-btn">HEX</button>
-            <button class="btn format-button" id="rgb-btn">RGB</button>
-            <button class="btn format-button" id="hsl-btn">HSL</button>
+            <button class="btn format-button active interactive-base" id="hex-btn">HEX</button>
+            <button class="btn format-button interactive-base" id="rgb-btn">RGB</button>
+            <button class="btn format-button interactive-base" id="hsl-btn">HSL</button>
           </div>
           <div class="format-divider"></div>
           <div class="wrap-controls">
-            <button class="btn format-button" id="wrap-btn">Wrap Text</button>
+            <button class="btn format-button interactive-base" id="wrap-btn">Wrap Text</button>
           </div>
         </div>
 
         <div class="toggle-group">
           <div class="toggle" id="media-toggle-container">
             <span>@media</span>
-            <div class="toggle-switch" id="media-toggle"></div>
+            <div class="toggle-switch interactive-base" id="media-toggle"></div>
           </div>
           <div class="toggle">
             <span>Themes</span>
-            <div class="toggle-switch active" id="themes-toggle"></div>
+            <div class="toggle-switch active interactive-base" id="themes-toggle"></div>
           </div>
         </div>
       </div>
@@ -685,7 +685,7 @@
         <div class="code-section tab-panel" id="tailwind-config-section">
           <div class="code-header">
             <span class="code-title">tailwind.config.js</span>
-            <button class="copy-button" id="tailwind-config-copy">Copy</button>
+            <button class="copy-button interactive-base" id="tailwind-config-copy">Copy</button>
           </div>
           <div class="code-content">
             <pre class="code-block" id="tailwind-config-code"></pre>
@@ -696,7 +696,7 @@
         <div class="code-section tab-panel" id="tailwind-css-section">
           <div class="code-header">
             <span class="code-title">globals.css</span>
-            <button class="copy-button" id="tailwind-css-copy">Copy</button>
+            <button class="copy-button interactive-base" id="tailwind-css-copy">Copy</button>
           </div>
           <div class="code-content">
             <pre class="code-block" id="tailwind-css-code"></pre>
@@ -707,7 +707,7 @@
         <div class="code-section tab-panel" id="json-section">
           <div class="code-header">
             <span class="code-title">colors.json</span>
-            <button class="copy-button" id="json-copy">Copy</button>
+            <button class="copy-button interactive-base" id="json-copy">Copy</button>
           </div>
           <div class="code-content">
             <pre class="code-block" id="json-code"></pre>
