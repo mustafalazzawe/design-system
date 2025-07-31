@@ -89,7 +89,7 @@ class Renderer {
 
     card.innerHTML = `
       <div class="primitive-swatch" style="background-color: ${hex}; color: ${textColor};">
-        <button class="copy-btn">Copy</button>
+        <button class="copy-btn interactive-base">Copy</button>
         ${mainColorIndicator}
       </div>
       <div class="primitive-info">
