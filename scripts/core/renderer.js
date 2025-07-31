@@ -118,7 +118,7 @@ class Renderer {
           }
           ${
             bestFamilyMatch
-              ? `<span class="contrast-badge family-pass">${bestFamilyMatch.shade.toUpperCase()}</span>`
+              ? `<span class="contrast-badge family-pass">${bestFamilyMatch.shade}</span>`
               : ""
           }
         </div>
