@@ -38,4 +38,11 @@ Use the configuration panel to:
 
 ## 📄 License
 
-MIT License - feel free to use this design system in your projects!
+This work is licensed under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License](https://creativecommons.org/licenses/by-nc-nd/4.0/).
+
+You are free to share this work, but:
+- **Attribution** is required
+- **No commercial use** is permitted
+- **No derivatives** may be distributed
+
+For the full license terms, see [LICENSE.md](LICENSE.md).
