@@ -1,9 +1,9 @@
-import { state } from "../core/state.js";
-import { cssUpdater } from "../core/css-updater.js";
-import { renderer } from "../core/renderer.js";
-import { DOMUtils } from "../utils/dom-utils.js";
-import { openEnhancedExportModal } from "../export/export-manager.js";
-import { PRESET_CONFIGS } from "../color-config.js";
+import { state } from '../core/state.js';
+import { cssUpdater } from '../core/css-updater.js';
+import { renderer } from '../core/renderer.js';
+import { DOMUtils } from '../utils/dom-utils.js';
+import { openEnhancedExportModal } from '../export/export-manager.js';
+import { PRESET_CONFIGS } from '../color-config.js';
 
 // =============================================================================
 // Configuration Panel Management
@@ -11,7 +11,7 @@ import { PRESET_CONFIGS } from "../color-config.js";
 
 class ConfigPanel {
   constructor() {
-    this.panel = document.getElementById("config-panel");
+    this.panel = document.getElementById('config-panel');
     this.applyFeedbackTimeout = null;
     this.isOpen = false;
     this.scrollPosition = undefined;
@@ -20,7 +20,7 @@ class ConfigPanel {
 
   init() {
     if (!this.panel) {
-      console.warn("Config Panel: Panel element not found");
+      console.warn('Config Panel: Panel element not found');
       return;
     }
 
@@ -79,7 +79,6 @@ class ConfigPanel {
     this.panel?.addEventListener(
       'touchmove',
       e => {
-        // Only prevent if not touching scrollable content
         if (!e.target.closest('.config-content')) {
           e.preventDefault();
           e.stopPropagation();
@@ -91,7 +90,6 @@ class ConfigPanel {
     this.panel?.addEventListener(
       'wheel',
       e => {
-        // Only prevent if not on scrollable content
         if (!e.target.closest('.config-content')) {
           e.preventDefault();
           e.stopPropagation();
@@ -100,13 +98,17 @@ class ConfigPanel {
       { passive: false }
     );
 
-    // Prevent background scroll when panel is open - more robust
+    // Update these document listeners:
     document.addEventListener(
       'touchmove',
       e => {
         if (this.isOpen && window.innerWidth <= 768) {
-          // Allow scrolling only within the config panel
-          if (!this.panel?.contains(e.target)) {
+          const exportModal = document.getElementById('exportModal');
+          const isInConfigPanel = this.panel?.contains(e.target);
+          const isInExportModal = exportModal?.contains(e.target);
+
+          // Only prevent if not in config panel AND not in export modal
+          if (!isInConfigPanel && !isInExportModal) {
             e.preventDefault();
           }
         }
@@ -114,12 +116,15 @@ class ConfigPanel {
       { passive: false }
     );
 
-    // Also prevent wheel scrolling on background
     document.addEventListener(
       'wheel',
       e => {
         if (this.isOpen && window.innerWidth <= 768) {
-          if (!this.panel?.contains(e.target)) {
+          const exportModal = document.getElementById('exportModal');
+          const isInConfigPanel = this.panel?.contains(e.target);
+          const isInExportModal = exportModal?.contains(e.target);
+
+          if (!isInConfigPanel && !isInExportModal) {
             e.preventDefault();
           }
         }
@@ -132,7 +137,7 @@ class ConfigPanel {
     if (
       this.isOpen &&
       !this.panel.contains(e.target) &&
-      !document.getElementById("config-toggle")?.contains(e.target)
+      !document.getElementById('config-toggle')?.contains(e.target)
     ) {
       this.close();
     }
@@ -145,7 +150,7 @@ class ConfigPanel {
   handlePresetChange(e) {
     const presetName = e.target.value;
 
-    if (presetName !== "custom") {
+    if (presetName !== 'custom') {
       const presetConfig = PRESET_CONFIGS?.[presetName];
       if (presetConfig) {
         this.updateFormWithPreset(presetConfig);
@@ -156,10 +161,10 @@ class ConfigPanel {
   }
 
   updateFormWithPreset(presetConfig) {
-    const neutralColorInput = document.getElementById("neutral-color");
-    const primaryColorInput = document.getElementById("primary-color");
-    const neutralHexInput = document.getElementById("neutral-hex");
-    const primaryHexInput = document.getElementById("primary-hex");
+    const neutralColorInput = document.getElementById('neutral-color');
+    const primaryColorInput = document.getElementById('primary-color');
+    const neutralHexInput = document.getElementById('neutral-hex');
+    const primaryHexInput = document.getElementById('primary-hex');
 
     if (
       neutralColorInput &&
@@ -180,7 +185,7 @@ class ConfigPanel {
   }
 
   updateDetectedColors(config = null) {
-    const detectedColors = document.getElementById("detected-colors");
+    const detectedColors = document.getElementById('detected-colors');
     if (!detectedColors) return;
 
     if (config) {
@@ -192,7 +197,7 @@ class ConfigPanel {
       )}, Primary: ${this.capitalize(primaryName)}`;
     } else {
       // For custom colors, just show generic names
-      detectedColors.textContent = "Neutral: Neutral, Primary: Primary";
+      detectedColors.textContent = 'Neutral: Neutral, Primary: Primary';
     }
   }
 
@@ -232,9 +237,9 @@ class ConfigPanel {
   }
 
   setCustomMode() {
-    const presetSelect = document.getElementById("preset-select");
-    if (presetSelect && presetSelect.value !== "custom") {
-      presetSelect.value = "custom";
+    const presetSelect = document.getElementById('preset-select');
+    if (presetSelect && presetSelect.value !== 'custom') {
+      presetSelect.value = 'custom';
     }
   }
 
@@ -244,16 +249,16 @@ class ConfigPanel {
 
   updateInputs() {
     if (!state.activeConfig) {
-      console.warn("Config Panel: No active config to update inputs");
+      console.warn('Config Panel: No active config to update inputs');
       return;
     }
 
-    const presetSelect = document.getElementById("preset-select");
-    const neutralColorInput = document.getElementById("neutral-color");
-    const primaryColorInput = document.getElementById("primary-color");
-    const neutralHexInput = document.getElementById("neutral-hex");
-    const primaryHexInput = document.getElementById("primary-hex");
-    const exactColorsToggle = document.getElementById("exact-colors-toggle");
+    const presetSelect = document.getElementById('preset-select');
+    const neutralColorInput = document.getElementById('neutral-color');
+    const primaryColorInput = document.getElementById('primary-color');
+    const neutralHexInput = document.getElementById('neutral-hex');
+    const primaryHexInput = document.getElementById('primary-hex');
+    const exactColorsToggle = document.getElementById('exact-colors-toggle');
 
     // Update color inputs
     if (
@@ -297,7 +302,7 @@ class ConfigPanel {
     }
 
     // Default to custom if no match
-    return "custom";
+    return 'custom';
   }
 
   configsMatch(config1, config2) {
@@ -310,7 +315,7 @@ class ConfigPanel {
   }
 
   updateDetectedColorsFromState() {
-    const detectedColors = document.getElementById("detected-colors");
+    const detectedColors = document.getElementById('detected-colors');
     if (!detectedColors || !state.activeConfig) return;
 
     const neutralName = state.activeConfig.baseColors.neutral.name;
@@ -327,7 +332,7 @@ class ConfigPanel {
   handleExactColorsToggle(e) {
     // This will trigger when user changes the checkbox
     // The actual state change will happen when they click "Apply Changes"
-    console.log("Exact colors toggle changed:", e.target.checked);
+    console.log('Exact colors toggle changed:', e.target.checked);
   }
 
   // =============================================================================
@@ -335,20 +340,20 @@ class ConfigPanel {
   // =============================================================================
 
   applyChanges() {
-    const presetSelect = document.getElementById("preset-select");
-    const neutralColorInput = document.getElementById("neutral-color");
-    const primaryColorInput = document.getElementById("primary-color");
-    const exactColorsToggle = document.getElementById("exact-colors-toggle");
+    const presetSelect = document.getElementById('preset-select');
+    const neutralColorInput = document.getElementById('neutral-color');
+    const primaryColorInput = document.getElementById('primary-color');
+    const exactColorsToggle = document.getElementById('exact-colors-toggle');
 
     if (!presetSelect) {
-      console.error("Config Panel: Preset select not found");
+      console.error('Config Panel: Preset select not found');
       return;
     }
 
     const useExactColors = exactColorsToggle?.checked || false;
 
     try {
-      if (presetSelect.value !== "custom") {
+      if (presetSelect.value !== 'custom') {
         // Load preset
         const success = state.loadPreset(presetSelect.value);
         if (!success) {
@@ -363,7 +368,7 @@ class ConfigPanel {
       } else {
         // Apply custom colors
         if (!neutralColorInput || !primaryColorInput) {
-          console.error("Config Panel: Color inputs not found");
+          console.error('Config Panel: Color inputs not found');
           return;
         }
 
@@ -371,8 +376,8 @@ class ConfigPanel {
           !this.isValidHex(neutralColorInput.value) ||
           !this.isValidHex(primaryColorInput.value)
         ) {
-          console.error("Config Panel: Invalid hex colors");
-          DOMUtils.showFeedback("Invalid color values", "error");
+          console.error('Config Panel: Invalid hex colors');
+          DOMUtils.showFeedback('Invalid color values', 'error');
           return;
         }
 
@@ -382,7 +387,7 @@ class ConfigPanel {
           { useExactInteractiveColors: useExactColors }
         );
         if (!success) {
-          console.error("Failed to set custom colors");
+          console.error('Failed to set custom colors');
           return;
         }
       }
@@ -392,15 +397,15 @@ class ConfigPanel {
       renderer.renderInterface();
       this.showApplyFeedback();
 
-      console.log("✅ Config changes applied successfully");
+      console.log('✅ Config changes applied successfully');
     } catch (error) {
-      console.error("❌ Error applying config changes:", error);
-      DOMUtils.showFeedback("Failed to apply changes", "error");
+      console.error('❌ Error applying config changes:', error);
+      DOMUtils.showFeedback('Failed to apply changes', 'error');
     }
   }
 
   showApplyFeedback() {
-    const applyButton = document.getElementById("apply-config");
+    const applyButton = document.getElementById('apply-config');
     if (!applyButton) return;
 
     // Clear any existing timeout
@@ -409,18 +414,18 @@ class ConfigPanel {
     }
 
     // Reset to original state
-    applyButton.classList.remove("applied");
-    applyButton.textContent = "Apply Changes";
+    applyButton.classList.remove('applied');
+    applyButton.textContent = 'Apply Changes';
     applyButton.offsetHeight; // Force reflow
 
     // Apply feedback state
-    applyButton.classList.add("applied");
-    applyButton.textContent = "Applied!";
+    applyButton.classList.add('applied');
+    applyButton.textContent = 'Applied!';
 
     // Reset after delay
     this.applyFeedbackTimeout = setTimeout(() => {
-      applyButton.classList.remove("applied");
-      applyButton.textContent = "Apply Changes";
+      applyButton.classList.remove('applied');
+      applyButton.textContent = 'Apply Changes';
       this.applyFeedbackTimeout = null;
     }, 1500);
   }
@@ -444,27 +449,27 @@ class ConfigPanel {
     this.scrollPosition =
       window.pageYOffset || document.documentElement.scrollTop;
 
-    this.panel.classList.add("show");
+    this.panel.classList.add('show');
     this.isOpen = true;
 
     // Prevent body scroll on mobile
     if (window.innerWidth <= 768) {
-      document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed";
-      document.body.style.width = "100%";
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
       document.body.style.top = `-${this.scrollPosition}px`;
     }
 
     // Update inputs when opening
     this.updateInputs();
 
-    console.log("⚙️ Config panel opened");
+    console.log('⚙️ Config panel opened');
   }
 
   close() {
     if (!this.panel) return;
 
-    this.panel.classList.remove("show");
+    this.panel.classList.remove('show');
     this.isOpen = false;
 
     // Restore body scroll on mobile
@@ -472,17 +477,17 @@ class ConfigPanel {
       const scrollY = this.scrollPosition;
 
       // Remove fixed positioning
-      document.body.style.overflow = "";
-      document.body.style.position = "";
-      document.body.style.width = "";
-      document.body.style.top = "";
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
 
       // Restore scroll position immediately
       window.scrollTo(0, scrollY);
       this.scrollPosition = undefined;
     }
 
-    console.log("⚙️ Config panel closed");
+    console.log('⚙️ Config panel closed');
   }
 
   // =============================================================================
@@ -499,14 +504,14 @@ class ConfigPanel {
 
   // Get current form values
   getCurrentFormValues() {
-    const presetSelect = document.getElementById("preset-select");
-    const neutralHex = document.getElementById("neutral-hex");
-    const primaryHex = document.getElementById("primary-hex");
+    const presetSelect = document.getElementById('preset-select');
+    const neutralHex = document.getElementById('neutral-hex');
+    const primaryHex = document.getElementById('primary-hex');
 
     return {
-      preset: presetSelect?.value || "custom",
-      neutralHex: neutralHex?.value || "#71717a",
-      primaryHex: primaryHex?.value || "#3b82f6",
+      preset: presetSelect?.value || 'custom',
+      neutralHex: neutralHex?.value || '#71717a',
+      primaryHex: primaryHex?.value || '#3b82f6',
     };
   }
 
@@ -514,7 +519,7 @@ class ConfigPanel {
   validateForm() {
     const values = this.getCurrentFormValues();
 
-    if (values.preset === "custom") {
+    if (values.preset === 'custom') {
       return (
         this.isValidHex(values.neutralHex) && this.isValidHex(values.primaryHex)
       );
@@ -526,7 +531,7 @@ class ConfigPanel {
   // Reset form to current state
   resetForm() {
     this.updateInputs();
-    console.log("🔄 Config form reset");
+    console.log('🔄 Config form reset');
   }
 
   // Check if panel is ready
