@@ -482,6 +482,16 @@
       <h3 class="demo-title" id="demo-title">Component Examples Using Semantic Tokens</h3>
       <div class="demo-grid">
         <div class="demo-group">
+          <h4>Text Hierarchy</h4>
+          <div class="demo-text">
+            <h2 class="demo-heading">Primary Heading</h2>
+            <h3 class="demo-subheading">Secondary Heading</h3>
+            <p class="demo-body">This is tertiary text for body content and paragraphs.</p>
+            <p class="demo-caption">Quaternary text for subtle information.</p>
+          </div>
+        </div>
+
+        <div class="demo-group">
           <h4>Buttons</h4>
           <div class="demo-controls">
             <button class="btn btn-primary interactive-base">Primary</button>
@@ -491,12 +501,20 @@
         </div>
 
         <div class="demo-group">
-          <h4>Text Hierarchy</h4>
-          <div class="demo-text">
-            <h2 class="demo-heading">Primary Heading</h2>
-            <h3 class="demo-subheading">Secondary Heading</h3>
-            <p class="demo-body">This is tertiary text for body content and paragraphs.</p>
-            <p class="demo-caption">Quaternary text for subtle information.</p>
+          <h4>Toggles</h4>
+          <div class="demo-toggles">
+            <div class="toggle">
+              <span>Notifications</span>
+              <div class="toggle-switch active interactive-base" id="demo-notifications-toggle"></div>
+            </div>
+            <div class="toggle">
+              <span>Auto-save</span>
+              <div class="toggle-switch interactive-base" id="demo-autosave-toggle"></div>
+            </div>
+            <div class="toggle">
+              <span>Dark mode</span>
+              <div class="toggle-switch interactive-base" id="demo-darkmode-toggle"></div>
+            </div>
           </div>
         </div>
 
@@ -518,24 +536,6 @@
               <div class="tab-panel" id="demo-settings-panel">
                 <p>Configuration and preference settings.</p>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="demo-group">
-          <h4>Toggles</h4>
-          <div class="demo-toggles">
-            <div class="toggle">
-              <span>Notifications</span>
-              <div class="toggle-switch active interactive-base" id="demo-notifications-toggle"></div>
-            </div>
-            <div class="toggle">
-              <span>Auto-save</span>
-              <div class="toggle-switch interactive-base" id="demo-autosave-toggle"></div>
-            </div>
-            <div class="toggle">
-              <span>Dark mode</span>
-              <div class="toggle-switch interactive-base" id="demo-darkmode-toggle"></div>
             </div>
           </div>
         </div>
@@ -611,7 +611,7 @@
         <div class="config-section">
           <label>
             <input type="checkbox" id="exact-colors-toggle">
-            Use exact selected colors for interactions
+            <span class="checkbox-label">Use exact selected colors for interactions</span>
           </label>
           <small>When enabled, uses your exact color choices. When disabled, optimizes colors for better hover/active
             states.</small>
