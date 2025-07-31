@@ -442,53 +442,78 @@ class ConfigPanel {
     }
   }
 
-  open() {
-    if (!this.panel) return;
+open() {
+  if (!this.panel) return;
 
-    // Store scroll position BEFORE any DOM changes
-    this.scrollPosition =
-      window.pageYOffset || document.documentElement.scrollTop;
+  // Store scroll position BEFORE any DOM changes
+  this.scrollPosition =
+    window.pageYOffset || document.documentElement.scrollTop;
 
-    this.panel.classList.add('show');
-    this.isOpen = true;
-
-    // Prevent body scroll on mobile
-    if (window.innerWidth <= 768) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.top = `-${this.scrollPosition}px`;
-    }
-
-    // Update inputs when opening
-    this.updateInputs();
-
-    console.log('⚙️ Config panel opened');
-  }
-
-  close() {
-    if (!this.panel) return;
-
+  // Always ensure the panel is visible before animation
+  this.panel.style.display = 'flex';
+  
+  // Only on desktop, prepare for animation by removing show class
+  if (window.innerWidth > 768) {
     this.panel.classList.remove('show');
-    this.isOpen = false;
-
-    // Restore body scroll on mobile
-    if (window.innerWidth <= 768) {
-      const scrollY = this.scrollPosition;
-
-      // Remove fixed positioning
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.top = '';
-
-      // Restore scroll position immediately
-      window.scrollTo(0, scrollY);
-      this.scrollPosition = undefined;
-    }
-
-    console.log('⚙️ Config panel closed');
+    this.panel.offsetHeight; // Force reflow
   }
+
+  // Add the show class to trigger animation
+  requestAnimationFrame(() => {
+    this.panel.classList.add('show');
+  });
+
+  this.isOpen = true;
+
+  // Prevent body scroll on mobile
+  if (window.innerWidth <= 768) {
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.top = `-${this.scrollPosition}px`;
+  }
+
+  // Update inputs when opening
+  this.updateInputs();
+
+  console.log('⚙️ Config panel opened');
+}
+
+close() {
+  if (!this.panel) return;
+
+  this.panel.classList.remove('show');
+  this.isOpen = false;
+
+  // Handle animation timing for both desktop and mobile
+  const transitionDuration = window.innerWidth > 768 ? 200 : 300; // --transition-fast vs --transition-normal
+
+  setTimeout(() => {
+    if (!this.isOpen) { // Double-check it's still closed
+      // Reset display on desktop
+      if (window.innerWidth > 768) {
+        this.panel.style.display = 'none';
+      }
+
+      // Restore body scroll on mobile (after animation completes)
+      if (window.innerWidth <= 768) {
+        const scrollY = this.scrollPosition;
+
+        // Remove fixed positioning
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.top = '';
+
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
+        this.scrollPosition = undefined;
+      }
+    }
+  }, transitionDuration);
+
+  console.log('⚙️ Config panel closed');
+}
 
   // =============================================================================
   // EXPORT FUNCTIONALITY

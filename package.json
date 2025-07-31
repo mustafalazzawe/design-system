@@ -7,7 +7,6 @@
   },
   "scripts": {
     "format-css": "postcss styles/*.css --replace && prettier --write styles/*.css",
-    "format-css-file": "postcss ${FILE} --replace && prettier --write ${FILE}",
     "format-css-all": "postcss **/*.css --replace && prettier --write **/*.css"
   }
 }

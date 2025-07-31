@@ -3,9 +3,29 @@ const addPropertyGroupSpacing = () => {
   return {
     postcssPlugin: 'add-property-group-spacing',
     Declaration(decl, { result }) {
+      // Skip CSS custom properties (variables)
+      if (decl.prop.startsWith('--')) return;
+
       const propertyGroups = {
-        priority: ['content'],
+        childContext: [
+          'flex',
+          'flex-grow', 
+          'flex-shrink',
+          'flex-basis',
+          'grid-area',
+          'grid-column',
+          'grid-row',
+          'grid-column-start',
+          'grid-column-end',
+          'grid-row-start',
+          'grid-row-end',
+          'order',
+          'align-self',
+          'justify-self',
+          'place-self'
+        ],
         positioning: [
+          'content',
           'position',
           'top',
           'right',
@@ -18,22 +38,15 @@ const addPropertyGroupSpacing = () => {
         ],
         layout: [
           'display',
-          'flex',
           'flex-direction',
           'flex-wrap',
           'flex-flow',
-          'flex-grow',
-          'flex-shrink',
-          'flex-basis',
           'justify-content',
           'justify-items',
-          'justify-self',
           'align-content',
           'align-items',
-          'align-self',
           'place-content',
           'place-items',
-          'place-self',
           'gap',
           'row-gap',
           'column-gap',
@@ -45,10 +58,6 @@ const addPropertyGroupSpacing = () => {
           'grid-auto-columns',
           'grid-auto-rows',
           'grid-auto-flow',
-          'grid-area',
-          'grid-column',
-          'grid-row',
-          'order',
           'float',
           'clear',
         ],
@@ -126,31 +135,80 @@ const addPropertyGroupSpacing = () => {
 
       if (!currentGroup) return;
 
-      // Check if previous declaration is from a different group
+      // Check if previous declaration exists
       const prevDecl = decl.prev();
       if (!prevDecl || prevDecl.type !== 'decl') return;
+
+      // Skip if previous declaration is a CSS custom property
+      if (prevDecl.prop.startsWith('--')) return;
 
       const prevGroup = Object.keys(propertyGroups).find(group =>
         propertyGroups[group].includes(prevDecl.prop)
       );
 
-      // If different groups, add spacing while preserving existing indentation
-      if (prevGroup && prevGroup !== currentGroup) {
-        // Get the existing indentation from the previous declaration
-        const existingIndent = prevDecl.raws.before?.match(/\n(\s*)$/)?.[1] || '  ';
-        decl.raws.before = `\n\n${existingIndent}`;
+      // Get the rule's base indentation
+      const parentRule = decl.parent;
+      const firstDecl = parentRule.first;
+      const baseIndent = firstDecl?.raws?.before?.match(/\n(\s*)$/)?.[1] || '  ';
+
+      if (prevGroup && prevGroup === currentGroup) {
+        // Same group - normalize to single line spacing (unless there's a comment)
+        let hasCommentBetween = false;
+        let current = prevDecl.next();
+        
+        while (current && current !== decl) {
+          if (current.type === 'comment') {
+            hasCommentBetween = true;
+            break;
+          }
+          current = current.next();
+        }
+
+        // If no comment between, normalize to single line
+        if (!hasCommentBetween) {
+          decl.raws.before = `\n${baseIndent}`;
+        }
+      } else if (prevGroup && prevGroup !== currentGroup) {
+        // Different groups - add spacing between groups
+        decl.raws.before = `\n\n${baseIndent}`;
       }
     },
   };
 };
 
+// Register the plugin
 addPropertyGroupSpacing.postcss = true;
 
+// Export the configuration
 module.exports = {
   plugins: [
     require('css-declaration-sorter')({
       order: function (a, b) {
+        // Don't sort CSS custom properties (variables)
+        if (a.startsWith('--') || b.startsWith('--')) {
+          if (a.startsWith('--') && b.startsWith('--')) return 0;
+          return 0;
+        }
+
         const customOrder = [
+          // Child/Parent Context - How this element behaves in its parent
+          'flex',
+          'flex-grow',
+          'flex-shrink', 
+          'flex-basis',
+          'grid-area',
+          'grid-column',
+          'grid-row',
+          'grid-column-start',
+          'grid-column-end',
+          'grid-row-start',
+          'grid-row-end',
+          'order',
+          'align-self',
+          'justify-self',
+          'place-self',
+          
+          // Positioning - Where this element is positioned
           'content',
           'position',
           'top',
@@ -161,23 +219,18 @@ module.exports = {
           'inset',
           'inset-block',
           'inset-inline',
+          
+          // Layout - How this element lays out its children
           'display',
-          'flex',
           'flex-direction',
           'flex-wrap',
           'flex-flow',
-          'flex-grow',
-          'flex-shrink',
-          'flex-basis',
           'justify-content',
           'justify-items',
-          'justify-self',
           'align-content',
           'align-items',
-          'align-self',
           'place-content',
           'place-items',
-          'place-self',
           'gap',
           'row-gap',
           'column-gap',
@@ -189,12 +242,10 @@ module.exports = {
           'grid-auto-columns',
           'grid-auto-rows',
           'grid-auto-flow',
-          'grid-area',
-          'grid-column',
-          'grid-row',
-          'order',
           'float',
           'clear',
+          
+          // Box Model - The element's own size and spacing
           'box-sizing',
           'width',
           'min-width',
@@ -222,6 +273,8 @@ module.exports = {
           'border-color',
           'border-radius',
           'outline',
+          
+          // Typography
           'font',
           'font-family',
           'font-size',
@@ -235,6 +288,8 @@ module.exports = {
           'white-space',
           'word-break',
           'color',
+          
+          // Visual
           'background',
           'background-color',
           'background-image',
@@ -246,6 +301,8 @@ module.exports = {
           'visibility',
           'filter',
           'backdrop-filter',
+          
+          // Animation & Interaction
           'cursor',
           'pointer-events',
           'user-select',
