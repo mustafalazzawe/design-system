@@ -251,6 +251,7 @@
   --z-navbar: 1000;
   --z-config-panel: 999;
   --z-feedback: 10000;
+  --z-tooltip: 10001;
 }
 
 [data-theme="dark"] {
@@ -434,7 +435,7 @@ body {
   visibility: hidden;
   
   transition: opacity var(--transition-fast);
-  z-index: 10001; 
+  z-index: var(--z-tooltip); 
 }
 
 .global-tooltip.show {
@@ -459,19 +460,6 @@ body {
 
 [data-theme="dark"] .navbar {
   background: var(--bg-primary);
-}
-
-/* For browsers that support backdrop-filter - glass effect */
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .navbar {
-    background: rgba(250, 250, 250, 0.8);
-    backdrop-filter: blur(var(--blur-md));
-    -webkit-backdrop-filter: blur(var(--blur-md));
-  }
-
-  [data-theme="dark"] .navbar {
-    background: rgba(24, 24, 27, 0.8);
-  }
 }
 
 .navbar-content {
@@ -1051,6 +1039,8 @@ textarea {
   
   background: var(--bg-secondary);
   box-shadow: var(--shadow-sm);
+
+  overflow: hidden;
   
   transition:
     transform var(--transition-fast),
@@ -1059,7 +1049,7 @@ textarea {
 
 .primitive-card:hover {
   box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .card-color {
@@ -1067,9 +1057,8 @@ textarea {
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   flex: 1;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .card-badges {
@@ -1093,7 +1082,7 @@ textarea {
   font-size: var(--font-size-body-xs);
   font-weight: var(--font-weight-bold);
   line-height: 1;
-  color: white;
+  color: var(--text-light);
   
   cursor: help;
   
@@ -1109,7 +1098,7 @@ textarea {
 }
 
 .card-indicator-badge:hover {
-  transform: scale(1.1);
+  transform: translateY(-1px);
 }
 
 .card-copy-btn {
@@ -1121,15 +1110,16 @@ textarea {
   justify-content: center;
   align-items: center;
   
-  width: 44px;
   height: 24px;
   border: none;
   border-radius: var(--radius-sm);
+
+  padding: var(--spacing-1);
   
   font-size: var(--font-size-body-xs);
   font-weight: var(--font-weight-medium);
   line-height: 1;
-  color: white;
+  color: var(--text-light);
   
   background: var(--bg-modal-overlay);
   box-shadow: var(--shadow-xs);
@@ -1143,21 +1133,15 @@ textarea {
 }
 
 .card-copy-btn:hover {
-  background: rgba(0, 0, 0, 0.6);
-  transform: scale(1.05);
+  background: rgba(0, 0, 0, var(--alpha-modal));
+  transform: translateY(-1px);
 }
 
 .card-copy-btn.copied {
   color: var(--success-fg);
-  background: var(--success-primary);
 }
 
 .contrast-display {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  
   padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--radius-sm);
   
@@ -1171,7 +1155,7 @@ textarea {
 }
 
 .contrast-display:hover {
-  transform: translate(-50%, -50%) scale(1.05);
+  transform: translateY(-1px);
 }
 
 .card-body {
@@ -1179,12 +1163,10 @@ textarea {
   flex-direction: column;
   justify-content: center;
   
-  height: 80px;
   padding: var(--spacing-4);
   
   background: var(--bg-secondary);
   border-top: var(--border-width-sm) solid var(--border-soft);
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
 .card-info {
@@ -1207,7 +1189,6 @@ textarea {
   color: var(--text-secondary);
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .primitive-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1328,6 +1309,10 @@ textarea {
 }
 
 .tooltip-badge {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+
   text-align: left;
 }
 
@@ -1335,7 +1320,6 @@ textarea {
   font-size: var(--font-size-body-sm);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  margin-bottom: 4px;
 }
 
 .tooltip-badge-description {
@@ -1894,7 +1878,6 @@ textarea {
   background: var(--bg-modal-overlay);
   opacity: 0;
   visibility: hidden;
-  backdrop-filter: blur(var(--blur-sm));
 
   transition:
     opacity var(--transition-fast),
@@ -2278,16 +2261,10 @@ textarea {
 
 .code-title {
   font-family: var(--font-family-mono);
-  font-size: var(--font-size-body-md);
+  font-size: var(--font-size-body-sm);
   font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-body-md);
+  line-height: var(--line-height-body-sm);
   color: var(--text-secondary);
-}
-
-@media (max-width: 768px) {
-  .code-title {
-    font-size: var(--font-size-body-sm);
-  }
 }
 
 @media (max-width: 475px) {
