@@ -757,7 +757,6 @@ body {
 
 .btn-secondary {
   border-color: var(--border-color);
-  /* TODO: Update text color to text-dark semantic token */
   color: var(--bg-primary);
 
   background: var(--interactive-secondary);
@@ -1047,8 +1046,7 @@ textarea {
   display: flex;
   flex-direction: column;
   
-  height: 240px;
-  overflow: visible;
+  height: 200px;
   border-radius: var(--radius-lg);
   
   background: var(--bg-secondary);
@@ -1071,7 +1069,6 @@ textarea {
   align-items: center;
   
   flex: 1;
-  overflow: hidden;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
@@ -1208,7 +1205,6 @@ textarea {
   font-weight: var(--font-weight-medium);
   line-height: var(--line-height-body-sm);
   color: var(--text-secondary);
-  /* Removed font-family: var(--font-family-mono); */
 }
 
 /* Responsive adjustments */
@@ -1449,6 +1445,10 @@ textarea {
   font-size: var(--font-size-body-sm);
   font-weight: var(--font-weight-medium);
   line-height: var(--line-height-body-sm);
+}
+
+.color-preview:hover {
+  transform: translateY(-1px)
 }
 
 @media (max-width: 1024px) {
@@ -2636,12 +2636,6 @@ textarea {
   background: var(--dynamic-bg, transparent);
 
   transition: transform var(--transition-fast);
-}
-
-.color-preview-light:hover,
-.color-preview-dark:hover,
-.color-preview-alpha:hover {
-  transform: scale(1.02);
 }
 
 /* Demo text element overrides - use these instead of inline styles */
