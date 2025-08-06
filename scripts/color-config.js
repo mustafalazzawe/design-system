@@ -417,9 +417,13 @@ export function generateSemanticTokens(
       light: { hex: neutralScale[500].hex, name: `${neutralName}-500` },
       dark: { hex: neutralScale[400].hex, name: `${neutralName}-400` },
     },
-    "text-white": {
-      light: { hex: "#ffffff", name: "base-white" },
-      dark: { hex: "#ffffff", name: "base-white" },
+    "text-dark": {
+      light: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
+      dark: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
+    },
+    "text-light": {
+      light: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
+      dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
     },
     "text-disabled": {
       light: { hex: neutralScale[500].hex, name: `${neutralName}-500` },
@@ -469,9 +473,13 @@ export function generateSemanticTokens(
       light: { hex: neutralScale[700].hex, name: `${neutralName}-700` },
       dark: { hex: neutralScale[400].hex, name: `${neutralName}-400` },
     },
-    "fg-white": {
-      light: { hex: "#ffffff", name: "base-white" },
-      dark: { hex: "#ffffff", name: "base-white" },
+    "fg-dark": {
+      light: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
+      dark: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
+    },
+    "fg-light": {
+      light: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
+      dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
     },
     "fg-disabled": {
       light: { hex: neutralScale[500].hex, name: `${neutralName}-500` },
@@ -492,6 +500,14 @@ export function generateSemanticTokens(
     "bg-tertiary": {
       light: { hex: neutralScale[200].hex, name: `${neutralName}-200` },
       dark: { hex: neutralScale[800].hex, name: `${neutralName}-800` },
+    },
+    "bg-dark": {
+      light: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
+      dark: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
+    },
+    "bg-light": {
+      light: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
+      dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
     },
     "bg-modal-overlay": {
       light: { hex: "rgba(0,0,0,0.36)", name: "alpha-black-modal" },

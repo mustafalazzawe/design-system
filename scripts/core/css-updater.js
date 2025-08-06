@@ -23,7 +23,8 @@ class CSSUpdater {
       "tertiary",
       "quaternary",
       "primary-on-brand",
-      "white",
+      "dark",
+      "light",
       "disabled",
       "placeholder",
     ]);
@@ -42,7 +43,8 @@ class CSSUpdater {
       "primary-on-brand",
       "secondary",
       "tertiary",
-      "white",
+      "dark",
+      "light",
       "disabled",
     ]);
 
@@ -51,6 +53,8 @@ class CSSUpdater {
       "primary",
       "secondary",
       "tertiary",
+      "dark",
+      "light",
       "modal-overlay",
     ]);
 

@@ -1,5 +1,5 @@
-import { ColorUtils } from "../utils/color-utils.js";
-import { initializeColorSystem, PRESET_CONFIGS } from "../color-config.js";
+import { ColorUtils } from '../utils/color-utils.js';
+import { initializeColorSystem, PRESET_CONFIGS } from '../color-config.js';
 
 // =============================================================================
 // Color System State Management
@@ -18,13 +18,13 @@ class ColorSystemState {
     // Use the default preset configuration for initial load
     return {
       baseColors: {
-        neutral: { name: "zinc", base: "#71717a", hex: "#71717a" },
-        primary: { name: "blue", base: "#3b82f6", hex: "#3b82f6" },
+        neutral: { name: 'zinc', base: '#71717a', hex: '#71717a' },
+        primary: { name: 'blue', base: '#3b82f6', hex: '#3b82f6' },
       },
       project: {
-        name: "Semantic Color Design System",
+        name: 'Semantic Color Design System',
         description:
-          "A comprehensive color system built on primitive colors with semantic tokens for consistent, accessible design",
+          'A comprehensive color system built on primitive colors with semantic tokens for consistent, accessible design',
       },
       options: {
         autoDetectColorNames: true,
@@ -32,8 +32,8 @@ class ColorSystemState {
         includeAlphaColors: true,
         includeStatusColors: true,
         includeFamilyContrast: true,
-        useSmartPositioning: true, 
-        useExactInteractiveColors: false, 
+        useSmartPositioning: true,
+        useExactInteractiveColors: false,
       },
     };
   }
@@ -47,7 +47,7 @@ class ColorSystemState {
       this.activeConfig = config;
       return true;
     } catch (error) {
-      console.error("Failed to update color system:", error);
+      console.error('Failed to update color system:', error);
       return false;
     }
   }
@@ -73,14 +73,14 @@ class ColorSystemState {
 
     customConfig.baseColors.neutral.base = neutralHex;
     customConfig.baseColors.neutral.hex = neutralHex;
-    customConfig.baseColors.neutral.name = "neutral";
+    customConfig.baseColors.neutral.name = 'neutral';
 
     customConfig.baseColors.primary.base = primaryHex;
     customConfig.baseColors.primary.hex = primaryHex;
-    customConfig.baseColors.primary.name = "primary";
+    customConfig.baseColors.primary.name = 'primary';
 
     // Update project name for custom colors
-    customConfig.project.name = "Custom Design System";
+    customConfig.project.name = 'Custom Design System';
 
     customConfig.options.autoDetectColorNames = false;
 
@@ -92,11 +92,11 @@ class ColorSystemState {
 
   // Getters for easy access to current state
   getCurrentNeutralName() {
-    return this.currentColorSystem?.meta?.neutralName || "neutral";
+    return this.currentColorSystem?.meta?.neutralName || 'neutral';
   }
 
   getCurrentPrimaryName() {
-    return this.currentColorSystem?.meta?.primaryName || "primary";
+    return this.currentColorSystem?.meta?.primaryName || 'primary';
   }
 
   getCurrentNeutralBase() {
@@ -114,6 +114,35 @@ class ColorSystemState {
         ? this.getCurrentNeutralBase()
         : this.getCurrentPrimaryBase();
     return hex.toLowerCase() === baseColor?.toLowerCase();
+  }
+
+  isUserSelectedColor(hex, colorFamily) {
+    const baseColor =
+      colorFamily === this.getCurrentNeutralName()
+        ? this.getCurrentNeutralBase()
+        : this.getCurrentPrimaryBase();
+
+    return hex.toLowerCase() === baseColor?.toLowerCase();
+  }
+
+  isFunctionalColor(hex, colorFamily) {
+    // Only check for primary colors since neutral doesn't have functional colors
+    if (colorFamily !== this.getCurrentPrimaryName()) {
+      return false;
+    }
+
+    // Check if this hex matches the interactive-primary color
+    const interactivePrimary = this.semanticTokens?.['interactive-primary'];
+    if (interactivePrimary) {
+      const currentTheme =
+        document.documentElement.getAttribute('data-theme') || 'light';
+      return (
+        hex.toLowerCase() ===
+        interactivePrimary[currentTheme]?.hex?.toLowerCase()
+      );
+    }
+
+    return false;
   }
 
   getContrastInfo(hex, colorFamily) {
