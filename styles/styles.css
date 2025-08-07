@@ -152,7 +152,7 @@
   --focus-ring-width-lg: 3px;
 
   /* Breakpoints */
-  --breakpoint-xs: 475px; /* Mobile */
+  --breakpoint-xs: 480px; /* Mobile */
   --breakpoint-sm: 640px; /* Large Mobile */
   --breakpoint-md: 768px; /* Tablet */
   --breakpoint-lg: 1024px; /* Large Tablet */
@@ -315,7 +315,7 @@
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   :root {
     --font-size-header-lg: var(--font-size-header-md); /* Scale down large headers */
     --font-size-header-md: var(--font-size-header-sm); /* Scale down medium headers */
@@ -476,7 +476,7 @@ body {
   min-width: 0; /* Allow flex items to shrink */
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .navbar-content {
     gap: var(--spacing-2);
   }
@@ -500,7 +500,7 @@ body {
   max-width: 100%;
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .navbar-title {
     font-size: var(--font-size-body-lg); 
   }
@@ -534,7 +534,7 @@ body {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .navbar-controls {
     gap: var(--spacing-2); 
   }
@@ -678,7 +678,7 @@ body {
   transform-origin: center center;
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .btn {
     font-size: var(--font-size-body-sm);
   }
@@ -794,7 +794,7 @@ body {
   border-color: var(--border-secondary);
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .form-element {
     font-size: var(--font-size-body-sm);
   }
@@ -845,7 +845,7 @@ body {
   font-size: var(--font-size-body-md);
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .status-message {
     font-size: var(--font-size-body-sm);
   }
@@ -874,7 +874,7 @@ textarea {
   color: var(--text-secondary);
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .toggle {
     font-size: var(--font-size-body-sm); 
   }
@@ -973,7 +973,7 @@ textarea {
   box-shadow: inset 0 0 0 2px var(--interactive-focus);
 }
 
-@media (max-width: 475px) {  
+@media (max-width: 480px) {  
   .tab-button {
     padding: var(--spacing-3) var(--spacing-2);
     font-size: var(--font-size-body-sm);
@@ -1009,8 +1009,6 @@ textarea {
   display: grid;
   gap: var(--grid-gap-sm);
   grid-template-columns: repeat(auto-fit, minmax(var(--grid-item-min-width-sm), 1fr));
-
-  margin-bottom: var(--spacing-8);
 }
 
 @media (max-width: 768px) {
@@ -1019,7 +1017,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .primitive-grid {
     grid-template-columns: 1fr;
   }
@@ -1028,6 +1026,18 @@ textarea {
 /* =============================================================================
    09 - PRIMITIVE COLOR CARDS
    ============================================================================= */
+
+.primitive-colors {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+}
+
+.color-family {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
 
 .primitive-card {
   position: relative;
@@ -1204,7 +1214,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .primitive-grid {
     grid-template-columns: 1fr;
   }
@@ -1328,6 +1338,66 @@ textarea {
   line-height: 1.4;
 }
 
+/* Color Legend for mobile/tablet */
+.color-legend {
+  display: flex; 
+  gap: var(--spacing-4);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--radius-md);
+  
+  background: var(--bg-secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 480px) {
+  .color-legend {
+    flex-direction: column;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+  }
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.legend-badge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-sm);
+  
+  font-size: var(--font-size-body-xs);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  color: white;
+}
+
+.legend-badge.badge-selected {
+  background: var(--success-primary);
+}
+
+.legend-badge.badge-functional {
+  background: var(--interactive-primary);
+}
+
+.legend-text {
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+}
+
+@media (max-width: 480px) {
+  .legend-text {
+    font-size: var(--font-size-body-xs);
+  }
+}
+
 /* =============================================================================
    10 - SEMANTIC TOKEN TABLES
    ============================================================================= */
@@ -1397,7 +1467,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .table-row {
     padding: var(--spacing-4);
   }
@@ -1410,7 +1480,7 @@ textarea {
   color: var(--text-primary);
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .token-name {
     font-size: var(--font-size-body-sm);
   }
@@ -1441,7 +1511,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .color-preview {
     font-size: var(--font-size-body-xs);
   }
@@ -1453,7 +1523,7 @@ textarea {
   color: var(--text-secondary);
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .usage-description {
     font-size: var(--font-size-body-xs);
   }
@@ -1509,7 +1579,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .config-panel {
     max-height: 90vh;
   }
@@ -1567,7 +1637,7 @@ textarea {
   color: var(--text-primary);
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .config-header h3 {
     font-size: var(--font-size-body-lg);
   }
@@ -1711,7 +1781,7 @@ textarea {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="%23999999"><path d="M2 4l4 4 4-4z"/></svg>');
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .config-select {
     font-size: var(--font-size-body-sm);
   }
@@ -1775,7 +1845,7 @@ textarea {
   color: var(--text-tertiary);
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .checkbox-label {
     font-size: var(--font-size-body-sm);
   }
@@ -1843,7 +1913,7 @@ textarea {
   background: var(--bg-tertiary);
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .config-export-btn {
     font-size: var(--font-size-body-xs);
   }
@@ -1856,7 +1926,7 @@ textarea {
   color: var(--text-tertiary);
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .config-detected-colors {
     font-size: var(--font-size-body-sm);
   }
@@ -2016,7 +2086,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .export-header .tab-button {
     padding: var(--spacing-4) var(--spacing-3);
 
@@ -2050,7 +2120,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .format-options {
     padding: var(--spacing-3) var(--spacing-4);
   }
@@ -2068,7 +2138,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .format-controls {
     gap: var(--spacing-2);
   }
@@ -2079,7 +2149,7 @@ textarea {
   gap: var(--spacing-2);
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .format-buttons {
     flex-wrap: wrap;
     gap: var(--spacing-1);
@@ -2129,7 +2199,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .format-button {
     padding: var(--spacing-2) var(--spacing-3);
 
@@ -2164,7 +2234,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .toggle-group {
     gap: var(--spacing-4);
   }
@@ -2192,7 +2262,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .code-preview-container {
     gap: var(--spacing-3);
 
@@ -2253,7 +2323,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .code-header {
     padding: var(--spacing-2) var(--spacing-3);
   }
@@ -2267,7 +2337,7 @@ textarea {
   color: var(--text-secondary);
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .code-title {
     font-size: var(--font-size-body-xs);
   }
@@ -2298,7 +2368,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .copy-button {
     padding: var(--spacing-1) var(--spacing-2);
 
@@ -2363,7 +2433,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .code-block {
     padding: var(--spacing-3);
 
@@ -2404,7 +2474,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .demo-section {
     padding: var(--spacing-4);
   }
@@ -2430,7 +2500,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .demo-grid {
     gap: var(--spacing-4);
   }
@@ -2448,7 +2518,7 @@ textarea {
   color: var(--text-primary);
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .demo-group {
     gap: var(--spacing-3);
   }
@@ -2465,7 +2535,7 @@ textarea {
   gap: var(--spacing-3);
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .demo-controls {
     gap: var(--spacing-2);
   }
@@ -2518,7 +2588,7 @@ textarea {
   color: var(--text-quaternary);
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .demo-heading {
     font-size: var(--font-size-header-xs);
   }
@@ -2551,7 +2621,7 @@ textarea {
   background-color: var(--bg-secondary);
 }
 
-@media (max-width: 475px) {  
+@media (max-width: 480px) {  
   .demo-tabs .tab-button {
     padding: var(--spacing-3) var(--spacing-2);
     font-size: var(--font-size-body-sm);
@@ -2573,7 +2643,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .demo-tabs .tab-panel {
     padding: var(--spacing-3);
     font-size: var(--font-size-body-xs);
@@ -2695,7 +2765,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .notification-base {
     top: var(--spacing-3);
 
@@ -2731,7 +2801,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .notification-center {
     right: var(--spacing-3);
     left: var(--spacing-3);
@@ -2762,7 +2832,7 @@ textarea {
   }
 }
 
-@media (max-width: 475px) {
+@media (max-width: 480px) {
   .notification-right {
     right: var(--spacing-3);
   }

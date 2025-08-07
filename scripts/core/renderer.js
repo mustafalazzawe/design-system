@@ -1,163 +1,8 @@
 import { state } from './state.js';
 import { themeManager } from './theme-manager.js';
+import { tooltipManager } from '../utils/tooltip-manager.js';
 import { ColorUtils } from '../utils/color-utils.js';
 import { DOMUtils } from '../utils/dom-utils.js';
-
-// =============================================================================
-// Tooltip Manager
-// =============================================================================
-class TooltipManager {
-  constructor() {
-    this.tooltip = null;
-    this.currentTarget = null;
-    this.isVisible = false;
-  }
-
-  // Create or get the global tooltip
-  getTooltip() {
-    if (!this.tooltip) {
-      this.tooltip = document.createElement('div');
-      this.tooltip.className = 'global-tooltip';
-      this.tooltip.innerHTML = `
-        <div class="tooltip-content">
-          <!-- Content populated dynamically -->
-        </div>
-      `;
-      document.body.appendChild(this.tooltip);
-    }
-    return this.tooltip;
-  }
-
-  // Show tooltip with custom content
-  show(content, e) {
-    const tooltip = this.getTooltip();
-    const contentEl = tooltip.querySelector('.tooltip-content');
-
-    // Handle different content types
-    if (typeof content === 'string') {
-      contentEl.innerHTML = content;
-    } else if (content.html) {
-      contentEl.innerHTML = content.html;
-    } else {
-      // Handle structured content
-      contentEl.innerHTML = this.renderContent(content);
-    }
-
-    // Ensure tooltip is visible
-    tooltip.style.display = 'block';
-    tooltip.classList.add('show');
-    this.isVisible = true;
-
-    // Position after showing to get accurate dimensions
-    setTimeout(() => {
-      this.position(e);
-    }, 0);
-  }
-
-  // Position tooltip
-  position(e) {
-    if (!this.tooltip || !this.isVisible) return;
-
-    const tooltip = this.getTooltip();
-
-    // Force a layout calculation to get accurate dimensions
-    tooltip.style.visibility = 'hidden';
-    tooltip.style.display = 'block';
-
-    const tooltipRect = tooltip.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-
-    let x = e.clientX + 15; // Offset from cursor
-    let y = e.clientY - tooltipRect.height / 2;
-
-    // Horizontal bounds checking
-    if (x + tooltipRect.width > viewportWidth - 10) {
-      x = e.clientX - tooltipRect.width - 15;
-    }
-
-    // Vertical bounds checking
-    if (y < 10) {
-      y = 10;
-    } else if (y + tooltipRect.height > viewportHeight - 10) {
-      y = viewportHeight - tooltipRect.height - 10;
-    }
-
-    // Apply position and show
-    tooltip.style.left = x + 'px';
-    tooltip.style.top = y + 'px';
-    tooltip.style.visibility = 'visible';
-  }
-
-  // Hide tooltip
-  hide() {
-    if (this.tooltip) {
-      this.tooltip.classList.remove('show');
-    }
-    this.isVisible = false;
-    this.currentTarget = null;
-  }
-
-  // Render different content types
-  renderContent(content) {
-    switch (content.type) {
-      case 'contrast':
-        return this.renderContrastContent(content);
-      case 'badge':
-        return this.renderBadgeContent(content);
-      case 'simple':
-        return `<div class="tooltip-simple">${content.text}</div>`;
-      default:
-        return content.html || '';
-    }
-  }
-
-  renderContrastContent(content) {
-    const { hex, bestFamilyMatch } = content.data;
-    return `
-      <div class="tooltip-header">Contrast Ratio</div>
-      <div class="tooltip-ratio">${bestFamilyMatch.ratio.toFixed(2)}</div>
-      <div class="tooltip-colors">
-        <div class="tooltip-color">
-          <div class="tooltip-color-swatch" style="background-color: ${hex};"></div>
-          <span>${hex.toUpperCase()}</span>
-        </div>
-        <div class="tooltip-vs">vs</div>
-        <div class="tooltip-color">
-          <div class="tooltip-color-swatch" style="background-color: ${bestFamilyMatch.hex};"></div>
-          <span>${bestFamilyMatch.hex.toUpperCase()}</span>
-        </div>
-      </div>
-      <div class="tooltip-standards">
-        <div class="tooltip-standard ${bestFamilyMatch.ratio >= 4.5 ? 'pass' : 'fail'}">
-          <span class="standard-icon">${bestFamilyMatch.ratio >= 4.5 ? '✓' : '✕'}</span>
-          AA ${bestFamilyMatch.ratio >= 4.5 ? 'Pass' : 'Fail'}
-        </div>
-        <div class="tooltip-standard ${bestFamilyMatch.ratio >= 7.0 ? 'pass' : 'fail'}">
-          <span class="standard-icon">${bestFamilyMatch.ratio >= 7.0 ? '✓' : '✕'}</span>
-          AAA ${bestFamilyMatch.ratio >= 7.0 ? 'Pass' : 'Fail'}
-        </div>
-      </div>
-    `;
-  }
-
-  renderBadgeContent(content) {
-    return `
-      <div class="tooltip-badge">
-        <div class="tooltip-badge-title">${content.data.title}</div>
-        <div class="tooltip-badge-description">${content.data.description}</div>
-      </div>
-    `;
-  }
-
-  // Cleanup
-  cleanup() {
-    if (this.tooltip && this.tooltip.parentNode) {
-      this.tooltip.parentNode.removeChild(this.tooltip);
-      this.tooltip = null;
-    }
-  }
-}
 
 // =============================================================================
 // Rendering System
@@ -166,7 +11,6 @@ class TooltipManager {
 class Renderer {
   constructor() {
     this.isRendering = false;
-    this.tooltipManager = new TooltipManager();
   }
 
   // =============================================================================
@@ -318,93 +162,89 @@ class Renderer {
     return card;
   }
 
-  attachCardEventListeners(card, hex, bestFamilyMatch) {
-    const copyBtn = card.querySelector('.card-copy-btn');
+attachCardEventListeners(card, hex, bestFamilyMatch) {
+ const copyBtn = card.querySelector('.card-copy-btn');
 
-    // Initialize cleanup array
-    card._cleanupListeners = card._cleanupListeners || [];
+ // Initialize cleanup array
+ card._cleanupListeners = card._cleanupListeners || [];
 
-    // Universal tooltip handler - need to bind 'this' context properly
-    const tooltipElements = card.querySelectorAll('[data-tooltip-type]');
+ // Always attach tooltip handlers - they'll only work if hover is available
+ const tooltipElements = card.querySelectorAll('[data-tooltip-type]');
 
-    tooltipElements.forEach(element => {
-      // Bind the tooltip manager context to ensure 'this' refers to the renderer
-      const handleMouseEnter = e => {
-        e.stopPropagation(); // Prevent event bubbling
+ tooltipElements.forEach(element => {
+   const handleMouseEnter = e => {
+     e.stopPropagation();
+     const type = element.dataset.tooltipType;
 
-        const type = element.dataset.tooltipType;
+     let content;
+     switch (type) {
+       case 'contrast':
+         content = {
+           type: 'contrast',
+           data: { hex, bestFamilyMatch },
+         };
+         break;
+       case 'badge':
+         content = {
+           type: 'badge',
+           data: {
+             title: element.dataset.tooltipTitle,
+             description: element.dataset.tooltipDescription,
+           },
+         };
+         break;
+     }
 
-        let content;
-        switch (type) {
-          case 'contrast':
-            content = {
-              type: 'contrast',
-              data: { hex, bestFamilyMatch },
-            };
-            break;
-          case 'badge':
-            content = {
-              type: 'badge',
-              data: {
-                title: element.dataset.tooltipTitle,
-                description: element.dataset.tooltipDescription,
-              },
-            };
-            break;
-        }
+     if (content) {
+       tooltipManager.show(content, e);
+     }
+   };
 
-        if (content) {
-          this.tooltipManager.show(content, e);
-        }
-      };
+   const handleMouseMove = e => {
+     e.stopPropagation();
+     tooltipManager.position(e);
+   };
 
-      const handleMouseMove = e => {
-        e.stopPropagation();
-        this.tooltipManager.position(e);
-      };
+   const handleMouseLeave = e => {
+     e.stopPropagation();
+     tooltipManager.hide();
+   };
 
-      const handleMouseLeave = e => {
-        e.stopPropagation();
-        this.tooltipManager.hide();
-      };
+   const boundEnter = handleMouseEnter.bind(this);
+   const boundMove = handleMouseMove.bind(this);
+   const boundLeave = handleMouseLeave.bind(this);
 
-      // Bind event listeners with proper context
-      const boundEnter = handleMouseEnter.bind(this);
-      const boundMove = handleMouseMove.bind(this);
-      const boundLeave = handleMouseLeave.bind(this);
+   element.addEventListener('mouseenter', boundEnter);
+   element.addEventListener('mousemove', boundMove);
+   element.addEventListener('mouseleave', boundLeave);
 
-      element.addEventListener('mouseenter', boundEnter);
-      element.addEventListener('mousemove', boundMove);
-      element.addEventListener('mouseleave', boundLeave);
+   card._cleanupListeners.push(() => {
+     element.removeEventListener('mouseenter', boundEnter);
+     element.removeEventListener('mousemove', boundMove);
+     element.removeEventListener('mouseleave', boundLeave);
+   });
+ });
 
-      // Store cleanup functions
-      card._cleanupListeners.push(() => {
-        element.removeEventListener('mouseenter', boundEnter);
-        element.removeEventListener('mousemove', boundMove);
-        element.removeEventListener('mouseleave', boundLeave);
-      });
-    });
+ // Copy button functionality
+ if (copyBtn) {
+   const handleCopyClick = e => {
+     e.stopPropagation();
+     DOMUtils.copyToClipboard(hex);
+     copyBtn.classList.add('copied');
+     copyBtn.textContent = 'Copied';
+     setTimeout(() => {
+       copyBtn.classList.remove('copied');
+       copyBtn.textContent = 'Copy';
+     }, 2000);
+   };
 
-    // Copy button functionality - ONLY on button click
-    if (copyBtn) {
-      const handleCopyClick = e => {
-        e.stopPropagation();
-        DOMUtils.copyToClipboard(hex);
-        copyBtn.classList.add('copied');
-        copyBtn.textContent = 'Copied';
-        setTimeout(() => {
-          copyBtn.classList.remove('copied');
-          copyBtn.textContent = 'Copy';
-        }, 2000);
-      };
+   copyBtn.addEventListener('click', handleCopyClick);
 
-      copyBtn.addEventListener('click', handleCopyClick);
-
-      card._cleanupListeners.push(() => {
-        copyBtn.removeEventListener('click', handleCopyClick);
-      });
-    }
-  }
+   card._cleanupListeners.push(() => {
+     copyBtn.removeEventListener('click', handleCopyClick);
+   });
+ }
+}
 
   // =============================================================================
   // PRIMITIVE GRID RENDERING
