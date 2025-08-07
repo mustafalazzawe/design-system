@@ -16,8 +16,6 @@ class EnhancedExportManager {
       textWrapEnabled: false,
     };
     this.modal = null;
-    this.copyFeedbackTimeouts = {};
-    this.originalCopyTexts = {};
     this.init();
   }
 
@@ -337,44 +335,20 @@ class EnhancedExportManager {
           return;
       }
 
-      DOMUtils.copyToClipboard(text, () => this.showCopyFeedback(format));
+      const button = document.getElementById(`${format}-copy`);
+      
+      DOMUtils.copyToClipboard(text, {
+        showNotification: false,
+        element: button,
+        feedbackText: "Copied!",
+        originalText: button?.textContent || "Copy",
+        timeout: 2000
+      });
+      
     } catch (error) {
       console.error("Export Manager: Error copying code:", error);
       DOMUtils.showFeedback("Copy failed", "error");
     }
-  }
-
-  showCopyFeedback(format) {
-    const button = document.getElementById(`${format}-copy`);
-    if (!button) return;
-
-    // Clear any existing timeout to prevent stuck state
-    if (this.copyFeedbackTimeouts[format]) {
-      clearTimeout(this.copyFeedbackTimeouts[format]);
-    }
-
-    // Store original text if we don't have it yet
-    if (!this.originalCopyTexts[format]) {
-      this.originalCopyTexts[format] = button.textContent;
-    }
-
-    const originalText = this.originalCopyTexts[format];
-
-    // Reset to original state first
-    button.classList.remove("copied");
-    button.textContent = originalText;
-    button.offsetHeight; // Force reflow
-
-    // Apply feedback state
-    button.classList.add("copied");
-    button.textContent = "Copied!";
-
-    // Set new timeout
-    this.copyFeedbackTimeouts[format] = setTimeout(() => {
-      button.textContent = originalText;
-      button.classList.remove("copied");
-      this.copyFeedbackTimeouts[format] = null;
-    }, 2000);
   }
 
   // =============================================================================
@@ -517,12 +491,6 @@ class EnhancedExportManager {
 
   // Cleanup method
   cleanup() {
-    // Clear any pending timeouts
-    Object.values(this.copyFeedbackTimeouts).forEach((timeout) => {
-      if (timeout) clearTimeout(timeout);
-    });
-    this.copyFeedbackTimeouts = {};
-
     // Restore body scroll if modal was open
     if (this.modal?.classList.contains("show")) {
       document.body.style.overflow = "";

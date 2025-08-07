@@ -162,89 +162,89 @@ class Renderer {
     return card;
   }
 
-attachCardEventListeners(card, hex, bestFamilyMatch) {
- const copyBtn = card.querySelector('.card-copy-btn');
+  attachCardEventListeners(card, hex, bestFamilyMatch) {
+    const copyBtn = card.querySelector('.card-copy-btn');
 
- // Initialize cleanup array
- card._cleanupListeners = card._cleanupListeners || [];
+    // Initialize cleanup array
+    card._cleanupListeners = card._cleanupListeners || [];
 
- // Always attach tooltip handlers - they'll only work if hover is available
- const tooltipElements = card.querySelectorAll('[data-tooltip-type]');
+    // Tooltip handlers (unchanged)
+    const tooltipElements = card.querySelectorAll('[data-tooltip-type]');
 
- tooltipElements.forEach(element => {
-   const handleMouseEnter = e => {
-     e.stopPropagation();
-     const type = element.dataset.tooltipType;
+    tooltipElements.forEach(element => {
+      const handleMouseEnter = e => {
+        e.stopPropagation();
+        const type = element.dataset.tooltipType;
 
-     let content;
-     switch (type) {
-       case 'contrast':
-         content = {
-           type: 'contrast',
-           data: { hex, bestFamilyMatch },
-         };
-         break;
-       case 'badge':
-         content = {
-           type: 'badge',
-           data: {
-             title: element.dataset.tooltipTitle,
-             description: element.dataset.tooltipDescription,
-           },
-         };
-         break;
-     }
+        let content;
+        switch (type) {
+          case 'contrast':
+            content = {
+              type: 'contrast',
+              data: { hex, bestFamilyMatch },
+            };
+            break;
+          case 'badge':
+            content = {
+              type: 'badge',
+              data: {
+                title: element.dataset.tooltipTitle,
+                description: element.dataset.tooltipDescription,
+              },
+            };
+            break;
+        }
 
-     if (content) {
-       tooltipManager.show(content, e);
-     }
-   };
+        if (content) {
+          tooltipManager.show(content, e);
+        }
+      };
 
-   const handleMouseMove = e => {
-     e.stopPropagation();
-     tooltipManager.position(e);
-   };
+      const handleMouseMove = e => {
+        e.stopPropagation();
+        tooltipManager.position(e);
+      };
 
-   const handleMouseLeave = e => {
-     e.stopPropagation();
-     tooltipManager.hide();
-   };
+      const handleMouseLeave = e => {
+        e.stopPropagation();
+        tooltipManager.hide();
+      };
 
-   const boundEnter = handleMouseEnter.bind(this);
-   const boundMove = handleMouseMove.bind(this);
-   const boundLeave = handleMouseLeave.bind(this);
+      const boundEnter = handleMouseEnter.bind(this);
+      const boundMove = handleMouseMove.bind(this);
+      const boundLeave = handleMouseLeave.bind(this);
 
-   element.addEventListener('mouseenter', boundEnter);
-   element.addEventListener('mousemove', boundMove);
-   element.addEventListener('mouseleave', boundLeave);
+      element.addEventListener('mouseenter', boundEnter);
+      element.addEventListener('mousemove', boundMove);
+      element.addEventListener('mouseleave', boundLeave);
 
-   card._cleanupListeners.push(() => {
-     element.removeEventListener('mouseenter', boundEnter);
-     element.removeEventListener('mousemove', boundMove);
-     element.removeEventListener('mouseleave', boundLeave);
-   });
- });
+      card._cleanupListeners.push(() => {
+        element.removeEventListener('mouseenter', boundEnter);
+        element.removeEventListener('mousemove', boundMove);
+        element.removeEventListener('mouseleave', boundLeave);
+      });
+    });
 
- // Copy button functionality
- if (copyBtn) {
-   const handleCopyClick = e => {
-     e.stopPropagation();
-     DOMUtils.copyToClipboard(hex);
-     copyBtn.classList.add('copied');
-     copyBtn.textContent = 'Copied';
-     setTimeout(() => {
-       copyBtn.classList.remove('copied');
-       copyBtn.textContent = 'Copy';
-     }, 2000);
-   };
+    // Updated copy button functionality
+    if (copyBtn) {
+      const handleCopyClick = e => {
+        e.stopPropagation();
+        DOMUtils.copyToClipboard(hex, {
+          showNotification: false,
+          element: copyBtn,
+          feedbackText: 'Copied',
+          originalText: 'Copy',
+          timeout: 2000,
+        });
+      };
 
-   copyBtn.addEventListener('click', handleCopyClick);
+      copyBtn.addEventListener('click', handleCopyClick);
 
-   card._cleanupListeners.push(() => {
-     copyBtn.removeEventListener('click', handleCopyClick);
-   });
- }
-}
+      card._cleanupListeners.push(() => {
+        copyBtn.removeEventListener('click', handleCopyClick);
+      });
+    }
+  }
 
   // =============================================================================
   // PRIMITIVE GRID RENDERING
@@ -342,9 +342,13 @@ attachCardEventListeners(card, hex, bestFamilyMatch) {
   }
 
   attachSemanticPreviewListener(preview, hex) {
-    // Remove existing listener to avoid duplicates
     preview.onclick = null;
-    preview.onclick = () => DOMUtils.copyToClipboard(hex);
+    preview.onclick = () => {
+      DOMUtils.copyToClipboard(hex, {
+        showNotification: true,
+        feedbackText: 'Copied!',
+      });
+    };
   }
 
   updateStatusDemos(theme) {
