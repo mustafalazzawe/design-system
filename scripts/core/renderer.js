@@ -1,163 +1,8 @@
 import { state } from './state.js';
 import { themeManager } from './theme-manager.js';
+import { tooltipManager } from '../utils/tooltip-manager.js';
 import { ColorUtils } from '../utils/color-utils.js';
 import { DOMUtils } from '../utils/dom-utils.js';
-
-// =============================================================================
-// Tooltip Manager
-// =============================================================================
-class TooltipManager {
-  constructor() {
-    this.tooltip = null;
-    this.currentTarget = null;
-    this.isVisible = false;
-  }
-
-  // Create or get the global tooltip
-  getTooltip() {
-    if (!this.tooltip) {
-      this.tooltip = document.createElement('div');
-      this.tooltip.className = 'global-tooltip';
-      this.tooltip.innerHTML = `
-        <div class="tooltip-content">
-          <!-- Content populated dynamically -->
-        </div>
-      `;
-      document.body.appendChild(this.tooltip);
-    }
-    return this.tooltip;
-  }
-
-  // Show tooltip with custom content
-  show(content, e) {
-    const tooltip = this.getTooltip();
-    const contentEl = tooltip.querySelector('.tooltip-content');
-
-    // Handle different content types
-    if (typeof content === 'string') {
-      contentEl.innerHTML = content;
-    } else if (content.html) {
-      contentEl.innerHTML = content.html;
-    } else {
-      // Handle structured content
-      contentEl.innerHTML = this.renderContent(content);
-    }
-
-    // Ensure tooltip is visible
-    tooltip.style.display = 'block';
-    tooltip.classList.add('show');
-    this.isVisible = true;
-
-    // Position after showing to get accurate dimensions
-    setTimeout(() => {
-      this.position(e);
-    }, 0);
-  }
-
-  // Position tooltip
-  position(e) {
-    if (!this.tooltip || !this.isVisible) return;
-
-    const tooltip = this.getTooltip();
-
-    // Force a layout calculation to get accurate dimensions
-    tooltip.style.visibility = 'hidden';
-    tooltip.style.display = 'block';
-
-    const tooltipRect = tooltip.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-
-    let x = e.clientX + 15; // Offset from cursor
-    let y = e.clientY - tooltipRect.height / 2;
-
-    // Horizontal bounds checking
-    if (x + tooltipRect.width > viewportWidth - 10) {
-      x = e.clientX - tooltipRect.width - 15;
-    }
-
-    // Vertical bounds checking
-    if (y < 10) {
-      y = 10;
-    } else if (y + tooltipRect.height > viewportHeight - 10) {
-      y = viewportHeight - tooltipRect.height - 10;
-    }
-
-    // Apply position and show
-    tooltip.style.left = x + 'px';
-    tooltip.style.top = y + 'px';
-    tooltip.style.visibility = 'visible';
-  }
-
-  // Hide tooltip
-  hide() {
-    if (this.tooltip) {
-      this.tooltip.classList.remove('show');
-    }
-    this.isVisible = false;
-    this.currentTarget = null;
-  }
-
-  // Render different content types
-  renderContent(content) {
-    switch (content.type) {
-      case 'contrast':
-        return this.renderContrastContent(content);
-      case 'badge':
-        return this.renderBadgeContent(content);
-      case 'simple':
-        return `<div class="tooltip-simple">${content.text}</div>`;
-      default:
-        return content.html || '';
-    }
-  }
-
-  renderContrastContent(content) {
-    const { hex, bestFamilyMatch } = content.data;
-    return `
-      <div class="tooltip-header">Contrast Ratio</div>
-      <div class="tooltip-ratio">${bestFamilyMatch.ratio.toFixed(2)}</div>
-      <div class="tooltip-colors">
-        <div class="tooltip-color">
-          <div class="tooltip-color-swatch" style="background-color: ${hex};"></div>
-          <span>${hex.toUpperCase()}</span>
-        </div>
-        <div class="tooltip-vs">vs</div>
-        <div class="tooltip-color">
-          <div class="tooltip-color-swatch" style="background-color: ${bestFamilyMatch.hex};"></div>
-          <span>${bestFamilyMatch.hex.toUpperCase()}</span>
-        </div>
-      </div>
-      <div class="tooltip-standards">
-        <div class="tooltip-standard ${bestFamilyMatch.ratio >= 4.5 ? 'pass' : 'fail'}">
-          <span class="standard-icon">${bestFamilyMatch.ratio >= 4.5 ? '✓' : '✕'}</span>
-          AA ${bestFamilyMatch.ratio >= 4.5 ? 'Pass' : 'Fail'}
-        </div>
-        <div class="tooltip-standard ${bestFamilyMatch.ratio >= 7.0 ? 'pass' : 'fail'}">
-          <span class="standard-icon">${bestFamilyMatch.ratio >= 7.0 ? '✓' : '✕'}</span>
-          AAA ${bestFamilyMatch.ratio >= 7.0 ? 'Pass' : 'Fail'}
-        </div>
-      </div>
-    `;
-  }
-
-  renderBadgeContent(content) {
-    return `
-      <div class="tooltip-badge">
-        <div class="tooltip-badge-title">${content.data.title}</div>
-        <div class="tooltip-badge-description">${content.data.description}</div>
-      </div>
-    `;
-  }
-
-  // Cleanup
-  cleanup() {
-    if (this.tooltip && this.tooltip.parentNode) {
-      this.tooltip.parentNode.removeChild(this.tooltip);
-      this.tooltip = null;
-    }
-  }
-}
 
 // =============================================================================
 // Rendering System
@@ -166,7 +11,6 @@ class TooltipManager {
 class Renderer {
   constructor() {
     this.isRendering = false;
-    this.tooltipManager = new TooltipManager();
   }
 
   // =============================================================================
@@ -229,19 +73,55 @@ class Renderer {
     const isUserSelectedColor = state.isUserSelectedColor(hex, colorFamily);
     const isFunctionalColor = state.isFunctionalColor(hex, colorFamily);
 
-    // Find best family contrast match for display
     let bestFamilyMatch = null;
-    for (const [shade, info] of Object.entries(contrast.family)) {
-      if (info.aa && (!bestFamilyMatch || info.ratio > bestFamilyMatch.ratio)) {
-        bestFamilyMatch = {
-          shade: `${colorFamily}-${shade}`,
-          ratio: info.ratio,
-          hex: info.hex,
-        };
+
+    if (colorFamily === state.getCurrentNeutralName()) {
+      // For neutral colors: test contrast within neutral family
+      for (const [shade, info] of Object.entries(contrast.family)) {
+        if (
+          info.aa &&
+          (!bestFamilyMatch || info.ratio > bestFamilyMatch.ratio)
+        ) {
+          bestFamilyMatch = {
+            shade: `${colorFamily}-${shade}`,
+            ratio: info.ratio,
+            hex: info.hex,
+          };
+        }
+      }
+    } else {
+      // For primary colors: test contrast against neutral colors for text readability
+      const neutralColors = state.neutralColors;
+      const primaryRgb = ColorUtils.hexToRgb(hex);
+
+      if (primaryRgb && neutralColors) {
+        const primaryRgbArray = [primaryRgb.r, primaryRgb.g, primaryRgb.b];
+
+        Object.entries(neutralColors).forEach(([weight, colorData]) => {
+          const neutralRgb = ColorUtils.hexToRgb(colorData.hex);
+          if (neutralRgb) {
+            const neutralRgbArray = [neutralRgb.r, neutralRgb.g, neutralRgb.b];
+            const contrastRatio = ColorUtils.getContrastRatio(
+              primaryRgbArray,
+              neutralRgbArray
+            );
+
+            if (
+              contrastRatio >= 4.5 &&
+              (!bestFamilyMatch || contrastRatio > bestFamilyMatch.ratio)
+            ) {
+              bestFamilyMatch = {
+                shade: `${state.getCurrentNeutralName()}-${weight}`,
+                ratio: contrastRatio,
+                hex: colorData.hex,
+              };
+            }
+          }
+        });
       }
     }
 
-    // Fallback: if no family match found, use white/black contrast
+    // Fallback: if no good match found, use white/black contrast
     if (!bestFamilyMatch) {
       const whiteContrast = contrast.white || 1;
       const blackContrast = contrast.black || 1;
@@ -284,34 +164,34 @@ class Renderer {
     const badgesHtml =
       isUserSelectedColor || isFunctionalColor
         ? `
-    <div class="card-badges">
-      ${isUserSelectedColor ? '<div class="card-indicator-badge badge-selected" data-tooltip-type="badge" data-tooltip-title="Selected" data-tooltip-description="This color was chosen as the base color for this family">S</div>' : ''}
-      ${isFunctionalColor ? '<div class="card-indicator-badge badge-functional" data-tooltip-type="badge" data-tooltip-title="Functional" data-tooltip-description="This color is used in interactive components like buttons">F</div>' : ''}
-    </div>
-  `
+  <div class="card-badges">
+    ${isUserSelectedColor ? '<div class="card-indicator-badge badge-selected" data-tooltip-type="badge" data-tooltip-title="Selected" data-tooltip-description="This color was chosen as the base color for this family">S</div>' : ''}
+    ${isFunctionalColor ? '<div class="card-indicator-badge badge-functional" data-tooltip-type="badge" data-tooltip-title="Functional" data-tooltip-description="This color is used in interactive components like buttons">F</div>' : ''}
+  </div>
+`
         : '';
 
     card.innerHTML = `
-    <div class="card-color" style="background-color: ${hex};">
-      ${badgesHtml}
-      <button class="card-copy-btn card-action-btn interactive-base">
-        Copy
-      </button>
-      <div class="contrast-display" style="color: ${contrastTextColor};" 
-           data-tooltip-type="contrast"
-           data-hex="${hex}"
-           data-contrast-hex="${bestFamilyMatch.hex}"
-           data-contrast-ratio="${bestFamilyMatch.ratio}">
-        ${contrastLabel}
-      </div>
+  <div class="card-color" style="background-color: ${hex};">
+    ${badgesHtml}
+    <button class="card-copy-btn card-action-btn interactive-base">
+      Copy
+    </button>
+    <div class="contrast-display" style="color: ${contrastTextColor};" 
+         data-tooltip-type="contrast"
+         data-hex="${hex}"
+         data-contrast-hex="${bestFamilyMatch.hex}"
+         data-contrast-ratio="${bestFamilyMatch.ratio}">
+      ${contrastLabel}
     </div>
-    <div class="card-body">
-      <div class="card-info">
-        <div class="card-name">${name}</div>
-        <div class="card-hex">${hex.toUpperCase()}</div>
-      </div>
+  </div>
+  <div class="card-body">
+    <div class="card-info">
+      <div class="card-name">${name}</div>
+      <div class="card-hex">${hex.toUpperCase()}</div>
     </div>
-  `;
+  </div>
+`;
 
     // Add event listeners
     this.attachCardEventListeners(card, hex, bestFamilyMatch);
@@ -324,14 +204,12 @@ class Renderer {
     // Initialize cleanup array
     card._cleanupListeners = card._cleanupListeners || [];
 
-    // Universal tooltip handler - need to bind 'this' context properly
+    // Tooltip handlers (unchanged)
     const tooltipElements = card.querySelectorAll('[data-tooltip-type]');
 
     tooltipElements.forEach(element => {
-      // Bind the tooltip manager context to ensure 'this' refers to the renderer
       const handleMouseEnter = e => {
-        e.stopPropagation(); // Prevent event bubbling
-
+        e.stopPropagation();
         const type = element.dataset.tooltipType;
 
         let content;
@@ -354,21 +232,20 @@ class Renderer {
         }
 
         if (content) {
-          this.tooltipManager.show(content, e);
+          tooltipManager.show(content, e);
         }
       };
 
       const handleMouseMove = e => {
         e.stopPropagation();
-        this.tooltipManager.position(e);
+        tooltipManager.position(e);
       };
 
       const handleMouseLeave = e => {
         e.stopPropagation();
-        this.tooltipManager.hide();
+        tooltipManager.hide();
       };
 
-      // Bind event listeners with proper context
       const boundEnter = handleMouseEnter.bind(this);
       const boundMove = handleMouseMove.bind(this);
       const boundLeave = handleMouseLeave.bind(this);
@@ -377,7 +254,6 @@ class Renderer {
       element.addEventListener('mousemove', boundMove);
       element.addEventListener('mouseleave', boundLeave);
 
-      // Store cleanup functions
       card._cleanupListeners.push(() => {
         element.removeEventListener('mouseenter', boundEnter);
         element.removeEventListener('mousemove', boundMove);
@@ -385,17 +261,17 @@ class Renderer {
       });
     });
 
-    // Copy button functionality - ONLY on button click
+    // Updated copy button functionality
     if (copyBtn) {
       const handleCopyClick = e => {
         e.stopPropagation();
-        DOMUtils.copyToClipboard(hex);
-        copyBtn.classList.add('copied');
-        copyBtn.textContent = 'Copied';
-        setTimeout(() => {
-          copyBtn.classList.remove('copied');
-          copyBtn.textContent = 'Copy';
-        }, 2000);
+        DOMUtils.copyToClipboard(hex, {
+          showNotification: false,
+          element: copyBtn,
+          feedbackText: 'Copied',
+          originalText: 'Copy',
+          timeout: 2000,
+        });
       };
 
       copyBtn.addEventListener('click', handleCopyClick);
@@ -502,9 +378,13 @@ class Renderer {
   }
 
   attachSemanticPreviewListener(preview, hex) {
-    // Remove existing listener to avoid duplicates
     preview.onclick = null;
-    preview.onclick = () => DOMUtils.copyToClipboard(hex);
+    preview.onclick = () => {
+      DOMUtils.copyToClipboard(hex, {
+        showNotification: true,
+        feedbackText: 'Copied!',
+      });
+    };
   }
 
   updateStatusDemos(theme) {

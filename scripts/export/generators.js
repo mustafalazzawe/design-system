@@ -15,93 +15,94 @@ class CodeGenerators {
     };
   }
 
-  // =============================================================================
-  // CSS GENERATOR
-  // =============================================================================
+// =============================================================================
+// CSS GENERATOR
+// =============================================================================
 
-  generateCSS(options = {}) {
-    const {
-      format = "hex",
-      includeMedia = false,
-      includeThemes = true,
-    } = options;
+generateCSS(options = {}) {
+  const {
+    format = "hex",
+    includeMedia = false,
+    includeThemes = true,
+  } = options;
 
-    if (!state.currentColorSystem) {
-      console.warn(
-        "Code Generators: No color system available for CSS generation"
-      );
-      return "";
-    }
-
-    const { neutralColors, primaryColors, semanticTokens } = state;
-    const neutralName = state.currentColorSystem.meta.neutralName;
-    const primaryName = state.currentColorSystem.meta.primaryName;
-
-    const template = new CodeTemplate();
-
-    // Build the root block content
-    const rootContent = [];
-
-    // Add neutral colors
-    Object.entries(neutralColors).forEach(([weight, colorData]) => {
-      rootContent.push(
-        `--${neutralName}-${weight}: ${this.formatColor(
-          colorData.hex,
-          format
-        )};`
-      );
-    });
-
-    rootContent.push("");
-
-    // Add primary colors
-    Object.entries(primaryColors).forEach(([weight, colorData]) => {
-      rootContent.push(
-        `--${primaryName}-${weight}: ${this.formatColor(
-          colorData.hex,
-          format
-        )};`
-      );
-    });
-
-    if (includeThemes) {
-      rootContent.push("");
-      rootContent.push("/* Semantic tokens */");
-      Object.entries(semanticTokens).forEach(([tokenName, token]) => {
-        rootContent.push(
-          `--${tokenName}: ${this.formatColor(token.light.hex, format)};`
-        );
-      });
-    }
-
-    // Determine the opener and closer based on @media setting
-    const opener = includeMedia
-      ? "@media (prefers-color-scheme: light) {\n  :root {"
-      : ":root {";
-
-    const closer = includeMedia ? "  }\n}" : "}";
-
-    template.addBlock(opener, rootContent, closer);
-
-    // Add dark theme if themes are included
-    if (includeThemes) {
-      const darkOpener = includeMedia
-        ? "@media (prefers-color-scheme: dark) {\n  :root {"
-        : '[data-theme="dark"] {';
-
-      const darkContent = ["/* Dark theme overrides */"];
-      Object.entries(semanticTokens).forEach(([tokenName, token]) => {
-        darkContent.push(
-          `--${tokenName}: ${this.formatColor(token.dark.hex, format)};`
-        );
-      });
-
-      const darkCloser = includeMedia ? "  }\n}" : "}";
-      template.addBlock(darkOpener, darkContent, darkCloser);
-    }
-
-    return template.render();
+  if (!state.currentColorSystem) {
+    console.warn(
+      "Code Generators: No color system available for CSS generation"
+    );
+    return "";
   }
+
+  const { neutralColors, primaryColors, semanticTokens } = state;
+  const neutralName = state.currentColorSystem.meta.neutralName;
+  const primaryName = state.currentColorSystem.meta.primaryName;
+
+  const template = new CodeTemplate();
+
+  // Build the root block content
+  const rootContent = [];
+
+  // Add neutral colors
+  Object.entries(neutralColors).forEach(([weight, colorData]) => {
+    rootContent.push(
+      `--${neutralName}-${weight}: ${this.formatColor(
+        colorData.hex,
+        format
+      )};`
+    );
+  });
+
+  rootContent.push("");
+
+  // Add primary colors
+  Object.entries(primaryColors).forEach(([weight, colorData]) => {
+    rootContent.push(
+      `--${primaryName}-${weight}: ${this.formatColor(
+        colorData.hex,
+        format
+      )};`
+    );
+  });
+
+  // Always include semantic tokens, but handle themes differently
+  rootContent.push("");
+  rootContent.push("/* Semantic tokens */");
+  Object.entries(semanticTokens).forEach(([tokenName, token]) => {
+    // When themes are disabled, just use light theme values
+    const colorValue = includeThemes ? token.light.hex : token.light.hex;
+    rootContent.push(
+      `--${tokenName}: ${this.formatColor(colorValue, format)};`
+    );
+  });
+
+  // Determine the opener and closer based on @media setting
+  const opener = includeMedia && includeThemes
+    ? "@media (prefers-color-scheme: light) {\n  :root {"
+    : ":root {";
+
+  const closer = includeMedia && includeThemes ? "  }\n}" : "}";
+
+  template.addBlock(opener, rootContent, closer);
+
+  // Add dark theme ONLY if themes are included
+  if (includeThemes) {
+    const darkOpener = includeMedia
+      ? "@media (prefers-color-scheme: dark) {\n  :root {"
+      : '[data-theme="dark"] {';
+
+    const darkContent = ["/* Dark theme overrides */"];
+    Object.entries(semanticTokens).forEach(([tokenName, token]) => {
+      darkContent.push(
+        `--${tokenName}: ${this.formatColor(token.dark.hex, format)};`
+      );
+    });
+
+    const darkCloser = includeMedia ? "  }\n}" : "}";
+    template.addBlock(darkOpener, darkContent, darkCloser);
+  }
+
+  return template.render();
+}
 
   // =============================================================================
   // TAILWIND CONFIG GENERATOR
@@ -208,62 +209,72 @@ class CodeGenerators {
     return template.render();
   }
 
-  // =============================================================================
-  // JSON GENERATOR
-  // =============================================================================
+// =============================================================================
+// JSON GENERATOR
+// =============================================================================
 
-  generateJSON(options = {}) {
-    const { format = "hex", includeThemes = true } = options;
+generateJSON(options = {}) {
+  const { format = "hex", includeThemes = true } = options;
 
-    if (!state.currentColorSystem) {
-      console.warn(
-        "Code Generators: No color system available for JSON generation"
-      );
-      return "{}";
-    }
-
-    const { neutralColors, primaryColors, semanticTokens } = state;
-    const neutralName = state.currentColorSystem.meta.neutralName;
-    const primaryName = state.currentColorSystem.meta.primaryName;
-
-    const data = { colors: {} };
-
-    // Add neutral colors
-    data.colors[neutralName] = {};
-    Object.entries(neutralColors).forEach(([weight, colorData]) => {
-      data.colors[neutralName][weight] = this.formatColor(
-        colorData.hex,
-        format
-      );
-    });
-
-    // Add primary colors
-    data.colors[primaryName] = {};
-    Object.entries(primaryColors).forEach(([weight, colorData]) => {
-      data.colors[primaryName][weight] = this.formatColor(
-        colorData.hex,
-        format
-      );
-    });
-
-    // Add semantic tokens if requested
-    if (includeThemes && semanticTokens) {
-      data.semanticTokens = { light: {}, dark: {} };
-
-      Object.entries(semanticTokens).forEach(([tokenName, token]) => {
-        data.semanticTokens.light[tokenName] = this.formatColor(
-          token.light.hex,
-          format
-        );
-        data.semanticTokens.dark[tokenName] = this.formatColor(
-          token.dark.hex,
-          format
-        );
-      });
-    }
-
-    return JSON.stringify(data, null, 2);
+  if (!state.currentColorSystem) {
+    console.warn(
+      "Code Generators: No color system available for JSON generation"
+    );
+    return "{}";
   }
+
+  const { neutralColors, primaryColors, semanticTokens } = state;
+  const neutralName = state.currentColorSystem.meta.neutralName;
+  const primaryName = state.currentColorSystem.meta.primaryName;
+
+  const data = { colors: {} };
+
+  // Add neutral colors
+  data.colors[neutralName] = {};
+  Object.entries(neutralColors).forEach(([weight, colorData]) => {
+    data.colors[neutralName][weight] = this.formatColor(
+      colorData.hex,
+      format
+    );
+  });
+
+  // Add primary colors
+  data.colors[primaryName] = {};
+  Object.entries(primaryColors).forEach(([weight, colorData]) => {
+    data.colors[primaryName][weight] = this.formatColor(
+      colorData.hex,
+      format
+    );
+  });
+
+  // Always add semantic tokens
+  if (includeThemes) {
+    // Include both light and dark themes
+    data.semanticTokens = { light: {}, dark: {} };
+
+    Object.entries(semanticTokens).forEach(([tokenName, token]) => {
+      data.semanticTokens.light[tokenName] = this.formatColor(
+        token.light.hex,
+        format
+      );
+      data.semanticTokens.dark[tokenName] = this.formatColor(
+        token.dark.hex,
+        format
+      );
+    });
+  } else {
+    // Include semantic tokens but without theme separation (use light values)
+    data.semanticTokens = {};
+    Object.entries(semanticTokens).forEach(([tokenName, token]) => {
+      data.semanticTokens[tokenName] = this.formatColor(
+        token.light.hex,
+        format
+      );
+    });
+  }
+
+  return JSON.stringify(data, null, 2);
+}
 
   // =============================================================================
   // TYPESCRIPT DECLARATIONS GENERATOR 
