@@ -73,19 +73,55 @@ class Renderer {
     const isUserSelectedColor = state.isUserSelectedColor(hex, colorFamily);
     const isFunctionalColor = state.isFunctionalColor(hex, colorFamily);
 
-    // Find best family contrast match for display
     let bestFamilyMatch = null;
-    for (const [shade, info] of Object.entries(contrast.family)) {
-      if (info.aa && (!bestFamilyMatch || info.ratio > bestFamilyMatch.ratio)) {
-        bestFamilyMatch = {
-          shade: `${colorFamily}-${shade}`,
-          ratio: info.ratio,
-          hex: info.hex,
-        };
+
+    if (colorFamily === state.getCurrentNeutralName()) {
+      // For neutral colors: test contrast within neutral family
+      for (const [shade, info] of Object.entries(contrast.family)) {
+        if (
+          info.aa &&
+          (!bestFamilyMatch || info.ratio > bestFamilyMatch.ratio)
+        ) {
+          bestFamilyMatch = {
+            shade: `${colorFamily}-${shade}`,
+            ratio: info.ratio,
+            hex: info.hex,
+          };
+        }
+      }
+    } else {
+      // For primary colors: test contrast against neutral colors for text readability
+      const neutralColors = state.neutralColors;
+      const primaryRgb = ColorUtils.hexToRgb(hex);
+
+      if (primaryRgb && neutralColors) {
+        const primaryRgbArray = [primaryRgb.r, primaryRgb.g, primaryRgb.b];
+
+        Object.entries(neutralColors).forEach(([weight, colorData]) => {
+          const neutralRgb = ColorUtils.hexToRgb(colorData.hex);
+          if (neutralRgb) {
+            const neutralRgbArray = [neutralRgb.r, neutralRgb.g, neutralRgb.b];
+            const contrastRatio = ColorUtils.getContrastRatio(
+              primaryRgbArray,
+              neutralRgbArray
+            );
+
+            if (
+              contrastRatio >= 4.5 &&
+              (!bestFamilyMatch || contrastRatio > bestFamilyMatch.ratio)
+            ) {
+              bestFamilyMatch = {
+                shade: `${state.getCurrentNeutralName()}-${weight}`,
+                ratio: contrastRatio,
+                hex: colorData.hex,
+              };
+            }
+          }
+        });
       }
     }
 
-    // Fallback: if no family match found, use white/black contrast
+    // Fallback: if no good match found, use white/black contrast
     if (!bestFamilyMatch) {
       const whiteContrast = contrast.white || 1;
       const blackContrast = contrast.black || 1;
@@ -128,34 +164,34 @@ class Renderer {
     const badgesHtml =
       isUserSelectedColor || isFunctionalColor
         ? `
-    <div class="card-badges">
-      ${isUserSelectedColor ? '<div class="card-indicator-badge badge-selected" data-tooltip-type="badge" data-tooltip-title="Selected" data-tooltip-description="This color was chosen as the base color for this family">S</div>' : ''}
-      ${isFunctionalColor ? '<div class="card-indicator-badge badge-functional" data-tooltip-type="badge" data-tooltip-title="Functional" data-tooltip-description="This color is used in interactive components like buttons">F</div>' : ''}
-    </div>
-  `
+  <div class="card-badges">
+    ${isUserSelectedColor ? '<div class="card-indicator-badge badge-selected" data-tooltip-type="badge" data-tooltip-title="Selected" data-tooltip-description="This color was chosen as the base color for this family">S</div>' : ''}
+    ${isFunctionalColor ? '<div class="card-indicator-badge badge-functional" data-tooltip-type="badge" data-tooltip-title="Functional" data-tooltip-description="This color is used in interactive components like buttons">F</div>' : ''}
+  </div>
+`
         : '';
 
     card.innerHTML = `
-    <div class="card-color" style="background-color: ${hex};">
-      ${badgesHtml}
-      <button class="card-copy-btn card-action-btn interactive-base">
-        Copy
-      </button>
-      <div class="contrast-display" style="color: ${contrastTextColor};" 
-           data-tooltip-type="contrast"
-           data-hex="${hex}"
-           data-contrast-hex="${bestFamilyMatch.hex}"
-           data-contrast-ratio="${bestFamilyMatch.ratio}">
-        ${contrastLabel}
-      </div>
+  <div class="card-color" style="background-color: ${hex};">
+    ${badgesHtml}
+    <button class="card-copy-btn card-action-btn interactive-base">
+      Copy
+    </button>
+    <div class="contrast-display" style="color: ${contrastTextColor};" 
+         data-tooltip-type="contrast"
+         data-hex="${hex}"
+         data-contrast-hex="${bestFamilyMatch.hex}"
+         data-contrast-ratio="${bestFamilyMatch.ratio}">
+      ${contrastLabel}
     </div>
-    <div class="card-body">
-      <div class="card-info">
-        <div class="card-name">${name}</div>
-        <div class="card-hex">${hex.toUpperCase()}</div>
-      </div>
+  </div>
+  <div class="card-body">
+    <div class="card-info">
+      <div class="card-name">${name}</div>
+      <div class="card-hex">${hex.toUpperCase()}</div>
     </div>
-  `;
+  </div>
+`;
 
     // Add event listeners
     this.attachCardEventListeners(card, hex, bestFamilyMatch);
