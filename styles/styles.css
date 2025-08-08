@@ -1177,7 +1177,7 @@ textarea {
   
   font-size: var(--font-size-body-xs);
   font-weight: var(--font-weight-regular);
-  line-height: 1;
+  line-height: var(--line-height-body-xs);
   color: var(--text-light);
   
   cursor: help;
@@ -1214,7 +1214,7 @@ textarea {
   
   font-size: var(--font-size-body-xs);
   font-weight: var(--font-weight-regular);
-  line-height: 1;
+  line-height: var(--line-height-body-xs);;
   color: var(--text-light);
   
   background: var(--bg-modal-overlay);
@@ -1243,7 +1243,7 @@ textarea {
   
   font-size: var(--font-size-body-sm);
   font-weight: var(--font-weight-medium);
-  line-height: 1;
+  line-height: var(--line-height-body-sm);
   text-align: center;
   cursor: help;
   
@@ -1421,7 +1421,7 @@ textarea {
 .tooltip-badge-description {
   font-size: var(--font-size-body-xs);
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: var(--line-height-body-xs);
 }
 
 /* Color Legend for mobile/tablet */
@@ -1460,8 +1460,8 @@ textarea {
   
   font-size: var(--font-size-body-xs);
   font-weight: var(--font-weight-regular);
-  line-height: 1;
-  color: white;
+  line-height: var(--line-height-body-xs);
+  color: var(--text-light);
 }
 
 .legend-badge.badge-selected {
@@ -2417,16 +2417,10 @@ textarea {
 
 .code-title {
   font-family: var(--font-family-mono);
-  font-size: var(--font-size-body-sm);
+  font-size: var(--font-size-body-xs);
   font-weight: var(--font-weight-regular);
-  line-height: var(--line-height-body-sm);
+  line-height: var(--line-height-body-xs);
   color: var(--text-secondary);
-}
-
-@media (max-width: 480px) {
-  .code-title {
-    font-size: var(--font-size-body-xs);
-  }
 }
 
 .copy-button {
@@ -2498,9 +2492,9 @@ textarea {
   padding: var(--spacing-6);
 
   font-family: var(--font-family-mono);
-  font-size: var(--font-size-body-md);
+  font-size: var(--font-size-body-sm);
   font-weight: var(--font-weight-regular);
-  line-height: var(--line-height-body-md);
+  line-height: var(--line-height-body-sm);
   white-space: pre-wrap;
   word-break: normal;
   color: var(--text-tertiary);
@@ -2513,9 +2507,6 @@ textarea {
 @media (max-width: 768px) {
   .code-block {
     padding: var(--spacing-4);
-
-    font-size: var(--font-size-body-sm);
-    line-height: var(--line-height-body-sm);
   }
 }
 
@@ -2524,6 +2515,7 @@ textarea {
     padding: var(--spacing-3);
 
     font-size: var(--font-size-body-xs);
+    line-height: var(--line-height-body-xs);
   }
 }
 
