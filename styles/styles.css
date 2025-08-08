@@ -1137,7 +1137,7 @@ textarea {
   box-shadow: var(--shadow-sm);
 
   overflow: hidden;
-  
+
   transition:
     transform var(--transition-fast),
     box-shadow var(--transition-fast);
@@ -1220,7 +1220,7 @@ textarea {
   background: var(--bg-modal-overlay);
   box-shadow: var(--shadow-xs);
   opacity: 0;
-  
+
   transition: all var(--transition-fast);
 }
 
@@ -1246,6 +1246,9 @@ textarea {
   line-height: var(--line-height-body-sm);
   text-align: center;
   cursor: help;
+
+  will-change: transform;
+  transform: translateZ(0); 
   
   transition: transform var(--transition-fast);
 }
