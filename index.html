@@ -184,52 +184,6 @@
         </div>
       </section>
 
-      <!-- Border Colors -->
-      <section class="color-section" aria-labelledby="border-colors-title">
-        <h2 class="section-title" id="border-colors-title">
-          Border Colors
-          <span class="semantic-badge">Semantic Tokens</span>
-        </h2>
-        <p class="section-description">Use for all stroke colors in your designs.</p>
-
-        <div class="semantic-table" role="table" aria-labelledby="border-colors-title">
-          <div class="table-header" role="row">
-            <div role="columnheader">Name</div>
-            <div role="columnheader">Color</div>
-            <div role="columnheader">Usage</div>
-          </div>
-
-          <div class="table-row" role="row">
-            <div class="token-name" role="cell">border-primary</div>
-            <div class="color-preview interactive-base" id="border-primary-preview" role="cell" tabindex="0">neutral-300
-            </div>
-            <div class="usage-description" role="cell">Default color for borders.</div>
-          </div>
-
-          <div class="table-row" role="row">
-            <div class="token-name" role="cell">border-secondary</div>
-            <div class="color-preview interactive-base" id="border-secondary-preview" role="cell" tabindex="0">
-              neutral-400</div>
-            <div class="usage-description" role="cell">High contrast borders.</div>
-          </div>
-
-          <div class="table-row" role="row">
-            <div class="token-name" role="cell">border-tertiary</div>
-            <div class="color-preview interactive-base" id="border-tertiary-preview" role="cell" tabindex="0">
-              neutral-200</div>
-            <div class="usage-description" role="cell">Low contrast borders, useful for subtle dividers and borders.
-            </div>
-          </div>
-
-          <div class="table-row" role="row">
-            <div class="token-name" role="cell">border-disabled</div>
-            <div class="color-preview interactive-base" id="border-disabled-preview" role="cell" tabindex="0">
-              neutral-300</div>
-            <div class="usage-description" role="cell">Default border color for components in a disabled state.</div>
-          </div>
-        </div>
-      </section>
-
       <!-- Foreground Colors -->
       <section class="color-section" aria-labelledby="foreground-colors-title">
         <h2 class="section-title" id="foreground-colors-title">
@@ -440,6 +394,52 @@
         </div>
       </section>
 
+      <!-- Border Colors -->
+      <section class="color-section" aria-labelledby="border-colors-title">
+        <h2 class="section-title" id="border-colors-title">
+          Border Colors
+          <span class="semantic-badge">Semantic Tokens</span>
+        </h2>
+        <p class="section-description">Use for all stroke colors in your designs.</p>
+
+        <div class="semantic-table" role="table" aria-labelledby="border-colors-title">
+          <div class="table-header" role="row">
+            <div role="columnheader">Name</div>
+            <div role="columnheader">Color</div>
+            <div role="columnheader">Usage</div>
+          </div>
+
+          <div class="table-row" role="row">
+            <div class="token-name" role="cell">border-primary</div>
+            <div class="color-preview interactive-base" id="border-primary-preview" role="cell" tabindex="0">neutral-300
+            </div>
+            <div class="usage-description" role="cell">Default color for borders.</div>
+          </div>
+
+          <div class="table-row" role="row">
+            <div class="token-name" role="cell">border-secondary</div>
+            <div class="color-preview interactive-base" id="border-secondary-preview" role="cell" tabindex="0">
+              neutral-400</div>
+            <div class="usage-description" role="cell">High contrast borders.</div>
+          </div>
+
+          <div class="table-row" role="row">
+            <div class="token-name" role="cell">border-tertiary</div>
+            <div class="color-preview interactive-base" id="border-tertiary-preview" role="cell" tabindex="0">
+              neutral-200</div>
+            <div class="usage-description" role="cell">Low contrast borders, useful for subtle dividers and borders.
+            </div>
+          </div>
+
+          <div class="table-row" role="row">
+            <div class="token-name" role="cell">border-disabled</div>
+            <div class="color-preview interactive-base" id="border-disabled-preview" role="cell" tabindex="0">
+              neutral-300</div>
+            <div class="usage-description" role="cell">Default border color for components in a disabled state.</div>
+          </div>
+        </div>
+      </section>
+
       <!-- Status Colors -->
       <section class="color-section" aria-labelledby="status-colors-title">
         <h2 class="section-title" id="status-colors-title">
@@ -574,8 +574,8 @@
     </div>
 
     <!-- Demo Section -->
+    <h2 class="section-title" id="demo-title">Component Examples Using Semantic Tokens</h2>
     <section class="demo-section" aria-labelledby="demo-title">
-      <h3 class="demo-title" id="demo-title">Component Examples Using Semantic Tokens</h3>
       <div class="demo-grid">
         <div class="demo-group">
           <h4>Text Hierarchy</h4>
@@ -721,7 +721,8 @@
             <input type="checkbox" id="perceptual-colors-toggle">
             <span class="checkbox-label">Use enhanced color generation (recommended)</span>
           </label>
-          <small>When enabled, uses CIELAB color space for more perceptually uniform colors. Based on Contentful's Forma 36 approach for superior visual consistency.</small>
+          <small>When enabled, uses CIELAB color space for more perceptually uniform colors. Based on Contentful's Forma
+            36 approach for superior visual consistency.</small>
         </div>
         <button type="button" class="btn btn-secondary apply-btn interactive-base" id="apply-config">Apply
           Changes</button>
