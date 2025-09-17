@@ -33,7 +33,7 @@ class ColorSystemState {
         includeStatusColors: true,
         includeFamilyContrast: true,
         useSmartPositioning: true,
-        useExactInteractiveColors: false,
+        useOptimizedContrast: false,
       },
     };
   }

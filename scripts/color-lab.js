@@ -10,27 +10,47 @@ import { capitalize } from './utils/object-utils.js';
  * @param {string} colorName - Name for the color family
  * @returns {Object} Color scale object
  */
-export function generateColorScaleLAB(baseHex, colorName) {
+export function generateColorScaleLAB(baseHex, colorName, options = {}) {
   try {
     const base = chroma(baseHex);
     // Use .get() method for CDN version
     const baseLCH = [base.get('lch.l'), base.get('lch.c'), base.get('lch.h')];
 
-    // Perceptually uniform lightness curve
-    // Based on Contentful's research for optimal contrast ratios
-    const lightnessCurve = {
-      50: 96, // Very light
-      100: 92, // Light
-      200: 84, // Light-medium
-      300: 74, // Medium-light
-      400: 64, // Medium
-      500: baseLCH[0] || 50, // Base color lightness
-      600: Math.max(baseLCH[0] - 15, 35), // Darker
-      700: Math.max(baseLCH[0] - 25, 25), // Much darker
-      800: Math.max(baseLCH[0] - 35, 15), // Very dark
-      900: Math.max(baseLCH[0] - 45, 8), // Extremely dark
-      950: 5, // Almost black
-    };
+    // Determine lightness approach based on options
+    let lightnessCurve;
+    
+    if (options.useOptimizedContrast) {
+      // Fixed perceptually uniform lightness curve for optimal contrast
+      // Based on Contentful's research for optimal contrast ratios
+      lightnessCurve = {
+        50: 97,   // Nearly white
+        100: 94,  // Very light  
+        200: 88,  // Light
+        300: 78,  // Light-medium
+        400: 65,  // Medium-light
+        500: 52,  // Medium (perceptual middle)
+        600: 42,  // Medium-dark
+        700: 32,  // Dark
+        800: 22,  // Very dark
+        900: 14,  // Extremely dark
+        950: 8    // Almost black
+      };
+    } else {
+      // Preserve user's input color approach
+      lightnessCurve = {
+        50: 96,   // Very light
+        100: 92,  // Light
+        200: 84,  // Light-medium
+        300: 74,  // Medium-light
+        400: 64,  // Medium
+        500: baseLCH[0] || 50, // Base color lightness
+        600: Math.max(baseLCH[0] - 15, 35), // Darker
+        700: Math.max(baseLCH[0] - 25, 25), // Much darker
+        800: Math.max(baseLCH[0] - 35, 15), // Very dark
+        900: Math.max(baseLCH[0] - 45, 8),  // Extremely dark
+        950: 5    // Almost black
+      };
+    }
 
     const scale = {};
 
@@ -50,13 +70,22 @@ export function generateColorScaleLAB(baseHex, colorName) {
       // Adjust chroma based on lightness for better vibrancy
       let adjustedChroma = chromaValue;
 
-      // Boost chroma for lighter colors to maintain vibrancy
-      if (targetLightness > 70) {
-        adjustedChroma = Math.min(chromaValue * 1.2, 100);
-      }
-      // Reduce chroma for very dark colors to avoid muddy appearance
-      else if (targetLightness < 20) {
-        adjustedChroma = chromaValue * 0.8;
+      if (options.useOptimizedContrast) {
+        // More aggressive chroma reduction for optimal contrast
+        if (targetLightness > 85) {
+          adjustedChroma = Math.max(chromaValue * 0.3, 8);
+        } else if (targetLightness > 70) {
+          adjustedChroma = chromaValue * 0.7;
+        } else if (targetLightness < 25) {
+          adjustedChroma = chromaValue * 0.8;
+        }
+      } else {
+        // Original chroma adjustments
+        if (targetLightness > 70) {
+          adjustedChroma = Math.min(chromaValue * 1.2, 100);
+        } else if (targetLightness < 20) {
+          adjustedChroma = chromaValue * 0.8;
+        }
       }
 
       // Create color using chroma.lch() constructor
