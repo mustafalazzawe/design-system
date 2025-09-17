@@ -1002,8 +1002,8 @@ textarea {
   height: var(--toggle-circle-size);
   border-radius: 50%;
 
-  background: var(--fg-primary-on-brand);
-  box-shadow: var(--shadow-xs);
+  background: var(--fg-light);
+  box-shadow: var(--shadow-sm);
 
   transition: transform var(--transition-fast);
 }
@@ -1431,18 +1431,12 @@ textarea {
 .color-legend {
   display: flex; 
   gap: var(--spacing-4);
-  /* padding: var(--spacing-3) var(--spacing-4); */
-  /* border-radius: var(--radius-md); */
-  
-  /* background: var(--bg-secondary); */
-  /* box-shadow: var(--shadow-sm); */
 }
 
 @media (max-width: 480px) {
   .color-legend {
     flex-direction: column;
     gap: var(--spacing-2);
-    padding: var(--spacing-2) var(--spacing-3);
   }
 }
 
