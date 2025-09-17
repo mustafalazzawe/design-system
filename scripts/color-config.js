@@ -1,5 +1,7 @@
+import { generateColorScaleLAB, detectColorNameLAB } from './color-lab.js';
+
 import { ColorUtils } from "./utils/color-utils.js";
-import { deepFreeze } from "./utils/object-utils.js";
+import { deepFreeze, capitalize } from "./utils/object-utils.js";
 
 // =============================================================================
 // Modular Color Design System Configuration
@@ -40,6 +42,8 @@ export const COLOR_SYSTEM_CONFIG = {
     includeFamilyContrast: true, // Include family contrast checking
     useSmartPositioning: true, // Use smart positioning for color scales
     useExactInteractiveColors: false, // Whether we use the exact color or optimized color
+    usePerceptualColors: false, // Enable CIELAB generation
+    colorGenerationMethod: 'hsl', // 'hsl' | 'lab'
   },
 };
 
@@ -185,7 +189,11 @@ export const PRESET_CONFIGS = deepFreeze({
  * @param {string} hex - Hex color string
  * @returns {string} Detected color name or "custom"
  */
-export function detectColorName(hex) {
+export function detectColorName(hex, useLAB = false) {
+  if (useLAB) {
+    return detectColorNameLAB(hex);
+  }
+
   const hsl = ColorUtils.hexToHsl(hex);
   if (!hsl) return "custom";
 
@@ -285,15 +293,6 @@ export function getAdaptiveInteractiveStates(primaryScale, baseWeight, primaryNa
   };
 }
 
-/**
- * Capitalize first letter of a string
- * @param {string} str - String to capitalize
- * @returns {string} Capitalized string
- */
-export function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
 // =============================================================================
 // COLOR SCALE GENERATION
 // =============================================================================
@@ -308,8 +307,15 @@ export function capitalize(str) {
 export function generateColorScale(
   baseHex,
   colorName,
-  useSmartPositioning = false
+  useSmartPositioning = false,
+  method = 'hsl'
 ) {
+
+  // Use LAB method if specified
+  if (method === 'lab') {
+    return generateColorScaleLAB(baseHex, colorName);
+  }
+
   const hsl = ColorUtils.hexToHsl(baseHex);
   if (!hsl) return null;
 
@@ -788,31 +794,32 @@ export function generateSemanticTokens(
 export function initializeColorSystem(config = COLOR_SYSTEM_CONFIG) {
   const { baseColors, options } = config;
 
-  // Auto-detect color names for presets only
-  if (
-    options.autoDetectColorNames &&
-    baseColors.neutral.name !== "neutral" &&
-    baseColors.primary.name !== "primary"
-  ) {
+  // Determine which method to use
+  const method = options.usePerceptualColors ? 'lab' : 'hsl';
+
+  // Auto-detect color names
+  if (options.autoDetectColorNames && baseColors.neutral.name !== "neutral" && baseColors.primary.name !== "primary") {
     if (!baseColors.neutral.name || baseColors.neutral.name === "auto") {
-      baseColors.neutral.name = detectColorName(baseColors.neutral.base);
+      baseColors.neutral.name = detectColorName(baseColors.neutral.base, options.usePerceptualColors);
     }
     if (!baseColors.primary.name || baseColors.primary.name === "auto") {
-      baseColors.primary.name = detectColorName(baseColors.primary.base);
+      baseColors.primary.name = detectColorName(baseColors.primary.base, options.usePerceptualColors);
     }
   }
 
-  // Generate color scales
+  // Generate color scales with specified method
   const neutralScale = generateColorScale(
     baseColors.neutral.base,
     baseColors.neutral.name,
-    options.useSmartPositioning
+    options.useSmartPositioning,
+    method
   );
 
   const primaryScale = generateColorScale(
     baseColors.primary.base,
     baseColors.primary.name,
-    options.useSmartPositioning
+    options.useSmartPositioning,
+    method
   );
 
   // Generate semantic tokens

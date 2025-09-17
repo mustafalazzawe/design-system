@@ -40,6 +40,9 @@ class ConfigPanel {
     const neutralHexInput = document.getElementById('neutral-hex');
     const primaryHexInput = document.getElementById('primary-hex');
     const exactColorsToggle = document.getElementById('exact-colors-toggle');
+    const perceptualToggle = document.getElementById(
+      'perceptual-colors-toggle'
+    );
     const applyButton = document.getElementById('apply-config');
     const closeButton = document.getElementById('close-config');
     const exportButton = document.getElementById('export-config');
@@ -66,6 +69,10 @@ class ConfigPanel {
     // Actions
     exactColorsToggle?.addEventListener('change', e =>
       this.handleExactColorsToggle(e)
+    );
+
+    perceptualToggle?.addEventListener('change', e =>
+      this.handlePerceptualToggle(e)
     );
 
     applyButton?.addEventListener('click', () => this.applyChanges());
@@ -259,6 +266,7 @@ class ConfigPanel {
     const neutralHexInput = document.getElementById('neutral-hex');
     const primaryHexInput = document.getElementById('primary-hex');
     const exactColorsToggle = document.getElementById('exact-colors-toggle');
+    const perceptualToggle = document.getElementById('perceptual-colors-toggle');
 
     // Update color inputs
     if (
@@ -285,6 +293,11 @@ class ConfigPanel {
     if (exactColorsToggle) {
       exactColorsToggle.checked =
         state.activeConfig?.options?.useExactInteractiveColors || false;
+    }
+
+    if (perceptualToggle) {
+      perceptualToggle.checked =
+        state.activeConfig?.options?.usePerceptualColors || false;
     }
 
     // Update detected colors display
@@ -326,13 +339,18 @@ class ConfigPanel {
   }
 
   // =============================================================================
-  // EXACT COLOR TOGGLE
+  // CONFIG TOGGLES
   // =============================================================================
 
   handleExactColorsToggle(e) {
     // This will trigger when user changes the checkbox
     // The actual state change will happen when they click "Apply Changes"
     console.log('Exact colors toggle changed:', e.target.checked);
+  }
+
+  handlePerceptualToggle(e) {
+    // This will trigger when user changes the checkbox
+    console.log('Perceptual colors toggle changed:', e.target.checked);
   }
 
   // =============================================================================
@@ -344,6 +362,7 @@ class ConfigPanel {
     const neutralColorInput = document.getElementById('neutral-color');
     const primaryColorInput = document.getElementById('primary-color');
     const exactColorsToggle = document.getElementById('exact-colors-toggle');
+    const perceptualToggle = document.getElementById('perceptual-colors-toggle');
 
     if (!presetSelect) {
       console.error('Config Panel: Preset select not found');
@@ -351,6 +370,7 @@ class ConfigPanel {
     }
 
     const useExactColors = exactColorsToggle?.checked || false;
+    const usePerceptualColors = perceptualToggle?.checked || false;
 
     try {
       if (presetSelect.value !== 'custom') {
@@ -363,6 +383,8 @@ class ConfigPanel {
 
         if (success && state.activeConfig) {
           state.activeConfig.options.useExactInteractiveColors = useExactColors;
+          state.activeConfig.options.usePerceptualColors = usePerceptualColors;
+          state.activeConfig.options.colorGenerationMethod = usePerceptualColors ? 'lab' : 'hsl';
           state.updateColorSystem(state.activeConfig);
         }
       } else {
@@ -384,7 +406,11 @@ class ConfigPanel {
         const success = state.setCustomColors(
           neutralColorInput.value,
           primaryColorInput.value,
-          { useExactInteractiveColors: useExactColors }
+          {
+            useExactInteractiveColors: useExactColors,
+            usePerceptualColors: usePerceptualColors,
+            colorGenerationMethod: usePerceptualColors ? 'lab' : 'hsl',
+          }
         );
         if (!success) {
           console.error('Failed to set custom colors');
@@ -442,78 +468,79 @@ class ConfigPanel {
     }
   }
 
-open() {
-  if (!this.panel) return;
+  open() {
+    if (!this.panel) return;
 
-  // Store scroll position BEFORE any DOM changes
-  this.scrollPosition =
-    window.pageYOffset || document.documentElement.scrollTop;
+    // Store scroll position BEFORE any DOM changes
+    this.scrollPosition =
+      window.pageYOffset || document.documentElement.scrollTop;
 
-  // Always ensure the panel is visible before animation
-  this.panel.style.display = 'flex';
-  
-  // Only on desktop, prepare for animation by removing show class
-  if (window.innerWidth > 768) {
-    this.panel.classList.remove('show');
-    this.panel.offsetHeight; // Force reflow
-  }
+    // Always ensure the panel is visible before animation
+    this.panel.style.display = 'flex';
 
-  // Add the show class to trigger animation
-  requestAnimationFrame(() => {
-    this.panel.classList.add('show');
-  });
-
-  this.isOpen = true;
-
-  // Prevent body scroll on mobile
-  if (window.innerWidth <= 768) {
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.top = `-${this.scrollPosition}px`;
-  }
-
-  // Update inputs when opening
-  this.updateInputs();
-
-  console.log('⚙️ Config panel opened');
-}
-
-close() {
-  if (!this.panel) return;
-
-  this.panel.classList.remove('show');
-  this.isOpen = false;
-
-  // Handle animation timing for both desktop and mobile
-  const transitionDuration = window.innerWidth > 768 ? 200 : 300; // --transition-fast vs --transition-normal
-
-  setTimeout(() => {
-    if (!this.isOpen) { // Double-check it's still closed
-      // Reset display on desktop
-      if (window.innerWidth > 768) {
-        this.panel.style.display = 'none';
-      }
-
-      // Restore body scroll on mobile (after animation completes)
-      if (window.innerWidth <= 768) {
-        const scrollY = this.scrollPosition;
-
-        // Remove fixed positioning
-        document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.width = '';
-        document.body.style.top = '';
-
-        // Restore scroll position
-        window.scrollTo(0, scrollY);
-        this.scrollPosition = undefined;
-      }
+    // Only on desktop, prepare for animation by removing show class
+    if (window.innerWidth > 768) {
+      this.panel.classList.remove('show');
+      this.panel.offsetHeight; // Force reflow
     }
-  }, transitionDuration);
 
-  console.log('⚙️ Config panel closed');
-}
+    // Add the show class to trigger animation
+    requestAnimationFrame(() => {
+      this.panel.classList.add('show');
+    });
+
+    this.isOpen = true;
+
+    // Prevent body scroll on mobile
+    if (window.innerWidth <= 768) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${this.scrollPosition}px`;
+    }
+
+    // Update inputs when opening
+    this.updateInputs();
+
+    console.log('⚙️ Config panel opened');
+  }
+
+  close() {
+    if (!this.panel) return;
+
+    this.panel.classList.remove('show');
+    this.isOpen = false;
+
+    // Handle animation timing for both desktop and mobile
+    const transitionDuration = window.innerWidth > 768 ? 200 : 300; // --transition-fast vs --transition-normal
+
+    setTimeout(() => {
+      if (!this.isOpen) {
+        // Double-check it's still closed
+        // Reset display on desktop
+        if (window.innerWidth > 768) {
+          this.panel.style.display = 'none';
+        }
+
+        // Restore body scroll on mobile (after animation completes)
+        if (window.innerWidth <= 768) {
+          const scrollY = this.scrollPosition;
+
+          // Remove fixed positioning
+          document.body.style.overflow = '';
+          document.body.style.position = '';
+          document.body.style.width = '';
+          document.body.style.top = '';
+
+          // Restore scroll position
+          window.scrollTo(0, scrollY);
+          this.scrollPosition = undefined;
+        }
+      }
+    }, transitionDuration);
+
+    console.log('⚙️ Config panel closed');
+  }
 
   // =============================================================================
   // EXPORT FUNCTIONALITY

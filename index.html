@@ -7,6 +7,9 @@
   <meta name="description"
     content="A comprehensive color system built on primitive colors with semantic tokens for consistent, accessible design">
 
+  <!-- Add chroma.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"></script>
+
   <!-- Link to font family -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -49,12 +52,12 @@
       <p class="subtitle">A comprehensive color system built on primitive colors with semantic tokens for consistent,
         accessible design</p>
     </header>
-    
+
     <!-- Primitive Colors Section -->
     <section class="color-section" aria-labelledby="primitive-colors-title">
       <h2 class="section-title" id="primitive-colors-title">Primitive Colors</h2>
       <p class="section-description">Base color scales that all semantic tokens reference</p>
-    
+
       <div class="primitive-colors">
         <div class="color-family">
           <div>
@@ -71,7 +74,7 @@
             </div>
           </div>
         </div>
-        
+
 
         <div class="color-family">
           <div>
@@ -92,9 +95,9 @@
             </div>
           </div>
         </div>
-        
+
       </div>
-      
+
 
     </section>
 
@@ -117,33 +120,38 @@
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">text-primary</div>
-            <div class="color-preview interactive-base" id="text-primary-preview" role="cell" tabindex="0">neutral-950</div>
+            <div class="color-preview interactive-base" id="text-primary-preview" role="cell" tabindex="0">neutral-950
+            </div>
             <div class="usage-description" role="cell">Primary text, this is our default text color, used for most text
               not in a text hierarchy--in which case use for headings.</div>
           </div>
 
           <div class="table-row" role="row">
             <div class="token-name nested" role="cell">text-primary-on-brand</div>
-            <div class="color-preview interactive-base" id="text-primary-on-brand-preview" role="cell" tabindex="0">neutral-50</div>
+            <div class="color-preview interactive-base" id="text-primary-on-brand-preview" role="cell" tabindex="0">
+              neutral-50</div>
             <div class="usage-description" role="cell">Primary text used on solid colored backgrounds. (e.g. CTA
               buttons)</div>
           </div>
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">text-secondary</div>
-            <div class="color-preview interactive-base" id="text-secondary-preview" role="cell" tabindex="0">neutral-900</div>
+            <div class="color-preview interactive-base" id="text-secondary-preview" role="cell" tabindex="0">neutral-900
+            </div>
             <div class="usage-description" role="cell">Secondary text used for labels and section headings.</div>
           </div>
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">text-tertiary</div>
-            <div class="color-preview interactive-base" id="text-tertiary-preview" role="cell" tabindex="0">neutral-700</div>
+            <div class="color-preview interactive-base" id="text-tertiary-preview" role="cell" tabindex="0">neutral-700
+            </div>
             <div class="usage-description" role="cell">Tertiary text used for supporting and paragraph text.</div>
           </div>
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">text-quaternary</div>
-            <div class="color-preview interactive-base" id="text-quaternary-preview" role="cell" tabindex="0">neutral-500</div>
+            <div class="color-preview interactive-base" id="text-quaternary-preview" role="cell" tabindex="0">
+              neutral-500</div>
             <div class="usage-description" role="cell">Quaternary text used for subtle and lower contrast text.</div>
           </div>
 
@@ -161,57 +169,17 @@
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">text-disabled</div>
-            <div class="color-preview interactive-base" id="text-disabled-preview" role="cell" tabindex="0">neutral-500</div>
+            <div class="color-preview interactive-base" id="text-disabled-preview" role="cell" tabindex="0">neutral-500
+            </div>
             <div class="usage-description" role="cell">Default text color for components in a disabled state.</div>
           </div>
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">text-placeholder</div>
-            <div class="color-preview interactive-base" id="text-placeholder-preview" role="cell" tabindex="0">neutral-500</div>
+            <div class="color-preview interactive-base" id="text-placeholder-preview" role="cell" tabindex="0">
+              neutral-500</div>
             <div class="usage-description" role="cell">Default text color for placeholder text such as placeholder text
               in an input field.</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Border Colors -->
-      <section class="color-section" aria-labelledby="border-colors-title">
-        <h2 class="section-title" id="border-colors-title">
-          Border Colors
-          <span class="semantic-badge">Semantic Tokens</span>
-        </h2>
-        <p class="section-description">Use for all stroke colors in your designs.</p>
-
-        <div class="semantic-table" role="table" aria-labelledby="border-colors-title">
-          <div class="table-header" role="row">
-            <div role="columnheader">Name</div>
-            <div role="columnheader">Color</div>
-            <div role="columnheader">Usage</div>
-          </div>
-
-          <div class="table-row" role="row">
-            <div class="token-name" role="cell">border-primary</div>
-            <div class="color-preview interactive-base" id="border-primary-preview" role="cell" tabindex="0">neutral-300</div>
-            <div class="usage-description" role="cell">Default color for borders.</div>
-          </div>
-
-          <div class="table-row" role="row">
-            <div class="token-name" role="cell">border-secondary</div>
-            <div class="color-preview interactive-base" id="border-secondary-preview" role="cell" tabindex="0">neutral-400</div>
-            <div class="usage-description" role="cell">High contrast borders.</div>
-          </div>
-
-          <div class="table-row" role="row">
-            <div class="token-name" role="cell">border-tertiary</div>
-            <div class="color-preview interactive-base" id="border-tertiary-preview" role="cell" tabindex="0">neutral-200</div>
-            <div class="usage-description" role="cell">Low contrast borders, useful for subtle dividers and borders.
-            </div>
-          </div>
-
-          <div class="table-row" role="row">
-            <div class="token-name" role="cell">border-disabled</div>
-            <div class="color-preview interactive-base" id="border-disabled-preview" role="cell" tabindex="0">neutral-300</div>
-            <div class="usage-description" role="cell">Default border color for components in a disabled state.</div>
           </div>
         </div>
       </section>
@@ -233,13 +201,15 @@
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">fg-primary</div>
-            <div class="color-preview interactive-base" id="fg-primary-preview" role="cell" tabindex="0">neutral-950</div>
+            <div class="color-preview interactive-base" id="fg-primary-preview" role="cell" tabindex="0">neutral-950
+            </div>
             <div class="usage-description" role="cell">Highest contrast non-text foreground elements.</div>
           </div>
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">fg-primary-on-brand</div>
-            <div class="color-preview interactive-base" id="fg-primary-on-brand-preview" role="cell" tabindex="0">neutral-50</div>
+            <div class="color-preview interactive-base" id="fg-primary-on-brand-preview" role="cell" tabindex="0">
+              neutral-50</div>
             <div class="usage-description" role="cell">Highest contrast non-text foreground elements used on solid
               colored backgrounds. (e.g. CTA
               buttons).</div>
@@ -247,13 +217,15 @@
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">fg-secondary</div>
-            <div class="color-preview interactive-base" id="fg-secondary-preview" role="cell" tabindex="0">neutral-900</div>
+            <div class="color-preview interactive-base" id="fg-secondary-preview" role="cell" tabindex="0">neutral-900
+            </div>
             <div class="usage-description" role="cell">High contrast non-text foreground elements.</div>
           </div>
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">fg-tertiary</div>
-            <div class="color-preview interactive-base" id="fg-tertiary-preview" role="cell" tabindex="0">neutral-700</div>
+            <div class="color-preview interactive-base" id="fg-tertiary-preview" role="cell" tabindex="0">neutral-700
+            </div>
             <div class="usage-description" role="cell">Medium contrast non-text foreground elements.</div>
           </div>
 
@@ -273,7 +245,8 @@
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">fg-disabled</div>
-            <div class="color-preview interactive-base" id="fg-disabled-preview" role="cell" tabindex="0">neutral-500</div>
+            <div class="color-preview interactive-base" id="fg-disabled-preview" role="cell" tabindex="0">neutral-500
+            </div>
             <div class="usage-description" role="cell">Default color for non-text elements in a disabled state.</div>
           </div>
         </div>
@@ -296,21 +269,24 @@
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">bg-primary</div>
-            <div class="color-preview interactive-base" id="bg-primary-preview" role="cell" tabindex="0">neutral-50</div>
+            <div class="color-preview interactive-base" id="bg-primary-preview" role="cell" tabindex="0">neutral-50
+            </div>
             <div class="usage-description" role="cell">Primary surface background color, used to create contrast against
               white backgrounds.</div>
           </div>
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">bg-secondary</div>
-            <div class="color-preview interactive-base" id="bg-secondary-preview" role="cell" tabindex="0">neutral-100</div>
+            <div class="color-preview interactive-base" id="bg-secondary-preview" role="cell" tabindex="0">neutral-100
+            </div>
             <div class="usage-description" role="cell">Secondary surface background color, used to create contrast
               against primary backgrounds.</div>
           </div>
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">bg-tertiary</div>
-            <div class="color-preview interactive-base" id="bg-tertiary-preview" role="cell" tabindex="0">neutral-200</div>
+            <div class="color-preview interactive-base" id="bg-tertiary-preview" role="cell" tabindex="0">neutral-200
+            </div>
             <div class="usage-description" role="cell">Tertiary surface background color, used to create contrast
               against secondary backgrounds.</div>
           </div>
@@ -318,18 +294,21 @@
           <div class="table-row" role="row">
             <div class="token-name" role="cell">bg-dark</div>
             <div class="color-preview interactive-base" id="bg-dark-preview" role="cell" tabindex="0">neutral-950</div>
-            <div class="usage-description" role="cell">Background elements that are always dark no matter the mode.</div>
+            <div class="usage-description" role="cell">Background elements that are always dark no matter the mode.
+            </div>
           </div>
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">bg-light</div>
             <div class="color-preview interactive-base" id="bg-light-preview" role="cell" tabindex="0">neutral-50</div>
-            <div class="usage-description" role="cell">Background elements that are always light no matter the mode.</div>
+            <div class="usage-description" role="cell">Background elements that are always light no matter the mode.
+            </div>
           </div>
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">bg-modal-overlay</div>
-            <div class="color-preview interactive-base" id="bg-modal-overlay-preview" role="cell" tabindex="0">alpha-black-modal</div>
+            <div class="color-preview interactive-base" id="bg-modal-overlay-preview" role="cell" tabindex="0">
+              alpha-black-modal</div>
             <div class="usage-description" role="cell">Background color used for the overlay for modals.</div>
           </div>
         </div>
@@ -352,20 +331,23 @@
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">interactive-primary</div>
-            <div class="color-preview interactive-base" id="interactive-primary-preview" role="cell" tabindex="0">primary-600</div>
+            <div class="color-preview interactive-base" id="interactive-primary-preview" role="cell" tabindex="0">
+              primary-600</div>
             <div class="usage-description" role="cell">Primary color used for all interactive components.</div>
           </div>
 
           <div class="table-row" role="row">
             <div class="token-name nested" role="cell">interactive-primary-hover</div>
-            <div class="color-preview interactive-base" id="interactive-primary-hover-preview" role="cell" tabindex="0">primary-500</div>
+            <div class="color-preview interactive-base" id="interactive-primary-hover-preview" role="cell" tabindex="0">
+              primary-500</div>
             <div class="usage-description" role="cell">Primary hover color used for all interactive components.
             </div>
           </div>
 
           <div class="table-row" role="row">
             <div class="token-name nested" role="cell">interactive-primary-active</div>
-            <div class="color-preview interactive-base" id="interactive-primary-active-preview" role="cell" tabindex="0">primary-400
+            <div class="color-preview interactive-base" id="interactive-primary-active-preview" role="cell"
+              tabindex="0">primary-400
             </div>
             <div class="usage-description" role="cell">Primary active color used for all interactive components.
             </div>
@@ -373,13 +355,15 @@
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">interactive-secondary</div>
-            <div class="color-preview interactive-base" id="interactive-secondary-preview" role="cell" tabindex="0">zinc-50</div>
+            <div class="color-preview interactive-base" id="interactive-secondary-preview" role="cell" tabindex="0">
+              zinc-50</div>
             <div class="usage-description" role="cell">Secondary color used for all interactive components.</div>
           </div>
 
           <div class="table-row" role="row">
             <div class="token-name nested" role="cell">interactive-secondary-hover</div>
-            <div class="color-preview interactive-base" id="interactive-secondary-hover-preview" role="cell" tabindex="0">zinc-100
+            <div class="color-preview interactive-base" id="interactive-secondary-hover-preview" role="cell"
+              tabindex="0">zinc-100
             </div>
             <div class="usage-description" role="cell">Secondary hover color used for all interactive components.
             </div>
@@ -387,7 +371,8 @@
 
           <div class="table-row" role="row">
             <div class="token-name nested" role="cell">interactive-secondary-active</div>
-            <div class="color-preview interactive-base" id="interactive-secondary-active-preview" role="cell" tabindex="0">zinc-200
+            <div class="color-preview interactive-base" id="interactive-secondary-active-preview" role="cell"
+              tabindex="0">zinc-200
             </div>
             <div class="usage-description" role="cell">Secondary active color used for all interactive components.
             </div>
@@ -395,14 +380,62 @@
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">interactive-tertiary</div>
-            <div class="color-preview interactive-base" id="interactive-tertiary-preview" role="cell" tabindex="0">transparent</div>
+            <div class="color-preview interactive-base" id="interactive-tertiary-preview" role="cell" tabindex="0">
+              transparent</div>
             <div class="usage-description" role="cell">Tertiary color used for outline interactive components.</div>
           </div>
 
           <div class="table-row" role="row">
             <div class="token-name" role="cell">interactive-focus</div>
-            <div class="color-preview interactive-base" id="interactive-focus-preview" role="cell" tabindex="0">blue-600-alpha-30</div>
+            <div class="color-preview interactive-base" id="interactive-focus-preview" role="cell" tabindex="0">
+              blue-600-alpha-30</div>
             <div class="usage-description" role="cell">Interactive color used for focus effects.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Border Colors -->
+      <section class="color-section" aria-labelledby="border-colors-title">
+        <h2 class="section-title" id="border-colors-title">
+          Border Colors
+          <span class="semantic-badge">Semantic Tokens</span>
+        </h2>
+        <p class="section-description">Use for all stroke colors in your designs.</p>
+
+        <div class="semantic-table" role="table" aria-labelledby="border-colors-title">
+          <div class="table-header" role="row">
+            <div role="columnheader">Name</div>
+            <div role="columnheader">Color</div>
+            <div role="columnheader">Usage</div>
+          </div>
+
+          <div class="table-row" role="row">
+            <div class="token-name" role="cell">border-primary</div>
+            <div class="color-preview interactive-base" id="border-primary-preview" role="cell" tabindex="0">neutral-300
+            </div>
+            <div class="usage-description" role="cell">Default color for borders.</div>
+          </div>
+
+          <div class="table-row" role="row">
+            <div class="token-name" role="cell">border-secondary</div>
+            <div class="color-preview interactive-base" id="border-secondary-preview" role="cell" tabindex="0">
+              neutral-400</div>
+            <div class="usage-description" role="cell">High contrast borders.</div>
+          </div>
+
+          <div class="table-row" role="row">
+            <div class="token-name" role="cell">border-tertiary</div>
+            <div class="color-preview interactive-base" id="border-tertiary-preview" role="cell" tabindex="0">
+              neutral-200</div>
+            <div class="usage-description" role="cell">Low contrast borders, useful for subtle dividers and borders.
+            </div>
+          </div>
+
+          <div class="table-row" role="row">
+            <div class="token-name" role="cell">border-disabled</div>
+            <div class="color-preview interactive-base" id="border-disabled-preview" role="cell" tabindex="0">
+              neutral-300</div>
+            <div class="usage-description" role="cell">Default border color for components in a disabled state.</div>
           </div>
         </div>
       </section>
@@ -427,25 +460,29 @@
 
             <div class="table-row" role="row">
               <div class="token-name" role="cell">success-primary</div>
-              <div class="color-preview interactive-base" id="success-primary-preview" role="cell" tabindex="0">green-100</div>
+              <div class="color-preview interactive-base" id="success-primary-preview" role="cell" tabindex="0">
+                green-100</div>
               <div class="usage-description" role="cell">Primary color for success states and messages.</div>
             </div>
 
             <div class="table-row" role="row">
               <div class="token-name" role="cell">success-background</div>
-              <div class="color-preview interactive-base" id="success-background-preview" role="cell" tabindex="0">green-100</div>
+              <div class="color-preview interactive-base" id="success-background-preview" role="cell" tabindex="0">
+                green-100</div>
               <div class="usage-description" role="cell">Background color for success states and messages.</div>
             </div>
 
             <div class="table-row" role="row">
               <div class="token-name" role="cell">success-foreground</div>
-              <div class="color-preview interactive-base" id="success-foreground-preview" role="cell" tabindex="0">green-600</div>
+              <div class="color-preview interactive-base" id="success-foreground-preview" role="cell" tabindex="0">
+                green-600</div>
               <div class="usage-description" role="cell">Foreground color for success icons, text, and elements.</div>
             </div>
 
             <div class="table-row" role="row">
               <div class="token-name" role="cell">success-focus</div>
-              <div class="color-preview interactive-base" id="success-focus-preview" role="cell" tabindex="0">green-600-alpha-30</div>
+              <div class="color-preview interactive-base" id="success-focus-preview" role="cell" tabindex="0">
+                green-600-alpha-30</div>
               <div class="usage-description" role="cell">Focus ring color for success interactive elements and form
                 fields.</div>
             </div>
@@ -464,25 +501,29 @@
 
             <div class="table-row" role="row">
               <div class="token-name" role="cell">warning-primary</div>
-              <div class="color-preview interactive-base" id="warning-primary-preview" role="cell" tabindex="0">amber-100</div>
+              <div class="color-preview interactive-base" id="warning-primary-preview" role="cell" tabindex="0">
+                amber-100</div>
               <div class="usage-description" role="cell">Primary color for warning states and messages.</div>
             </div>
 
             <div class="table-row" role="row">
               <div class="token-name" role="cell">warning-background</div>
-              <div class="color-preview interactive-base" id="warning-background-preview" role="cell" tabindex="0">amber-100</div>
+              <div class="color-preview interactive-base" id="warning-background-preview" role="cell" tabindex="0">
+                amber-100</div>
               <div class="usage-description" role="cell">Background color for warning states and messages.</div>
             </div>
 
             <div class="table-row" role="row">
               <div class="token-name" role="cell">warning-foreground</div>
-              <div class="color-preview interactive-base" id="warning-foreground-preview" role="cell" tabindex="0">amber-600</div>
+              <div class="color-preview interactive-base" id="warning-foreground-preview" role="cell" tabindex="0">
+                amber-600</div>
               <div class="usage-description" role="cell">Foreground color for warning icons, text, and elements.</div>
             </div>
 
             <div class="table-row" role="row">
               <div class="token-name" role="cell">warning-focus</div>
-              <div class="color-preview interactive-base" id="warning-focus-preview" role="cell" tabindex="0">amber-600-alpha-30</div>
+              <div class="color-preview interactive-base" id="warning-focus-preview" role="cell" tabindex="0">
+                amber-600-alpha-30</div>
               <div class="usage-description" role="cell">Focus ring color for warning interactive elements and form
                 fields.</div>
             </div>
@@ -501,25 +542,29 @@
 
             <div class="table-row" role="row">
               <div class="token-name" role="cell">error-primary</div>
-              <div class="color-preview interactive-base" id="error-primary-preview" role="cell" tabindex="0">red-100</div>
+              <div class="color-preview interactive-base" id="error-primary-preview" role="cell" tabindex="0">red-100
+              </div>
               <div class="usage-description" role="cell">Primary color for error states and messages.</div>
             </div>
 
             <div class="table-row" role="row">
               <div class="token-name" role="cell">error-background</div>
-              <div class="color-preview interactive-base" id="error-background-preview" role="cell" tabindex="0">red-100</div>
+              <div class="color-preview interactive-base" id="error-background-preview" role="cell" tabindex="0">red-100
+              </div>
               <div class="usage-description" role="cell">Background color for error states and messages.</div>
             </div>
 
             <div class="table-row" role="row">
               <div class="token-name" role="cell">error-foreground</div>
-              <div class="color-preview interactive-base" id="error-foreground-preview" role="cell" tabindex="0">red-600</div>
+              <div class="color-preview interactive-base" id="error-foreground-preview" role="cell" tabindex="0">red-600
+              </div>
               <div class="usage-description" role="cell">Foreground color for error icons, text, and elements.</div>
             </div>
 
             <div class="table-row" role="row">
               <div class="token-name" role="cell">error-focus</div>
-              <div class="color-preview interactive-base" id="error-focus-preview" role="cell" tabindex="0">red-600-alpha-30</div>
+              <div class="color-preview interactive-base" id="error-focus-preview" role="cell" tabindex="0">
+                red-600-alpha-30</div>
               <div class="usage-description" role="cell">Focus ring color for error interactive elements and form
                 fields.</div>
             </div>
@@ -529,8 +574,8 @@
     </div>
 
     <!-- Demo Section -->
+    <h2 class="section-title" id="demo-title">Component Examples Using Semantic Tokens</h2>
     <section class="demo-section" aria-labelledby="demo-title">
-      <h3 class="demo-title" id="demo-title">Component Examples Using Semantic Tokens</h3>
       <div class="demo-grid">
         <div class="demo-group">
           <h4>Text Hierarchy</h4>
@@ -609,9 +654,10 @@
         <div class="demo-group">
           <h4>Text Fields</h4>
           <div class="demo-fields">
-            <input type="text" class="text-field form-element" placeholder="Enter your text" aria-label="Example text input">
-            <input type="text" class="text-field success form-element" placeholder="Valid input" value="john@example.com"
-              aria-label="Valid email input">
+            <input type="text" class="text-field form-element" placeholder="Enter your text"
+              aria-label="Example text input">
+            <input type="text" class="text-field success form-element" placeholder="Valid input"
+              value="john@example.com" aria-label="Valid email input">
             <input type="text" class="text-field error form-element" placeholder="Invalid input" value="invalid-email"
               aria-label="Invalid email input" aria-invalid="true">
           </div>
@@ -640,22 +686,24 @@
             <option value="custom">Custom Colors</option>
           </select>
         </div>
-        
+
         <div class="config-section">
           <label for="neutral-color">Neutral Color:</label>
           <div class="config-color-input">
-            <input type="color" id="neutral-color" class="config-color-picker form-element interactive-base" aria-label="Choose neutral color">
-            <input type="text" id="neutral-hex" class="config-hex-input text-field form-element interactive-base" placeholder="#71717a"
-              aria-label="Neutral color hex value">
+            <input type="color" id="neutral-color" class="config-color-picker form-element interactive-base"
+              aria-label="Choose neutral color">
+            <input type="text" id="neutral-hex" class="config-hex-input text-field form-element interactive-base"
+              placeholder="#71717a" aria-label="Neutral color hex value">
           </div>
         </div>
 
         <div class="config-section">
           <label for="primary-color">Primary Color:</label>
           <div class="config-color-input">
-            <input type="color" id="primary-color" class="config-color-picker form-element interactive-base" aria-label="Choose primary color">
-            <input type="text" id="primary-hex" class="config-hex-input text-field form-element interactive-base" placeholder="#3b82f6"
-              aria-label="Primary color hex value">
+            <input type="color" id="primary-color" class="config-color-picker form-element interactive-base"
+              aria-label="Choose primary color">
+            <input type="text" id="primary-hex" class="config-hex-input text-field form-element interactive-base"
+              placeholder="#3b82f6" aria-label="Primary color hex value">
           </div>
         </div>
 
@@ -667,7 +715,17 @@
           <small>When enabled, uses your exact color choices. When disabled, optimizes colors for better hover/active
             states.</small>
         </div>
-        <button type="button" class="btn btn-secondary apply-btn interactive-base" id="apply-config">Apply Changes</button>
+
+        <div class="config-section">
+          <label>
+            <input type="checkbox" id="perceptual-colors-toggle">
+            <span class="checkbox-label">Use enhanced color generation (recommended)</span>
+          </label>
+          <small>When enabled, uses CIELAB color space for more perceptually uniform colors. Based on Contentful's Forma
+            36 approach for superior visual consistency.</small>
+        </div>
+        <button type="button" class="btn btn-secondary apply-btn interactive-base" id="apply-config">Apply
+          Changes</button>
       </form>
     </div>
 
@@ -681,21 +739,21 @@
       </div>
       <p id="detected-colors" class="config-detected-colors" aria-live="polite"></p>
     </footer>
-    
+
   </aside>
 
   <!-- Enhanced Export Modal -->
   <div class="modal-overlay" id="exportModal">
     <div class="export-modal">
-    <div class="export-header">
-      <!-- Tab Navigation -->
-      <div class="tab-nav">
-        <button class="tab-button active interactive-base" id="css-tab">CSS</button>
-        <button class="tab-button interactive-base" id="tailwind-tab">Tailwind CSS</button>
-        <button class="tab-button interactive-base" id="json-tab">JSON</button>
+      <div class="export-header">
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+          <button class="tab-button active interactive-base" id="css-tab">CSS</button>
+          <button class="tab-button interactive-base" id="tailwind-tab">Tailwind CSS</button>
+          <button class="tab-button interactive-base" id="json-tab">JSON</button>
+        </div>
+        <button class="export-close interactive-base" id="close-export" aria-label="Close export modal">✕</button>
       </div>
-      <button class="export-close interactive-base" id="close-export" aria-label="Close export modal">✕</button>
-    </div>
 
       <!-- Format Options -->
       <div class="format-options">
