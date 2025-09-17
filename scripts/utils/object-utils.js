@@ -10,4 +10,8 @@ function deepFreeze(obj) {
   return Object.freeze(obj);
 }
 
-export { deepFreeze }
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export { deepFreeze, capitalize };
