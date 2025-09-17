@@ -1233,10 +1233,6 @@ textarea {
   transform: translateY(-1px);
 }
 
-.card-copy-btn.copied {
-  color: var(--success-fg);
-}
-
 .contrast-display {
   padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--radius-sm);
@@ -1327,11 +1323,6 @@ textarea {
   
   .card-indicator-badge {
     width: 20px;
-    height: 20px;
-  }
-  
-  .card-copy-btn {
-    width: 40px;
     height: 20px;
   }
 }
