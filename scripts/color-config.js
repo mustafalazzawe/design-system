@@ -541,7 +541,7 @@ export function generateSemanticTokens(
   let primaryColor, hoverColor, activeColor;
 
   if (!options.useOptimizedContrast) {
-    // Try to use the user's base color (e.g., the 500 weight they selected)
+    // Try to use the user's base color   
     const userBaseHex = options.userSelectedPrimaryHex || primaryScale[600].hex;
     const matchedWeight = findScaleWeight(userBaseHex, primaryScale);
 

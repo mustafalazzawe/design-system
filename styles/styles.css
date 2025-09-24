@@ -1618,6 +1618,7 @@ textarea {
 
   min-width: var(--config-panel-min-width);
   max-width: var(--config-panel-max-width);
+  max-height: 80vh;
   border: var(--border-width-sm) solid var(--border-color);
   border-radius: var(--radius-lg);
 
