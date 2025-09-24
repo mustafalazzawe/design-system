@@ -1,7 +1,7 @@
 import { generateColorScaleLAB, detectColorNameLAB } from './color-lab.js';
 
-import { ColorUtils } from "./utils/color-utils.js";
-import { deepFreeze, capitalize } from "./utils/object-utils.js";
+import { ColorUtils } from './utils/color-utils.js';
+import { deepFreeze, capitalize } from './utils/object-utils.js';
 
 // =============================================================================
 // Modular Color Design System Configuration
@@ -15,22 +15,22 @@ export const COLOR_SYSTEM_CONFIG = {
   // Base colors - these will generate the full scales
   baseColors: {
     neutral: {
-      name: "neutral", // Always use "neutral" for custom colors
-      base: "#71717a", // Base color (usually 500 level)
-      hex: "#71717a", // Same as base for now
+      name: 'neutral', // Always use "neutral" for custom colors
+      base: '#71717a', // Base color (usually 500 level)
+      hex: '#71717a', // Same as base for now
     },
     primary: {
-      name: "primary", // Always use "primary" for custom colors
-      base: "#3b82f6", // Base color (usually 500 level)
-      hex: "#3b82f6", // Same as base for now
+      name: 'primary', // Always use "primary" for custom colors
+      base: '#3b82f6', // Base color (usually 500 level)
+      hex: '#3b82f6', // Same as base for now
     },
   },
 
   // Project metadata
   project: {
-    name: "Semantic Color Design System",
+    name: 'Semantic Color Design System',
     description:
-      "A comprehensive color system built on primitive colors with semantic tokens for consistent,accessible design",
+      'A comprehensive color system built on primitive colors with semantic tokens for consistent,accessible design',
   },
 
   // Customization options
@@ -41,7 +41,7 @@ export const COLOR_SYSTEM_CONFIG = {
     includeStatusColors: true, // Include success/warning/error colors
     includeFamilyContrast: true, // Include family contrast checking
     useSmartPositioning: true, // Use smart positioning for color scales
-    useExactInteractiveColors: false, // Whether we use the exact color or optimized color
+    useOptimizedContrast: false, // Whether we use the exact color or optimized color
     usePerceptualColors: false, // Enable CIELAB generation
     colorGenerationMethod: 'hsl', // 'hsl' | 'lab'
   },
@@ -101,38 +101,38 @@ export const LIGHTNESS_SCALE = Object.freeze({
 export const STATUS_COLORS = Object.freeze({
   success: {
     light: {
-      primary: { name: "green-600", hex: "#16a34a" },
-      background: { name: "green-200", hex: "#bbf7d0" },
-      foreground: { name: "green-600", hex: "#16a34a" },
+      primary: { name: 'green-600', hex: '#16a34a' },
+      background: { name: 'green-200', hex: '#bbf7d0' },
+      foreground: { name: 'green-600', hex: '#16a34a' },
     },
     dark: {
-      primary: { name: "green-600", hex: "#16a34a" },
-      background: { name: "green-950", hex: "#052e16" },
-      foreground: { name: "green-400", hex: "#4ade80" },
+      primary: { name: 'green-600', hex: '#16a34a' },
+      background: { name: 'green-950', hex: '#052e16' },
+      foreground: { name: 'green-400', hex: '#4ade80' },
     },
   },
   warning: {
     light: {
-      primary: { name: "amber-600", hex: "#d97706" },
-      background: { name: "amber-200", hex: "#fde68a" },
-      foreground: { name: "amber-600", hex: "#d97706" },
+      primary: { name: 'amber-600', hex: '#d97706' },
+      background: { name: 'amber-200', hex: '#fde68a' },
+      foreground: { name: 'amber-600', hex: '#d97706' },
     },
     dark: {
-      primary: { name: "amber-600", hex: "#d97706" },
-      background: { name: "amber-950", hex: "#451a03" },
-      foreground: { name: "amber-400", hex: "#fbbf24" },
+      primary: { name: 'amber-600', hex: '#d97706' },
+      background: { name: 'amber-950', hex: '#451a03' },
+      foreground: { name: 'amber-400', hex: '#fbbf24' },
     },
   },
   error: {
     light: {
-      primary: { name: "red-600", hex: "#dc2626" },
-      background: { name: "red-200", hex: "#fecaca" },
-      foreground: { name: "red-600", hex: "#dc2626" },
+      primary: { name: 'red-600', hex: '#dc2626' },
+      background: { name: 'red-200', hex: '#fecaca' },
+      foreground: { name: 'red-600', hex: '#dc2626' },
     },
     dark: {
-      primary: { name: "red-600", hex: "#dc2626" },
-      background: { name: "red-950", hex: "#450a0a" },
-      foreground: { name: "red-400", hex: "#f87171" },
+      primary: { name: 'red-600', hex: '#dc2626' },
+      background: { name: 'red-950', hex: '#450a0a' },
+      foreground: { name: 'red-400', hex: '#f87171' },
     },
   },
 });
@@ -145,37 +145,49 @@ export const STATUS_COLORS = Object.freeze({
 export const PRESET_CONFIGS = deepFreeze({
   default: {
     baseColors: {
-      neutral: { name: "zinc", base: "#71717a", hex: "#71717a" },
-      primary: { name: "blue", base: "#3b82f6", hex: "#3b82f6" },
+      neutral: { name: 'zinc', base: '#71717a', hex: '#71717a' },
+      primary: { name: 'blue', base: '#3b82f6', hex: '#3b82f6' },
     },
-    project: { name: "Default Design System" },
-    options: { ...COLOR_SYSTEM_CONFIG.options, autoDetectColorNames: true },
+    project: { name: 'Default Design System' },
+    options: {
+      ...COLOR_SYSTEM_CONFIG.options,
+      autoDetectColorNames: true,
+      useOptimizedContrast: true,
+    },
   },
 
   modern: {
     baseColors: {
-      neutral: { name: "slate", base: "#64748b", hex: "#64748b" },
-      primary: { name: "indigo", base: "#6366f1", hex: "#6366f1" },
+      neutral: { name: 'slate', base: '#64748b', hex: '#64748b' },
+      primary: { name: 'indigo', base: '#6366f1', hex: '#6366f1' },
     },
-    project: { name: "Modern Design System" },
-    options: { ...COLOR_SYSTEM_CONFIG.options, autoDetectColorNames: true },
+    project: { name: 'Modern Design System' },
+    options: {
+      ...COLOR_SYSTEM_CONFIG.options,
+      autoDetectColorNames: true,
+      useOptimizedContrast: true,
+    },
   },
 
   natural: {
     baseColors: {
-      neutral: { name: "stone", base: "#78716c", hex: "#78716c" },
-      primary: { name: "emerald", base: "#10b981", hex: "#10b981" },
+      neutral: { name: 'stone', base: '#78716c', hex: '#78716c' },
+      primary: { name: 'emerald', base: '#10b981', hex: '#10b981' },
     },
-    project: { name: "Natural Design System" },
-    options: { ...COLOR_SYSTEM_CONFIG.options, autoDetectColorNames: true },
+    project: { name: 'Natural Design System' },
+    options: {
+      ...COLOR_SYSTEM_CONFIG.options,
+      autoDetectColorNames: true,
+      useOptimizedContrast: true,
+    },
   },
 
   custom: {
     baseColors: {
-      neutral: { name: "neutral", base: "#6b7280", hex: "#6b7280" },
-      primary: { name: "primary", base: "#8b5cf6", hex: "#8b5cf6" },
+      neutral: { name: 'neutral', base: '#6b7280', hex: '#6b7280' },
+      primary: { name: 'primary', base: '#8b5cf6', hex: '#8b5cf6' },
     },
-    project: { name: "Custom Design System" },
+    project: { name: 'Custom Design System' },
     options: { ...COLOR_SYSTEM_CONFIG.options, autoDetectColorNames: false },
   },
 });
@@ -195,13 +207,13 @@ export function detectColorName(hex, useLAB = false) {
   }
 
   const hsl = ColorUtils.hexToHsl(hex);
-  if (!hsl) return "custom";
+  if (!hsl) return 'custom';
 
   // For very low saturation, it's likely a neutral
   if (hsl.s <= 10) {
-    if (hsl.s <= 5) return "zinc";
-    if (hsl.s <= 8) return "neutral";
-    return "gray";
+    if (hsl.s <= 5) return 'zinc';
+    if (hsl.s <= 8) return 'neutral';
+    return 'gray';
   }
 
   // Check against known color mappings
@@ -215,7 +227,7 @@ export function detectColorName(hex, useLAB = false) {
     }
   }
 
-  return "custom";
+  return 'custom';
 }
 
 /**
@@ -258,12 +270,16 @@ export function findScaleWeight(targetHex, colorScale) {
  * @param {string} primaryName - Name of the primary color
  * @returns {Object} Hover and active color definitions
  */
-export function getAdaptiveInteractiveStates(primaryScale, baseWeight, primaryName) {
+export function getAdaptiveInteractiveStates(
+  primaryScale,
+  baseWeight,
+  primaryName
+) {
   const weightNum = parseInt(baseWeight);
-  
+
   // Only calculate hover - active will be same as hover
   let hoverWeight;
-  
+
   if (weightNum <= 300) {
     // For light colors, go darker for hover
     hoverWeight = Math.min(weightNum + 100, 950);
@@ -274,13 +290,13 @@ export function getAdaptiveInteractiveStates(primaryScale, baseWeight, primaryNa
     // For middle range, go darker (traditional pattern)
     hoverWeight = Math.max(weightNum - 100, 50);
   }
-  
+
   // Ensure we have this weight in our scale
   const availableWeights = Object.keys(primaryScale).map(w => parseInt(w));
-  hoverWeight = availableWeights.reduce((prev, curr) => 
+  hoverWeight = availableWeights.reduce((prev, curr) =>
     Math.abs(curr - hoverWeight) < Math.abs(prev - hoverWeight) ? curr : prev
   );
-  
+
   return {
     hover: {
       hex: primaryScale[hoverWeight].hex,
@@ -289,7 +305,7 @@ export function getAdaptiveInteractiveStates(primaryScale, baseWeight, primaryNa
     active: {
       hex: primaryScale[hoverWeight].hex, // Same as hover!
       name: `${primaryName}-${hoverWeight}`,
-    }
+    },
   };
 }
 
@@ -308,12 +324,12 @@ export function generateColorScale(
   baseHex,
   colorName,
   useSmartPositioning = false,
-  method = 'hsl'
+  method = 'hsl',
+  options = {}
 ) {
-
   // Use LAB method if specified
   if (method === 'lab') {
-    return generateColorScaleLAB(baseHex, colorName);
+    return generateColorScaleLAB(baseHex, colorName, options);
   }
 
   const hsl = ColorUtils.hexToHsl(baseHex);
@@ -403,39 +419,39 @@ export function generateSemanticTokens(
 
   // Text tokens
   Object.assign(tokens, {
-    "text-primary": {
+    'text-primary': {
       light: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
       dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
     },
-    "text-primary-on-brand": {
+    'text-primary-on-brand': {
       light: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
       dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
     },
-    "text-secondary": {
+    'text-secondary': {
       light: { hex: neutralScale[900].hex, name: `${neutralName}-900` },
       dark: { hex: neutralScale[300].hex, name: `${neutralName}-300` },
     },
-    "text-tertiary": {
+    'text-tertiary': {
       light: { hex: neutralScale[700].hex, name: `${neutralName}-700` },
       dark: { hex: neutralScale[400].hex, name: `${neutralName}-400` },
     },
-    "text-quaternary": {
+    'text-quaternary': {
       light: { hex: neutralScale[500].hex, name: `${neutralName}-500` },
       dark: { hex: neutralScale[400].hex, name: `${neutralName}-400` },
     },
-    "text-dark": {
+    'text-dark': {
       light: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
       dark: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
     },
-    "text-light": {
+    'text-light': {
       light: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
       dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
     },
-    "text-disabled": {
+    'text-disabled': {
       light: { hex: neutralScale[500].hex, name: `${neutralName}-500` },
       dark: { hex: neutralScale[500].hex, name: `${neutralName}-500` },
     },
-    "text-placeholder": {
+    'text-placeholder': {
       light: { hex: neutralScale[500].hex, name: `${neutralName}-500` },
       dark: { hex: neutralScale[400].hex, name: `${neutralName}-400` },
     },
@@ -443,19 +459,19 @@ export function generateSemanticTokens(
 
   // Border tokens
   Object.assign(tokens, {
-    "border-primary": {
+    'border-primary': {
       light: { hex: neutralScale[300].hex, name: `${neutralName}-300` },
       dark: { hex: neutralScale[600].hex, name: `${neutralName}-600` },
     },
-    "border-secondary": {
+    'border-secondary': {
       light: { hex: neutralScale[400].hex, name: `${neutralName}-400` },
       dark: { hex: neutralScale[700].hex, name: `${neutralName}-700` },
     },
-    "border-tertiary": {
+    'border-tertiary': {
       light: { hex: neutralScale[200].hex, name: `${neutralName}-200` },
       dark: { hex: neutralScale[900].hex, name: `${neutralName}-900` },
     },
-    "border-disabled": {
+    'border-disabled': {
       light: { hex: neutralScale[300].hex, name: `${neutralName}-300` },
       dark: { hex: neutralScale[600].hex, name: `${neutralName}-600` },
     },
@@ -463,31 +479,31 @@ export function generateSemanticTokens(
 
   // Foreground tokens
   Object.assign(tokens, {
-    "fg-primary": {
+    'fg-primary': {
       light: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
       dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
     },
-    "fg-primary-on-brand": {
+    'fg-primary-on-brand': {
       light: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
       dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
     },
-    "fg-secondary": {
+    'fg-secondary': {
       light: { hex: neutralScale[900].hex, name: `${neutralName}-900` },
       dark: { hex: neutralScale[300].hex, name: `${neutralName}-300` },
     },
-    "fg-tertiary": {
+    'fg-tertiary': {
       light: { hex: neutralScale[700].hex, name: `${neutralName}-700` },
       dark: { hex: neutralScale[400].hex, name: `${neutralName}-400` },
     },
-    "fg-dark": {
+    'fg-dark': {
       light: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
       dark: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
     },
-    "fg-light": {
+    'fg-light': {
       light: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
       dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
     },
-    "fg-disabled": {
+    'fg-disabled': {
       light: { hex: neutralScale[500].hex, name: `${neutralName}-500` },
       dark: { hex: neutralScale[500].hex, name: `${neutralName}-500` },
     },
@@ -495,37 +511,37 @@ export function generateSemanticTokens(
 
   // Background tokens
   Object.assign(tokens, {
-    "bg-primary": {
+    'bg-primary': {
       light: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
       dark: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
     },
-    "bg-secondary": {
+    'bg-secondary': {
       light: { hex: neutralScale[100].hex, name: `${neutralName}-100` },
       dark: { hex: neutralScale[900].hex, name: `${neutralName}-900` },
     },
-    "bg-tertiary": {
+    'bg-tertiary': {
       light: { hex: neutralScale[200].hex, name: `${neutralName}-200` },
       dark: { hex: neutralScale[800].hex, name: `${neutralName}-800` },
     },
-    "bg-dark": {
+    'bg-dark': {
       light: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
       dark: { hex: neutralScale[950].hex, name: `${neutralName}-950` },
     },
-    "bg-light": {
+    'bg-light': {
       light: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
       dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` },
     },
-    "bg-modal-overlay": {
-      light: { hex: "rgba(0,0,0,0.36)", name: "alpha-black-modal" },
-      dark: { hex: "rgba(0,0,0,0.36)", name: "alpha-black-modal" },
+    'bg-modal-overlay': {
+      light: { hex: 'rgba(0,0,0,0.36)', name: 'alpha-black-modal' },
+      dark: { hex: 'rgba(0,0,0,0.36)', name: 'alpha-black-modal' },
     },
   });
 
   // Interactive color logic
   let primaryColor, hoverColor, activeColor;
 
-  if (options.useExactInteractiveColors) {
-    // Try to use the user's base color (e.g., the 500 weight they selected)
+  if (!options.useOptimizedContrast) {
+    // Try to use the user's base color   
     const userBaseHex = options.userSelectedPrimaryHex || primaryScale[600].hex;
     const matchedWeight = findScaleWeight(userBaseHex, primaryScale);
 
@@ -577,41 +593,41 @@ export function generateSemanticTokens(
 
   Object.assign(tokens, {
     // Primary
-    "interactive-primary": {
+    'interactive-primary': {
       light: primaryColor,
       dark: primaryColor,
     },
-    "interactive-primary-hover": {
+    'interactive-primary-hover': {
       light: hoverColor,
       dark: hoverColor,
     },
-    "interactive-primary-active": {
+    'interactive-primary-active': {
       light: activeColor,
       dark: activeColor,
     },
 
     // Secondary interactive (solid button with inverted colors)
-    "interactive-secondary": {
+    'interactive-secondary': {
       light: { hex: neutralScale[950].hex, name: `${neutralName}-950` }, // text-primary
       dark: { hex: neutralScale[50].hex, name: `${neutralName}-50` }, // text-primary for dark mode
     },
-    "interactive-secondary-hover": {
+    'interactive-secondary-hover': {
       light: { hex: neutralScale[900].hex, name: `${neutralName}-900` }, // text-secondary
       dark: { hex: neutralScale[100].hex, name: `${neutralName}-100` }, // text-secondary for dark mode
     },
-    "interactive-secondary-active": {
+    'interactive-secondary-active': {
       light: { hex: neutralScale[900].hex, name: `${neutralName}-900` },
       dark: { hex: neutralScale[200].hex, name: `${neutralName}-200` },
     },
 
     // Tertiary interactive (outline button)
-    "interactive-tertiary": {
-      light: { hex: "transparent", name: "transparent" },
-      dark: { hex: "transparent", name: "transparent" },
+    'interactive-tertiary': {
+      light: { hex: 'transparent', name: 'transparent' },
+      dark: { hex: 'transparent', name: 'transparent' },
     },
 
     // Focus
-    "interactive-focus": {
+    'interactive-focus': {
       light: {
         hex: focusLight,
         name: `${primaryColor.name}-alpha-500`,
@@ -625,7 +641,7 @@ export function generateSemanticTokens(
 
   // Status colors using constants
   Object.assign(tokens, {
-    "success-primary": {
+    'success-primary': {
       light: {
         hex: STATUS_COLORS.success.light.primary.hex,
         name: STATUS_COLORS.success.light.primary.name,
@@ -635,7 +651,7 @@ export function generateSemanticTokens(
         name: STATUS_COLORS.success.dark.primary.name,
       },
     },
-    "success-background": {
+    'success-background': {
       light: {
         hex: STATUS_COLORS.success.light.background.hex,
         name: STATUS_COLORS.success.light.background.name,
@@ -645,7 +661,7 @@ export function generateSemanticTokens(
         name: STATUS_COLORS.success.dark.background.name,
       },
     },
-    "success-foreground": {
+    'success-foreground': {
       light: {
         hex: STATUS_COLORS.success.light.foreground.hex,
         name: STATUS_COLORS.success.light.foreground.name,
@@ -655,13 +671,13 @@ export function generateSemanticTokens(
         name: STATUS_COLORS.success.dark.foreground.name,
       },
     },
-    "success-focus": {
+    'success-focus': {
       light: {
         hex: `rgba(${(() => {
           const rgb = ColorUtils.hexToRgb(
             STATUS_COLORS.success.light.foreground.hex
           );
-          return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : "0, 0, 0";
+          return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : '0, 0, 0';
         })()}, 0.24)`,
         name: `${STATUS_COLORS.success.light.foreground.name}-alpha-500`,
       },
@@ -670,13 +686,13 @@ export function generateSemanticTokens(
           const rgb = ColorUtils.hexToRgb(
             STATUS_COLORS.success.dark.foreground.hex
           );
-          return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : "0, 0, 0";
+          return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : '0, 0, 0';
         })()}, 0.36)`,
         name: `${STATUS_COLORS.success.dark.foreground.name}-alpha-600`,
       },
     },
 
-    "warning-primary": {
+    'warning-primary': {
       light: {
         hex: STATUS_COLORS.warning.light.primary.hex,
         name: STATUS_COLORS.warning.light.primary.name,
@@ -686,7 +702,7 @@ export function generateSemanticTokens(
         name: STATUS_COLORS.warning.dark.primary.name,
       },
     },
-    "warning-background": {
+    'warning-background': {
       light: {
         hex: STATUS_COLORS.warning.light.background.hex,
         name: STATUS_COLORS.warning.light.background.name,
@@ -696,7 +712,7 @@ export function generateSemanticTokens(
         name: STATUS_COLORS.warning.dark.background.name,
       },
     },
-    "warning-foreground": {
+    'warning-foreground': {
       light: {
         hex: STATUS_COLORS.warning.light.foreground.hex,
         name: STATUS_COLORS.warning.light.foreground.name,
@@ -706,13 +722,13 @@ export function generateSemanticTokens(
         name: STATUS_COLORS.warning.dark.foreground.name,
       },
     },
-    "warning-focus": {
+    'warning-focus': {
       light: {
         hex: `rgba(${(() => {
           const rgb = ColorUtils.hexToRgb(
             STATUS_COLORS.warning.light.foreground.hex
           );
-          return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : "0, 0, 0";
+          return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : '0, 0, 0';
         })()}, 0.24)`,
         name: `${STATUS_COLORS.warning.light.foreground.name}-alpha-500`,
       },
@@ -721,13 +737,13 @@ export function generateSemanticTokens(
           const rgb = ColorUtils.hexToRgb(
             STATUS_COLORS.warning.dark.foreground.hex
           );
-          return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : "0, 0, 0";
+          return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : '0, 0, 0';
         })()}, 0.36)`,
         name: `${STATUS_COLORS.warning.dark.foreground.name}-alpha-600`,
       },
     },
 
-    "error-primary": {
+    'error-primary': {
       light: {
         hex: STATUS_COLORS.error.light.primary.hex,
         name: STATUS_COLORS.error.light.primary.name,
@@ -737,7 +753,7 @@ export function generateSemanticTokens(
         name: STATUS_COLORS.error.dark.primary.name,
       },
     },
-    "error-background": {
+    'error-background': {
       light: {
         hex: STATUS_COLORS.error.light.background.hex,
         name: STATUS_COLORS.error.light.background.name,
@@ -747,7 +763,7 @@ export function generateSemanticTokens(
         name: STATUS_COLORS.error.dark.background.name,
       },
     },
-    "error-foreground": {
+    'error-foreground': {
       light: {
         hex: STATUS_COLORS.error.light.foreground.hex,
         name: STATUS_COLORS.error.light.foreground.name,
@@ -757,13 +773,13 @@ export function generateSemanticTokens(
         name: STATUS_COLORS.error.dark.foreground.name,
       },
     },
-    "error-focus": {
+    'error-focus': {
       light: {
         hex: `rgba(${(() => {
           const rgb = ColorUtils.hexToRgb(
             STATUS_COLORS.error.light.foreground.hex
           );
-          return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : "0, 0, 0";
+          return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : '0, 0, 0';
         })()}, 0.24)`,
         name: `${STATUS_COLORS.error.light.foreground.name}-alpha-500`,
       },
@@ -772,7 +788,7 @@ export function generateSemanticTokens(
           const rgb = ColorUtils.hexToRgb(
             STATUS_COLORS.error.dark.foreground.hex
           );
-          return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : "0, 0, 0";
+          return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : '0, 0, 0';
         })()}, 0.36)`,
         name: `${STATUS_COLORS.error.dark.foreground.name}-alpha-600`,
       },
@@ -798,12 +814,22 @@ export function initializeColorSystem(config = COLOR_SYSTEM_CONFIG) {
   const method = options.usePerceptualColors ? 'lab' : 'hsl';
 
   // Auto-detect color names
-  if (options.autoDetectColorNames && baseColors.neutral.name !== "neutral" && baseColors.primary.name !== "primary") {
-    if (!baseColors.neutral.name || baseColors.neutral.name === "auto") {
-      baseColors.neutral.name = detectColorName(baseColors.neutral.base, options.usePerceptualColors);
+  if (
+    options.autoDetectColorNames &&
+    baseColors.neutral.name !== 'neutral' &&
+    baseColors.primary.name !== 'primary'
+  ) {
+    if (!baseColors.neutral.name || baseColors.neutral.name === 'auto') {
+      baseColors.neutral.name = detectColorName(
+        baseColors.neutral.base,
+        options.usePerceptualColors
+      );
     }
-    if (!baseColors.primary.name || baseColors.primary.name === "auto") {
-      baseColors.primary.name = detectColorName(baseColors.primary.base, options.usePerceptualColors);
+    if (!baseColors.primary.name || baseColors.primary.name === 'auto') {
+      baseColors.primary.name = detectColorName(
+        baseColors.primary.base,
+        options.usePerceptualColors
+      );
     }
   }
 
@@ -812,14 +838,16 @@ export function initializeColorSystem(config = COLOR_SYSTEM_CONFIG) {
     baseColors.neutral.base,
     baseColors.neutral.name,
     options.useSmartPositioning,
-    method
+    method,
+    options
   );
 
   const primaryScale = generateColorScale(
     baseColors.primary.base,
     baseColors.primary.name,
     options.useSmartPositioning,
-    method
+    method,
+    options
   );
 
   // Generate semantic tokens
@@ -829,7 +857,7 @@ export function initializeColorSystem(config = COLOR_SYSTEM_CONFIG) {
     baseColors.neutral.name,
     baseColors.primary.name,
     {
-      useExactInteractiveColors: options.useExactInteractiveColors,
+      useOptimizedContrast: options.useOptimizedContrast,
       userSelectedPrimaryHex: baseColors.primary.base,
     }
   );
@@ -842,11 +870,11 @@ export function initializeColorSystem(config = COLOR_SYSTEM_CONFIG) {
       neutralName: baseColors.neutral.name,
       primaryName: baseColors.primary.name,
       generatedAt: new Date().toISOString(),
-      version: "2.0.0",
+      version: '2.0.0',
     },
   };
 }
 
-console.log("🎨 Modular Color System v2.0 loaded");
-console.log("📋 Available presets:", Object.keys(PRESET_CONFIGS));
-console.log("🔒 Presets are immutable and protected from modification");
+console.log('🎨 Modular Color System v2.0 loaded');
+console.log('📋 Available presets:', Object.keys(PRESET_CONFIGS));
+console.log('🔒 Presets are immutable and protected from modification');

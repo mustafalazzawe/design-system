@@ -8,33 +8,60 @@ import { capitalize } from './utils/object-utils.js';
  * Generate perceptually uniform color scale using CIELAB color space
  * @param {string} baseHex - Base hex color
  * @param {string} colorName - Name for the color family
+ * @param {Object} options - Generation options
  * @returns {Object} Color scale object
  */
-export function generateColorScaleLAB(baseHex, colorName) {
+export function generateColorScaleLAB(baseHex, colorName, options = {}) {
   try {
     const base = chroma(baseHex);
     // Use .get() method for CDN version
     const baseLCH = [base.get('lch.l'), base.get('lch.c'), base.get('lch.h')];
 
-    // Perceptually uniform lightness curve
-    // Based on Contentful's research for optimal contrast ratios
-    const lightnessCurve = {
-      50: 96, // Very light
-      100: 92, // Light
-      200: 84, // Light-medium
-      300: 74, // Medium-light
-      400: 64, // Medium
-      500: baseLCH[0] || 50, // Base color lightness
-      600: Math.max(baseLCH[0] - 15, 35), // Darker
-      700: Math.max(baseLCH[0] - 25, 25), // Much darker
-      800: Math.max(baseLCH[0] - 35, 15), // Very dark
-      900: Math.max(baseLCH[0] - 45, 8), // Extremely dark
-      950: 5, // Almost black
+    // Define the target lightness values for each weight
+    const targetLightness = {
+      50: 97,   // Nearly white
+      100: 94,  // Very light  
+      200: 88,  // Light
+      300: 78,  // Light-medium
+      400: 65,  // Medium-light
+      500: 52,  // Medium (perceptual middle)
+      600: 42,  // Medium-dark
+      700: 32,  // Dark
+      800: 22,  // Very dark
+      900: 14,  // Extremely dark
+      950: 8    // Almost black
     };
+
+    let lightnessCurve;
+    let basePosition = 500; // Default position
+
+    if (options.useOptimizedContrast) {
+      // Use fixed optimal lightness curve
+      lightnessCurve = { ...targetLightness };
+    } else {
+      // Smart positioning: find where user's color best fits
+      const userLightness = baseLCH[0];
+      let closestDiff = Infinity;
+      let closestWeight = 500;
+
+      Object.entries(targetLightness).forEach(([weight, lightness]) => {
+        const diff = Math.abs(userLightness - lightness);
+        if (diff < closestDiff) {
+          closestDiff = diff;
+          closestWeight = parseInt(weight);
+        }
+      });
+
+      basePosition = closestWeight;
+      
+      // Build lightness curve with user's color positioned correctly
+      lightnessCurve = { ...targetLightness };
+      lightnessCurve[basePosition] = userLightness;
+    }
 
     const scale = {};
 
-    Object.entries(lightnessCurve).forEach(([weight, targetLightness]) => {
+    Object.entries(lightnessCurve).forEach(([weight, targetLightnessValue]) => {
       let chromaValue, hue;
 
       // Handle potential NaN values from base color
@@ -47,20 +74,39 @@ export function generateColorScaleLAB(baseHex, colorName) {
         hue = baseLCH[2];
       }
 
-      // Adjust chroma based on lightness for better vibrancy
+      let finalLightness = targetLightnessValue;
       let adjustedChroma = chromaValue;
 
-      // Boost chroma for lighter colors to maintain vibrancy
-      if (targetLightness > 70) {
-        adjustedChroma = Math.min(chromaValue * 1.2, 100);
-      }
-      // Reduce chroma for very dark colors to avoid muddy appearance
-      else if (targetLightness < 20) {
-        adjustedChroma = chromaValue * 0.8;
+      // For the positioned user color, use exact values
+      if (!options.useOptimizedContrast && parseInt(weight) === basePosition) {
+        finalLightness = baseLCH[0];
+        adjustedChroma = baseLCH[1] || 0;
+        hue = baseLCH[2] || 0;
+      } else {
+        // Adjust chroma based on lightness for better vibrancy
+        if (options.useOptimizedContrast) {
+          // More aggressive chroma reduction for optimal contrast
+          if (finalLightness > 85) {
+            adjustedChroma = Math.max(chromaValue * 0.3, 8);
+          } else if (finalLightness > 70) {
+            adjustedChroma = chromaValue * 0.7;
+          } else if (finalLightness < 25) {
+            adjustedChroma = chromaValue * 0.8;
+          }
+        } else {
+          // Gentler chroma adjustments to preserve color character
+          if (finalLightness > 85) {
+            adjustedChroma = Math.max(chromaValue * 0.4, 6);
+          } else if (finalLightness > 70) {
+            adjustedChroma = chromaValue * 0.8;
+          } else if (finalLightness < 20) {
+            adjustedChroma = chromaValue * 0.7;
+          }
+        }
       }
 
       // Create color using chroma.lch() constructor
-      const color = chroma.lch(targetLightness, adjustedChroma, hue || 0);
+      const color = chroma.lch(finalLightness, adjustedChroma, hue || 0);
 
       // Ensure valid hex output
       let hex;
@@ -73,9 +119,9 @@ export function generateColorScaleLAB(baseHex, colorName) {
 
       scale[weight] = {
         hex: hex,
-        name: `${capitalize(colorName)} ${weight}`, // Add capitalize here
+        name: `${capitalize(colorName)} ${weight}`,
         lab: {
-          l: targetLightness,
+          l: finalLightness,
           c: adjustedChroma,
           h: hue || 0,
         },

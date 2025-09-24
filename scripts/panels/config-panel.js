@@ -39,7 +39,7 @@ class ConfigPanel {
     const primaryColorInput = document.getElementById('primary-color');
     const neutralHexInput = document.getElementById('neutral-hex');
     const primaryHexInput = document.getElementById('primary-hex');
-    const exactColorsToggle = document.getElementById('exact-colors-toggle');
+    const optimizedContrastToggle = document.getElementById('optimized-contrast-toggle');
     const perceptualToggle = document.getElementById(
       'perceptual-colors-toggle'
     );
@@ -67,8 +67,8 @@ class ConfigPanel {
     );
 
     // Actions
-    exactColorsToggle?.addEventListener('change', e =>
-      this.handleExactColorsToggle(e)
+    optimizedContrastToggle?.addEventListener('change', e =>
+      this.handleOptimizedContrastToggle(e)
     );
 
     perceptualToggle?.addEventListener('change', e =>
@@ -265,7 +265,7 @@ class ConfigPanel {
     const primaryColorInput = document.getElementById('primary-color');
     const neutralHexInput = document.getElementById('neutral-hex');
     const primaryHexInput = document.getElementById('primary-hex');
-    const exactColorsToggle = document.getElementById('exact-colors-toggle');
+    const optimizedContrastToggle = document.getElementById('optimized-contrast-toggle');
     const perceptualToggle = document.getElementById('perceptual-colors-toggle');
 
     // Update color inputs
@@ -290,9 +290,9 @@ class ConfigPanel {
       presetSelect.value = matchingPreset;
     }
 
-    if (exactColorsToggle) {
-      exactColorsToggle.checked =
-        state.activeConfig?.options?.useExactInteractiveColors || false;
+    if (optimizedContrastToggle) {
+      optimizedContrastToggle.checked =
+        state.activeConfig?.options?.useOptimizedContrast || false;
     }
 
     if (perceptualToggle) {
@@ -342,7 +342,7 @@ class ConfigPanel {
   // CONFIG TOGGLES
   // =============================================================================
 
-  handleExactColorsToggle(e) {
+  handleOptimizedContrastToggle(e) {
     // This will trigger when user changes the checkbox
     // The actual state change will happen when they click "Apply Changes"
     console.log('Exact colors toggle changed:', e.target.checked);
@@ -361,7 +361,7 @@ class ConfigPanel {
     const presetSelect = document.getElementById('preset-select');
     const neutralColorInput = document.getElementById('neutral-color');
     const primaryColorInput = document.getElementById('primary-color');
-    const exactColorsToggle = document.getElementById('exact-colors-toggle');
+    const optimizedContrastToggle = document.getElementById('optimized-contrast-toggle');
     const perceptualToggle = document.getElementById('perceptual-colors-toggle');
 
     if (!presetSelect) {
@@ -369,7 +369,7 @@ class ConfigPanel {
       return;
     }
 
-    const useExactColors = exactColorsToggle?.checked || false;
+    const useOptimizedContrast = optimizedContrastToggle?.checked || false;
     const usePerceptualColors = perceptualToggle?.checked || false;
 
     try {
@@ -382,7 +382,7 @@ class ConfigPanel {
         }
 
         if (success && state.activeConfig) {
-          state.activeConfig.options.useExactInteractiveColors = useExactColors;
+          state.activeConfig.options.useOptimizedContrast = useOptimizedContrast;
           state.activeConfig.options.usePerceptualColors = usePerceptualColors;
           state.activeConfig.options.colorGenerationMethod = usePerceptualColors ? 'lab' : 'hsl';
           state.updateColorSystem(state.activeConfig);
@@ -407,7 +407,7 @@ class ConfigPanel {
           neutralColorInput.value,
           primaryColorInput.value,
           {
-            useExactInteractiveColors: useExactColors,
+            useOptimizedContrast: useOptimizedContrast,
             usePerceptualColors: usePerceptualColors,
             colorGenerationMethod: usePerceptualColors ? 'lab' : 'hsl',
           }
