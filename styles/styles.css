@@ -454,6 +454,14 @@ body {
   }
 }
 
+/* Icon styling */
+.lucide {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+  color: inherit; 
+}
+
 .interactive-base {
   cursor: pointer;
   touch-action: manipulation;
@@ -925,6 +933,10 @@ body {
 }
 
 .status-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
   padding: var(--spacing-3);
   border-radius: var(--radius-sm);
 
@@ -935,6 +947,8 @@ body {
   .status-message {
     font-size: var(--font-size-body-sm);
   }
+  
+
 }
 
 /* Form inheritance */

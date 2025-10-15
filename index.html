@@ -10,6 +10,9 @@
   <!-- Add chroma.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"></script>
 
+  <!-- Add Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
   <!-- Link to font family -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -33,11 +36,11 @@
       </div>
       <div class="navbar-controls">
         <button class="btn btn-tertiary interactive-base" id="config-toggle" aria-label="Open configuration panel">
-          <span id="config-icon" aria-hidden="true">⚙️</span>
+          <i id="config-icon" data-lucide="settings"></i>
           <span id="config-text">Config</span>
         </button>
         <button class="btn btn-tertiary interactive-base" id="theme-toggle" aria-label="Toggle theme">
-          <span id="theme-icon" aria-hidden="true">🌙</span>
+          <i id="theme-icon" data-lucide="moon"></i>
           <span id="theme-text">Dark</span>
         </button>
       </div>
@@ -640,13 +643,13 @@
           <h4>Status Messages</h4>
           <div class="demo-messages">
             <div class="status-message" id="success-demo">
-              <span aria-hidden="true">✓</span> Success: Operation completed successfully
+              <i data-lucide="check-circle"></i> Success: Operation completed successfully
             </div>
             <div class="status-message" id="warning-demo">
-              <span aria-hidden="true">⚠</span> Warning: Please review your input
+              <i data-lucide="alert-triangle"></i> Warning: Please review your input
             </div>
             <div class="status-message" id="error-demo">
-              <span aria-hidden="true">✕</span> Error: Something went wrong
+              <i data-lucide="x-circle"></i> Error: Something went wrong
             </div>
           </div>
         </div>
@@ -670,7 +673,9 @@
   <aside class="config-panel" id="config-panel" role="dialog" aria-labelledby="config-title" aria-hidden="true">
     <div class="config-header">
       <h3 id="config-title">Configuration</h3>
-      <button class="config-close interactive-base" id="close-config" aria-label="Close configuration panel">✕</button>
+      <button class="config-close interactive-base" id="close-config" aria-label="Close configuration panel">
+        <i data-lucide="x"></i>
+      </button>
     </div>
 
     <div class="divider"></div>
@@ -751,7 +756,9 @@
           <button class="tab-button interactive-base" id="tailwind-tab">Tailwind CSS</button>
           <button class="tab-button interactive-base" id="json-tab">JSON</button>
         </div>
-        <button class="export-close interactive-base" id="close-export" aria-label="Close export modal">✕</button>
+        <button class="export-close interactive-base" id="close-export" aria-label="Close export modal">
+          <i data-lucide="x"></i>
+        </button>
       </div>
 
       <!-- Format Options -->
