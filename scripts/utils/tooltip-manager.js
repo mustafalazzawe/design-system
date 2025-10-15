@@ -1,3 +1,5 @@
+import { calculateAPCA } from '../color-oklch.js';
+
 // =============================================================================
 // Tooltip Manager - Global tooltip system for hover interactions
 // =============================================================================
@@ -110,6 +112,11 @@ class TooltipManager {
 
   renderContrastContent(content) {
     const { hex, bestFamilyMatch } = content.data;
+
+    // Calculate APCA contrast
+    const apcaLc = calculateAPCA(hex, bestFamilyMatch.hex);
+    const apcaPass = apcaLc !== null && apcaLc >= 60;
+
     return `
       <div class="tooltip-header">Contrast Ratio</div>
       <div class="tooltip-ratio">${bestFamilyMatch.ratio.toFixed(2)}</div>
@@ -132,6 +139,10 @@ class TooltipManager {
         <div class="tooltip-standard ${bestFamilyMatch.ratio >= 7.0 ? 'pass' : 'fail'}">
           <span class="standard-icon">${bestFamilyMatch.ratio >= 7.0 ? '✓' : '✕'}</span>
           AAA ${bestFamilyMatch.ratio >= 7.0 ? 'Pass' : 'Fail'}
+        </div>
+        <div class="tooltip-standard ${apcaPass ? 'pass' : 'fail'}">
+          <span class="standard-icon">${apcaPass ? '✓' : '✕'}</span>
+          APCA Lc ${apcaLc !== null ? apcaLc : 'N/A'}
         </div>
       </div>
     `;

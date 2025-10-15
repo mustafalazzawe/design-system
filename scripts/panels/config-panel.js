@@ -296,8 +296,9 @@ class ConfigPanel {
     }
 
     if (perceptualToggle) {
-      perceptualToggle.checked =
-        state.activeConfig?.options?.usePerceptualColors || false;
+      // Check if colorGenerationMethod is 'oklch'
+      const method = state.activeConfig?.options?.colorGenerationMethod || 'hsl';
+      perceptualToggle.checked = method === 'oklch';
     }
 
     // Update detected colors display
@@ -350,7 +351,8 @@ class ConfigPanel {
 
   handlePerceptualToggle(e) {
     // This will trigger when user changes the checkbox
-    console.log('Perceptual colors toggle changed:', e.target.checked);
+    const useOKLCH = e.target.checked;
+    console.log(`🎨 Color generation method: ${useOKLCH ? 'OKLCH' : 'HSL'}`);
   }
 
   // =============================================================================
@@ -372,6 +374,9 @@ class ConfigPanel {
     const useOptimizedContrast = optimizedContrastToggle?.checked || false;
     const usePerceptualColors = perceptualToggle?.checked || false;
 
+    // Determine color generation method based on toggle
+    const colorGenerationMethod = usePerceptualColors ? 'oklch' : 'hsl';
+
     try {
       if (presetSelect.value !== 'custom') {
         // Load preset
@@ -383,8 +388,7 @@ class ConfigPanel {
 
         if (success && state.activeConfig) {
           state.activeConfig.options.useOptimizedContrast = useOptimizedContrast;
-          state.activeConfig.options.usePerceptualColors = usePerceptualColors;
-          state.activeConfig.options.colorGenerationMethod = usePerceptualColors ? 'lab' : 'hsl';
+          state.activeConfig.options.colorGenerationMethod = colorGenerationMethod;
           state.updateColorSystem(state.activeConfig);
         }
       } else {
@@ -408,8 +412,7 @@ class ConfigPanel {
           primaryColorInput.value,
           {
             useOptimizedContrast: useOptimizedContrast,
-            usePerceptualColors: usePerceptualColors,
-            colorGenerationMethod: usePerceptualColors ? 'lab' : 'hsl',
+            colorGenerationMethod: colorGenerationMethod,
           }
         );
         if (!success) {

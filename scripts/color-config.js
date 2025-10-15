@@ -1,4 +1,4 @@
-import { generateColorScaleLAB, detectColorNameLAB } from './color-lab.js';
+import { generateColorScaleOKLCH, detectColorNameOKLCH, generateStatusColorScale } from './color-oklch.js';
 
 import { ColorUtils } from './utils/color-utils.js';
 import { deepFreeze, capitalize } from './utils/object-utils.js';
@@ -40,10 +40,11 @@ export const COLOR_SYSTEM_CONFIG = {
     includeAlphaColors: true, // Include alpha/transparency colors
     includeStatusColors: true, // Include success/warning/error colors
     includeFamilyContrast: true, // Include family contrast checking
+    includeDynamicStatusColors: false, // Generate status colors matching primary chroma
     useSmartPositioning: true, // Use smart positioning for color scales
     useOptimizedContrast: false, // Whether we use the exact color or optimized color
-    usePerceptualColors: false, // Enable CIELAB generation
-    colorGenerationMethod: 'hsl', // 'hsl' | 'lab'
+    usePerceptualColors: false, // Deprecated: maps to OKLCH for backward compatibility
+    colorGenerationMethod: 'oklch', // 'hsl' | 'oklch'
   },
 };
 
@@ -153,6 +154,8 @@ export const PRESET_CONFIGS = deepFreeze({
       ...COLOR_SYSTEM_CONFIG.options,
       autoDetectColorNames: true,
       useOptimizedContrast: true,
+      includeDynamicStatusColors: true,
+      colorGenerationMethod: 'oklch',
     },
   },
 
@@ -166,6 +169,8 @@ export const PRESET_CONFIGS = deepFreeze({
       ...COLOR_SYSTEM_CONFIG.options,
       autoDetectColorNames: true,
       useOptimizedContrast: true,
+      includeDynamicStatusColors: true,
+      colorGenerationMethod: 'oklch',
     },
   },
 
@@ -179,6 +184,8 @@ export const PRESET_CONFIGS = deepFreeze({
       ...COLOR_SYSTEM_CONFIG.options,
       autoDetectColorNames: true,
       useOptimizedContrast: true,
+      includeDynamicStatusColors: true,
+      colorGenerationMethod: 'oklch',
     },
   },
 
@@ -188,7 +195,11 @@ export const PRESET_CONFIGS = deepFreeze({
       primary: { name: 'primary', base: '#8b5cf6', hex: '#8b5cf6' },
     },
     project: { name: 'Custom Design System' },
-    options: { ...COLOR_SYSTEM_CONFIG.options, autoDetectColorNames: false },
+    options: {
+      ...COLOR_SYSTEM_CONFIG.options,
+      autoDetectColorNames: false,
+      colorGenerationMethod: 'oklch',
+    },
   },
 });
 
@@ -197,15 +208,17 @@ export const PRESET_CONFIGS = deepFreeze({
 // =============================================================================
 
 /**
- * Detect color name based on HSL values
+ * Detect color name based on color space
  * @param {string} hex - Hex color string
+ * @param {string} method - Method to use: 'hsl' or 'oklch'
  * @returns {string} Detected color name or "custom"
  */
-export function detectColorName(hex, useLAB = false) {
-  if (useLAB) {
-    return detectColorNameLAB(hex);
+export function detectColorName(hex, method = 'oklch') {
+  if (method === 'oklch') {
+    return detectColorNameOKLCH(hex);
   }
 
+  // Default HSL method
   const hsl = ColorUtils.hexToHsl(hex);
   if (!hsl) return 'custom';
 
@@ -318,20 +331,22 @@ export function getAdaptiveInteractiveStates(
  * @param {string} baseHex - Base hex color
  * @param {string} colorName - Name for the color family
  * @param {boolean} useSmartPositioning - Whether to use smart positioning
+ * @param {string} method - Generation method: 'hsl' or 'oklch'
  * @returns {Object|null} Color scale object or null if invalid
  */
 export function generateColorScale(
   baseHex,
   colorName,
   useSmartPositioning = false,
-  method = 'hsl',
+  method = 'oklch',
   options = {}
 ) {
-  // Use LAB method if specified
-  if (method === 'lab') {
-    return generateColorScaleLAB(baseHex, colorName, options);
+  // Use OKLCH method if specified (recommended)
+  if (method === 'oklch') {
+    return generateColorScaleOKLCH(baseHex, colorName, options);
   }
 
+  // HSL method fallback
   const hsl = ColorUtils.hexToHsl(baseHex);
   if (!hsl) return null;
 
@@ -404,6 +419,8 @@ export function generateColorScale(
  * @param {Object} primaryScale - Primary color scale
  * @param {string} neutralName - Neutral color name
  * @param {string} primaryName - Primary color name
+ * @param {Object} options - Generation options
+ * @param {Object|null} statusScales - Optional dynamic status color scales
  * @returns {Object} Semantic tokens object
  */
 export function generateSemanticTokens(
@@ -411,7 +428,8 @@ export function generateSemanticTokens(
   primaryScale,
   neutralName,
   primaryName,
-  options = {}
+  options = {},
+  statusScales = null
 ) {
   const tokens = {};
 
@@ -639,158 +657,162 @@ export function generateSemanticTokens(
     },
   });
 
-  // Status colors using constants
+  // Status colors - use dynamic scales if provided, otherwise use constants
+  const successColors = statusScales?.success || STATUS_COLORS.success;
+  const warningColors = statusScales?.warning || STATUS_COLORS.warning;
+  const errorColors = statusScales?.error || STATUS_COLORS.error;
+
   Object.assign(tokens, {
     'success-primary': {
       light: {
-        hex: STATUS_COLORS.success.light.primary.hex,
-        name: STATUS_COLORS.success.light.primary.name,
+        hex: successColors.light.primary.hex,
+        name: successColors.light.primary.name,
       },
       dark: {
-        hex: STATUS_COLORS.success.dark.primary.hex,
-        name: STATUS_COLORS.success.dark.primary.name,
+        hex: successColors.dark.primary.hex,
+        name: successColors.dark.primary.name,
       },
     },
     'success-background': {
       light: {
-        hex: STATUS_COLORS.success.light.background.hex,
-        name: STATUS_COLORS.success.light.background.name,
+        hex: successColors.light.background.hex,
+        name: successColors.light.background.name,
       },
       dark: {
-        hex: STATUS_COLORS.success.dark.background.hex,
-        name: STATUS_COLORS.success.dark.background.name,
+        hex: successColors.dark.background.hex,
+        name: successColors.dark.background.name,
       },
     },
     'success-foreground': {
       light: {
-        hex: STATUS_COLORS.success.light.foreground.hex,
-        name: STATUS_COLORS.success.light.foreground.name,
+        hex: successColors.light.foreground.hex,
+        name: successColors.light.foreground.name,
       },
       dark: {
-        hex: STATUS_COLORS.success.dark.foreground.hex,
-        name: STATUS_COLORS.success.dark.foreground.name,
+        hex: successColors.dark.foreground.hex,
+        name: successColors.dark.foreground.name,
       },
     },
     'success-focus': {
       light: {
         hex: `rgba(${(() => {
           const rgb = ColorUtils.hexToRgb(
-            STATUS_COLORS.success.light.foreground.hex
+            successColors.light.foreground.hex
           );
           return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : '0, 0, 0';
         })()}, 0.24)`,
-        name: `${STATUS_COLORS.success.light.foreground.name}-alpha-500`,
+        name: `${successColors.light.foreground.name}-alpha-500`,
       },
       dark: {
         hex: `rgba(${(() => {
           const rgb = ColorUtils.hexToRgb(
-            STATUS_COLORS.success.dark.foreground.hex
+            successColors.dark.foreground.hex
           );
           return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : '0, 0, 0';
         })()}, 0.36)`,
-        name: `${STATUS_COLORS.success.dark.foreground.name}-alpha-600`,
+        name: `${successColors.dark.foreground.name}-alpha-600`,
       },
     },
 
     'warning-primary': {
       light: {
-        hex: STATUS_COLORS.warning.light.primary.hex,
-        name: STATUS_COLORS.warning.light.primary.name,
+        hex: warningColors.light.primary.hex,
+        name: warningColors.light.primary.name,
       },
       dark: {
-        hex: STATUS_COLORS.warning.dark.primary.hex,
-        name: STATUS_COLORS.warning.dark.primary.name,
+        hex: warningColors.dark.primary.hex,
+        name: warningColors.dark.primary.name,
       },
     },
     'warning-background': {
       light: {
-        hex: STATUS_COLORS.warning.light.background.hex,
-        name: STATUS_COLORS.warning.light.background.name,
+        hex: warningColors.light.background.hex,
+        name: warningColors.light.background.name,
       },
       dark: {
-        hex: STATUS_COLORS.warning.dark.background.hex,
-        name: STATUS_COLORS.warning.dark.background.name,
+        hex: warningColors.dark.background.hex,
+        name: warningColors.dark.background.name,
       },
     },
     'warning-foreground': {
       light: {
-        hex: STATUS_COLORS.warning.light.foreground.hex,
-        name: STATUS_COLORS.warning.light.foreground.name,
+        hex: warningColors.light.foreground.hex,
+        name: warningColors.light.foreground.name,
       },
       dark: {
-        hex: STATUS_COLORS.warning.dark.foreground.hex,
-        name: STATUS_COLORS.warning.dark.foreground.name,
+        hex: warningColors.dark.foreground.hex,
+        name: warningColors.dark.foreground.name,
       },
     },
     'warning-focus': {
       light: {
         hex: `rgba(${(() => {
           const rgb = ColorUtils.hexToRgb(
-            STATUS_COLORS.warning.light.foreground.hex
+            warningColors.light.foreground.hex
           );
           return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : '0, 0, 0';
         })()}, 0.24)`,
-        name: `${STATUS_COLORS.warning.light.foreground.name}-alpha-500`,
+        name: `${warningColors.light.foreground.name}-alpha-500`,
       },
       dark: {
         hex: `rgba(${(() => {
           const rgb = ColorUtils.hexToRgb(
-            STATUS_COLORS.warning.dark.foreground.hex
+            warningColors.dark.foreground.hex
           );
           return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : '0, 0, 0';
         })()}, 0.36)`,
-        name: `${STATUS_COLORS.warning.dark.foreground.name}-alpha-600`,
+        name: `${warningColors.dark.foreground.name}-alpha-600`,
       },
     },
 
     'error-primary': {
       light: {
-        hex: STATUS_COLORS.error.light.primary.hex,
-        name: STATUS_COLORS.error.light.primary.name,
+        hex: errorColors.light.primary.hex,
+        name: errorColors.light.primary.name,
       },
       dark: {
-        hex: STATUS_COLORS.error.dark.primary.hex,
-        name: STATUS_COLORS.error.dark.primary.name,
+        hex: errorColors.dark.primary.hex,
+        name: errorColors.dark.primary.name,
       },
     },
     'error-background': {
       light: {
-        hex: STATUS_COLORS.error.light.background.hex,
-        name: STATUS_COLORS.error.light.background.name,
+        hex: errorColors.light.background.hex,
+        name: errorColors.light.background.name,
       },
       dark: {
-        hex: STATUS_COLORS.error.dark.background.hex,
-        name: STATUS_COLORS.error.dark.background.name,
+        hex: errorColors.dark.background.hex,
+        name: errorColors.dark.background.name,
       },
     },
     'error-foreground': {
       light: {
-        hex: STATUS_COLORS.error.light.foreground.hex,
-        name: STATUS_COLORS.error.light.foreground.name,
+        hex: errorColors.light.foreground.hex,
+        name: errorColors.light.foreground.name,
       },
       dark: {
-        hex: STATUS_COLORS.error.dark.foreground.hex,
-        name: STATUS_COLORS.error.dark.foreground.name,
+        hex: errorColors.dark.foreground.hex,
+        name: errorColors.dark.foreground.name,
       },
     },
     'error-focus': {
       light: {
         hex: `rgba(${(() => {
           const rgb = ColorUtils.hexToRgb(
-            STATUS_COLORS.error.light.foreground.hex
+            errorColors.light.foreground.hex
           );
           return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : '0, 0, 0';
         })()}, 0.24)`,
-        name: `${STATUS_COLORS.error.light.foreground.name}-alpha-500`,
+        name: `${errorColors.light.foreground.name}-alpha-500`,
       },
       dark: {
         hex: `rgba(${(() => {
           const rgb = ColorUtils.hexToRgb(
-            STATUS_COLORS.error.dark.foreground.hex
+            errorColors.dark.foreground.hex
           );
           return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : '0, 0, 0';
         })()}, 0.36)`,
-        name: `${STATUS_COLORS.error.dark.foreground.name}-alpha-600`,
+        name: `${errorColors.dark.foreground.name}-alpha-600`,
       },
     },
   });
@@ -810,10 +832,16 @@ export function generateSemanticTokens(
 export function initializeColorSystem(config = COLOR_SYSTEM_CONFIG) {
   const { baseColors, options } = config;
 
-  // Determine which method to use
-  const method = options.usePerceptualColors ? 'lab' : 'hsl';
+  // Determine which method to use - prioritize OKLCH
+  let method = options.colorGenerationMethod || 'oklch';
 
-  // Auto-detect color names
+  // Backward compatibility: map deprecated usePerceptualColors to OKLCH
+  if (options.usePerceptualColors && method === 'hsl') {
+    method = 'oklch';
+    console.log('📋 Migrated usePerceptualColors option to OKLCH');
+  }
+
+  // Auto-detect color names with appropriate method
   if (
     options.autoDetectColorNames &&
     baseColors.neutral.name !== 'neutral' &&
@@ -822,13 +850,13 @@ export function initializeColorSystem(config = COLOR_SYSTEM_CONFIG) {
     if (!baseColors.neutral.name || baseColors.neutral.name === 'auto') {
       baseColors.neutral.name = detectColorName(
         baseColors.neutral.base,
-        options.usePerceptualColors
+        method
       );
     }
     if (!baseColors.primary.name || baseColors.primary.name === 'auto') {
       baseColors.primary.name = detectColorName(
         baseColors.primary.base,
-        options.usePerceptualColors
+        method
       );
     }
   }
@@ -850,6 +878,75 @@ export function initializeColorSystem(config = COLOR_SYSTEM_CONFIG) {
     options
   );
 
+  // Generate dynamic status colors if option is enabled
+  let statusScales = null;
+  if (options.includeDynamicStatusColors && method === 'oklch') {
+    // Extract chroma from primary scale for baseline vibrancy
+    const primaryBaseColor = primaryScale[500] || primaryScale[600];
+    const primaryChroma = primaryBaseColor?.oklch?.c || 0.15; // Default fallback
+
+    // Apply accessibility-focused chroma multipliers for colorblind users
+    // Higher multipliers ensure sufficient saturation differences beyond just hue
+    const successChroma = Math.min(primaryChroma * 1.3, 0.37);  // 30% boost - moderate green
+    const warningChroma = Math.min(primaryChroma * 1.6, 0.37);  // 60% boost - vibrant amber (needs most saturation)
+    const errorChroma = Math.min(primaryChroma * 1.4, 0.37);    // 40% boost - vibrant red
+
+    console.log(
+      `🎨 Status chromas (colorblind-optimized) - ` +
+      `Success: ${successChroma.toFixed(3)}, ` +
+      `Warning: ${warningChroma.toFixed(3)}, ` +
+      `Error: ${errorChroma.toFixed(3)}`
+    );
+
+    // Generate status color scales with differentiated chroma values
+    // Success: green (~140°), Warning: amber (~40°), Error: red (~15°)
+    const successScale = generateStatusColorScale(successChroma, 140, 'success');
+    const warningScale = generateStatusColorScale(warningChroma, 40, 'warning');
+    const errorScale = generateStatusColorScale(errorChroma, 15, 'error');
+
+    // Map scales to STATUS_COLORS structure for compatibility
+    if (successScale && warningScale && errorScale) {
+      statusScales = {
+        success: {
+          light: {
+            primary: successScale[600],
+            background: successScale[200],
+            foreground: successScale[600],
+          },
+          dark: {
+            primary: successScale[600],
+            background: successScale[950],
+            foreground: successScale[400],
+          },
+        },
+        warning: {
+          light: {
+            primary: warningScale[600],
+            background: warningScale[200],
+            foreground: warningScale[600],
+          },
+          dark: {
+            primary: warningScale[600],
+            background: warningScale[950],
+            foreground: warningScale[400],
+          },
+        },
+        error: {
+          light: {
+            primary: errorScale[600],
+            background: errorScale[200],
+            foreground: errorScale[600],
+          },
+          dark: {
+            primary: errorScale[600],
+            background: errorScale[950],
+            foreground: errorScale[400],
+          },
+        },
+      };
+    }
+  }
+
   // Generate semantic tokens
   const semanticTokens = generateSemanticTokens(
     neutralScale,
@@ -859,7 +956,8 @@ export function initializeColorSystem(config = COLOR_SYSTEM_CONFIG) {
     {
       useOptimizedContrast: options.useOptimizedContrast,
       userSelectedPrimaryHex: baseColors.primary.base,
-    }
+    },
+    statusScales
   );
 
   return {
@@ -875,6 +973,7 @@ export function initializeColorSystem(config = COLOR_SYSTEM_CONFIG) {
   };
 }
 
-console.log('🎨 Modular Color System v2.0 loaded');
+console.log('🎨 Modular Color System v2.1 loaded');
 console.log('📋 Available presets:', Object.keys(PRESET_CONFIGS));
+console.log('🎨 Available color methods: HSL, OKLCH (default)');
 console.log('🔒 Presets are immutable and protected from modification');

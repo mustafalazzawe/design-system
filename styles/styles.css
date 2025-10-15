@@ -454,6 +454,14 @@ body {
   }
 }
 
+/* Icon styling */
+.lucide {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+  color: inherit; 
+}
+
 .interactive-base {
   cursor: pointer;
   touch-action: manipulation;
@@ -519,7 +527,7 @@ body {
   position: fixed;
   pointer-events: none;
   
-  max-width: 280px;
+  max-width: 224px;
   padding: 12px;
   border-radius: var(--radius-md);
   
@@ -925,8 +933,12 @@ body {
 }
 
 .status-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
   padding: var(--spacing-3);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
 
   font-size: var(--font-size-body-md);
 }
@@ -935,6 +947,8 @@ body {
   .status-message {
     font-size: var(--font-size-body-sm);
   }
+  
+
 }
 
 /* Form inheritance */
@@ -1376,7 +1390,8 @@ textarea {
 
 .tooltip-standards {
   display: flex;
-  gap: var(--spacing-3);
+  flex-wrap: wrap;
+  gap: var(--spacing-1) var(--spacing-2);
 }
 
 .tooltip-standard {

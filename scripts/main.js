@@ -35,6 +35,9 @@ class ColorSystemApp {
     console.log("🚀 Initializing Modular Color Design System...");
 
     try {
+      // Initialize Lucide icons
+      this.initializeLucideIcons();
+
       // Load the default preset to ensure correct color names
       const success = state.loadPreset("default");
       if (!success) {
@@ -61,6 +64,16 @@ class ColorSystemApp {
     } catch (error) {
       console.error("❌ App initialization failed:", error);
       this.handleInitializationError(error);
+    }
+  }
+
+  initializeLucideIcons() {
+    // Initialize Lucide icons
+    if (window.lucide) {
+      window.lucide.createIcons();
+      console.log("✅ Lucide icons initialized");
+    } else {
+      console.warn("⚠️ Lucide library not loaded");
     }
   }
 

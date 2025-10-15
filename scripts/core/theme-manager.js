@@ -91,15 +91,23 @@ class ThemeManager {
     const icon = document.getElementById("theme-icon");
     const text = document.getElementById("theme-text");
 
+    icon.classList.add('icon.md');
+
     if (icon && text) {
       if (theme === "dark") {
-        icon.textContent = "☀️";
+        
+        icon.setAttribute("data-lucide", "sun");
         text.textContent = "Light";
         icon.setAttribute("aria-label", "Switch to light mode");
       } else {
-        icon.textContent = "🌙";
+        icon.setAttribute("data-lucide", "moon");
         text.textContent = "Dark";
         icon.setAttribute("aria-label", "Switch to dark mode");
+      }
+
+      // Reinitialize Lucide icons for the updated icon
+      if (window.lucide) {
+        window.lucide.createIcons();
       }
     }
 
