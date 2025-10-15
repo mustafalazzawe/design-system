@@ -1,4 +1,5 @@
 import * as culori from 'https://cdn.jsdelivr.net/npm/culori@3/+esm';
+import { APCAcontrast, sRGBtoY } from 'https://cdn.skypack.dev/apca-w3@0.1.9';
 import { capitalize } from './utils/object-utils.js';
 
 // =============================================================================
@@ -273,5 +274,53 @@ export function calculatePerceptualContrastOKLCH(color1Hex, color2Hex) {
   } catch (error) {
     console.warn('Perceptual contrast calculation failed:', error);
     return { deltaE: 0, approximateRatio: 1, isAccessible: false };
+  }
+}
+
+/**
+ * Calculate APCA (Accessible Perceptual Contrast Algorithm) contrast
+ * Used for WCAG 3.0 contrast assessment
+ *
+ * @param {string} foregroundHex - Foreground color hex
+ * @param {string} backgroundHex - Background color hex
+ * @returns {number|null} APCA Lc value (absolute), or null if calculation fails
+ */
+export function calculateAPCA(foregroundHex, backgroundHex) {
+  try {
+    const { rgb } = culori;
+
+    // Parse colors to RGB
+    const fgRgb = rgb(foregroundHex);
+    const bgRgb = rgb(backgroundHex);
+
+    if (!fgRgb || !bgRgb) {
+      console.warn('APCA: Invalid color input');
+      return null;
+    }
+
+    // Convert to 0-255 range with alpha channel for APCA library
+    // Format: [R, G, B, A] where RGB is 0-255 and A is 0.0-1.0
+    const fg = [
+      Math.round(fgRgb.r * 255),
+      Math.round(fgRgb.g * 255),
+      Math.round(fgRgb.b * 255),
+      1.0, // Alpha (fully opaque)
+    ];
+    const bg = [
+      Math.round(bgRgb.r * 255),
+      Math.round(bgRgb.g * 255),
+      Math.round(bgRgb.b * 255),
+      1.0, // Alpha (fully opaque)
+    ];
+
+    // Convert RGB to luminance Y values, then calculate APCA contrast
+    // APCAcontrast expects Y values, not raw RGB
+    const Lc = APCAcontrast(sRGBtoY(fg), sRGBtoY(bg));
+
+    // Return absolute value, rounded
+    return Math.round(Math.abs(Lc));
+  } catch (error) {
+    console.warn('APCA calculation failed:', error);
+    return null;
   }
 }

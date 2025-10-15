@@ -527,7 +527,7 @@ body {
   position: fixed;
   pointer-events: none;
   
-  max-width: 280px;
+  max-width: 224px;
   padding: 12px;
   border-radius: var(--radius-md);
   
@@ -1390,7 +1390,8 @@ textarea {
 
 .tooltip-standards {
   display: flex;
-  gap: var(--spacing-3);
+  flex-wrap: wrap;
+  gap: var(--spacing-1) var(--spacing-2);
 }
 
 .tooltip-standard {
