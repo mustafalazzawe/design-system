@@ -164,6 +164,92 @@ export function generateColorScaleOKLCH(baseHex, colorName, options = {}) {
 }
 
 /**
+ * Generate status color scale matching a target chroma value
+ * Creates success/warning/error colors with consistent chroma for cohesive palette
+ *
+ * @param {number} targetChroma - Chroma value to match (from primary color)
+ * @param {number} targetHue - Hue for the status color (140=green, 40=amber, 15=red)
+ * @param {string} colorName - Name for the color (success, warning, error)
+ * @returns {Object} Color scale object with weights 50-950
+ */
+export function generateStatusColorScale(targetChroma, targetHue, colorName) {
+  try {
+    const { formatHex, clampChroma } = culori;
+
+    // Use Evil Martians Harmonizer lightness values for consistency
+    const targetLightness = {
+      50: 0.99,   // Almost white
+      100: 0.97,  // Very light
+      200: 0.93,  // Light (backgrounds)
+      300: 0.87,  // Light-medium
+      400: 0.77,  // Medium-light (dark mode foregrounds)
+      500: 0.65,  // True middle
+      600: 0.53,  // Medium-dark (primary/foreground)
+      700: 0.42,  // Dark
+      800: 0.31,  // Very dark
+      900: 0.22,  // Extremely dark
+      950: 0.15,  // Almost black (dark mode backgrounds)
+    };
+
+    const scale = {};
+
+    Object.entries(targetLightness).forEach(([weight, lightness]) => {
+      let adjustedChroma = targetChroma;
+
+      // Adjust chroma based on lightness for better vibrancy and gamut fit
+      // Very light colors need reduced chroma to stay in gamut
+      if (lightness > 0.85) {
+        adjustedChroma = Math.max(targetChroma * 0.4, 0.015);
+      } else if (lightness > 0.7) {
+        adjustedChroma = targetChroma * 0.8;
+      } else if (lightness < 0.2) {
+        // Very dark colors also need slight chroma reduction
+        adjustedChroma = targetChroma * 0.7;
+      }
+
+      // Create color using OKLCH
+      const color = {
+        mode: 'oklch',
+        l: lightness,
+        c: adjustedChroma,
+        h: targetHue,
+      };
+
+      // Apply gamut mapping with chroma clamping (preserves hue better)
+      const clampedColor = clampChroma(color, 'oklch');
+
+      // Convert to hex
+      let hex;
+      try {
+        hex = formatHex(clampedColor);
+      } catch (error) {
+        console.warn(
+          `Failed to convert status OKLCH to hex for ${colorName}-${weight}:`,
+          error
+        );
+        // Fallback: try direct conversion without clamping
+        hex = formatHex(color);
+      }
+
+      scale[weight] = {
+        hex: hex,
+        name: `${capitalize(colorName)} ${weight}`,
+        oklch: {
+          l: lightness,
+          c: adjustedChroma,
+          h: targetHue,
+        },
+      };
+    });
+
+    return scale;
+  } catch (error) {
+    console.error(`Status color generation failed for ${colorName}:`, error);
+    return null;
+  }
+}
+
+/**
  * Enhanced color detection using OKLCH color space
  * More accurate than HSL for perceptual color matching
  *
