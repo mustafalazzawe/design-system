@@ -7,8 +7,7 @@
   <meta name="description"
     content="A comprehensive color system built on primitive colors with semantic tokens for consistent, accessible design">
 
-  <!-- Add chroma.js CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"></script>
+  <!-- Culori imported as ES module in color-oklch.js -->
 
   <!-- Add Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -723,10 +722,9 @@
         <div class="config-section">
           <label>
             <input type="checkbox" id="perceptual-colors-toggle">
-            <span class="checkbox-label">Use enhanced color generation (Recommended)</span>
+            <span class="checkbox-label">Use OKLCH color generation (Recommended)</span>
           </label>
-          <small>When enabled, uses CIELAB color space for more perceptually uniform colors. Based on Contentful's Forma
-            36 approach for superior visual consistency.</small>
+          <small>When enabled, uses OKLCH color space for superior perceptual uniformity and more vibrant colors. Designed for modern displays with better hue consistency across lightness values.</small>
         </div>
         <button type="button" class="btn btn-secondary apply-btn interactive-base" id="apply-config">Apply
           Changes</button>

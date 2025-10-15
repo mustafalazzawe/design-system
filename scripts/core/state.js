@@ -34,6 +34,7 @@ class ColorSystemState {
         includeFamilyContrast: true,
         useSmartPositioning: true,
         useOptimizedContrast: false,
+        colorGenerationMethod: 'oklch', // Default to OKLCH
       },
     };
   }

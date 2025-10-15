@@ -1,4 +1,4 @@
-import { generateColorScaleLAB, detectColorNameLAB } from './color-lab.js';
+import { generateColorScaleOKLCH, detectColorNameOKLCH } from './color-oklch.js';
 
 import { ColorUtils } from './utils/color-utils.js';
 import { deepFreeze, capitalize } from './utils/object-utils.js';
@@ -42,8 +42,8 @@ export const COLOR_SYSTEM_CONFIG = {
     includeFamilyContrast: true, // Include family contrast checking
     useSmartPositioning: true, // Use smart positioning for color scales
     useOptimizedContrast: false, // Whether we use the exact color or optimized color
-    usePerceptualColors: false, // Enable CIELAB generation
-    colorGenerationMethod: 'hsl', // 'hsl' | 'lab'
+    usePerceptualColors: false, // Deprecated: maps to OKLCH for backward compatibility
+    colorGenerationMethod: 'oklch', // 'hsl' | 'oklch'
   },
 };
 
@@ -153,6 +153,7 @@ export const PRESET_CONFIGS = deepFreeze({
       ...COLOR_SYSTEM_CONFIG.options,
       autoDetectColorNames: true,
       useOptimizedContrast: true,
+      colorGenerationMethod: 'oklch',
     },
   },
 
@@ -166,6 +167,7 @@ export const PRESET_CONFIGS = deepFreeze({
       ...COLOR_SYSTEM_CONFIG.options,
       autoDetectColorNames: true,
       useOptimizedContrast: true,
+      colorGenerationMethod: 'oklch',
     },
   },
 
@@ -179,6 +181,7 @@ export const PRESET_CONFIGS = deepFreeze({
       ...COLOR_SYSTEM_CONFIG.options,
       autoDetectColorNames: true,
       useOptimizedContrast: true,
+      colorGenerationMethod: 'oklch',
     },
   },
 
@@ -188,7 +191,11 @@ export const PRESET_CONFIGS = deepFreeze({
       primary: { name: 'primary', base: '#8b5cf6', hex: '#8b5cf6' },
     },
     project: { name: 'Custom Design System' },
-    options: { ...COLOR_SYSTEM_CONFIG.options, autoDetectColorNames: false },
+    options: {
+      ...COLOR_SYSTEM_CONFIG.options,
+      autoDetectColorNames: false,
+      colorGenerationMethod: 'oklch',
+    },
   },
 });
 
@@ -197,15 +204,17 @@ export const PRESET_CONFIGS = deepFreeze({
 // =============================================================================
 
 /**
- * Detect color name based on HSL values
+ * Detect color name based on color space
  * @param {string} hex - Hex color string
+ * @param {string} method - Method to use: 'hsl' or 'oklch'
  * @returns {string} Detected color name or "custom"
  */
-export function detectColorName(hex, useLAB = false) {
-  if (useLAB) {
-    return detectColorNameLAB(hex);
+export function detectColorName(hex, method = 'oklch') {
+  if (method === 'oklch') {
+    return detectColorNameOKLCH(hex);
   }
 
+  // Default HSL method
   const hsl = ColorUtils.hexToHsl(hex);
   if (!hsl) return 'custom';
 
@@ -318,20 +327,22 @@ export function getAdaptiveInteractiveStates(
  * @param {string} baseHex - Base hex color
  * @param {string} colorName - Name for the color family
  * @param {boolean} useSmartPositioning - Whether to use smart positioning
+ * @param {string} method - Generation method: 'hsl' or 'oklch'
  * @returns {Object|null} Color scale object or null if invalid
  */
 export function generateColorScale(
   baseHex,
   colorName,
   useSmartPositioning = false,
-  method = 'hsl',
+  method = 'oklch',
   options = {}
 ) {
-  // Use LAB method if specified
-  if (method === 'lab') {
-    return generateColorScaleLAB(baseHex, colorName, options);
+  // Use OKLCH method if specified (recommended)
+  if (method === 'oklch') {
+    return generateColorScaleOKLCH(baseHex, colorName, options);
   }
 
+  // HSL method fallback
   const hsl = ColorUtils.hexToHsl(baseHex);
   if (!hsl) return null;
 
@@ -810,10 +821,16 @@ export function generateSemanticTokens(
 export function initializeColorSystem(config = COLOR_SYSTEM_CONFIG) {
   const { baseColors, options } = config;
 
-  // Determine which method to use
-  const method = options.usePerceptualColors ? 'lab' : 'hsl';
+  // Determine which method to use - prioritize OKLCH
+  let method = options.colorGenerationMethod || 'oklch';
 
-  // Auto-detect color names
+  // Backward compatibility: map deprecated usePerceptualColors to OKLCH
+  if (options.usePerceptualColors && method === 'hsl') {
+    method = 'oklch';
+    console.log('📋 Migrated usePerceptualColors option to OKLCH');
+  }
+
+  // Auto-detect color names with appropriate method
   if (
     options.autoDetectColorNames &&
     baseColors.neutral.name !== 'neutral' &&
@@ -822,13 +839,13 @@ export function initializeColorSystem(config = COLOR_SYSTEM_CONFIG) {
     if (!baseColors.neutral.name || baseColors.neutral.name === 'auto') {
       baseColors.neutral.name = detectColorName(
         baseColors.neutral.base,
-        options.usePerceptualColors
+        method
       );
     }
     if (!baseColors.primary.name || baseColors.primary.name === 'auto') {
       baseColors.primary.name = detectColorName(
         baseColors.primary.base,
-        options.usePerceptualColors
+        method
       );
     }
   }
@@ -875,6 +892,7 @@ export function initializeColorSystem(config = COLOR_SYSTEM_CONFIG) {
   };
 }
 
-console.log('🎨 Modular Color System v2.0 loaded');
+console.log('🎨 Modular Color System v2.1 loaded');
 console.log('📋 Available presets:', Object.keys(PRESET_CONFIGS));
+console.log('🎨 Available color methods: HSL, OKLCH (default)');
 console.log('🔒 Presets are immutable and protected from modification');
